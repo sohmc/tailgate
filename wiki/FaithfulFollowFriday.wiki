@@ -1,5 +1,17 @@
 #Project page for Faithful Follow Friday
 
-= Content Coming Soon =
+= Version 0.2 Released =
 
-Source code is available now under Source.
+I've updated the script to use [http://oauth.net/ OAuth], as [http://dev.twitter.com/announcements required by Twitter].  The script uses [http://twitter.com/abraham @abraham]'s [http://github.com/abraham/twitteroauth twitteroauth].  For your convienence, I've put a [http://tailgate.googlecode.com/files/abraham-twitteroauth-0.2.0-beta2-0-g35fa109.tar.gz copy] under the [http://code.google.com/p/tailgate/downloads/list Downloads] tab above.  I've only tested it using 0.2.0-beta2.
+
+As of right now, you will need your own [http://dev.twitter.com/apps application OAuth keys].  I'll write some more detailed directions later on.
+
+== Documentation ==
+
+The #followfriday format should look like this:
+{{{
+#followfriday #sometag #othertag @twitter @twitterapi @twitter @etc...
+#followfriday #anothertag @abc123 @def456...
+}}}
+
+Each #followfriday *category* should have their own line.  So don't use a program that inserts a line-break after so many characters.
