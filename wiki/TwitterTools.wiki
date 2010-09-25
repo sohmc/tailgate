@@ -1,7 +1,7 @@
 #Tools to help administer and maintain twitter accounts.
 
 = List of Tools =
-  * [TwitterTools/FaithfulFollowFriday Faithful Follow Friday]
+  * [TwitterTools_FaithfulFollowFriday Faithful Follow Friday]
     Automatically posts a list of all your #followfriday friends so that you don't have to.  Written in PHP
   * _Twitter Archive_ (Coming Soon)
     Downloads your daily twitter feed and puts them into a searchable database.  Written PHP using MySQL.
