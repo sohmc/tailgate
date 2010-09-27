@@ -4,14 +4,24 @@
 
 I've updated the script to use [http://oauth.net/ OAuth], as [http://dev.twitter.com/announcements required by Twitter].  The script uses [http://twitter.com/abraham @abraham]'s [http://github.com/abraham/twitteroauth twitteroauth].  For your convienence, I've put a [http://tailgate.googlecode.com/files/abraham-twitteroauth-0.2.0-beta2-0-g35fa109.tar.gz copy] under the [http://code.google.com/p/tailgate/downloads/list Downloads] tab above.  I've only tested it using 0.2.0-beta2.
 
-As of right now, you will need your own [http://dev.twitter.com/apps application OAuth keys].  I'll write some more detailed directions later on.
+As of right now, you will need your own [http://dev.twitter.com/apps application OAuth keys].  I'll write some more [ObtainingOAuthKeys detailed directions] later on.
 
 == Documentation ==
 
-The #followfriday format should look like this:
+The script takes a plain-text file.  Modify the variable *$followfriday_file* on line 9 as necessary.  Most people who do #followfriday posts are usually members of a [http://www.twibes.com/ twibe] or hashtag group.  If you're not one of these people, don't worry.  You can still use the script.
+
+The #followfriday file format should look like this:
 {{{
 #followfriday #sometag #othertag @twitter @twitterapi @twitter @etc...
 #followfriday #anothertag @abc123 @def456...
 }}}
 
-Each #followfriday *category* should have their own line.  So don't use a program that inserts a line-break after so many characters.
+Each #followfriday *twibe* or *hashtag* group should have their own line.  So don't use a program that inserts line-breaks.  In a pinch, you can use the "Comments" form to type in your friends and then copy and paste that into a file.
+
+Also, be sure that each user has an *@* in front of their username.
+
+Once the file is completed, you can run the script.  The script will automatically parse the hashtags and append them to the end of all of the posts.  The script will break apart your list so that each post does not exceed 140 characters.  Take a look at the example below:
+
+[http://img835.imageshack.us/img835/5276/examplex.jpg]
+
+Notice that the first post contains a different hashtag than the six below it.  This is because they were on a seperate line.  You can view my `followfriday_file` to see the format.
