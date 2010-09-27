@@ -11,7 +11,7 @@ As of right now, you will need your own [http://dev.twitter.com/apps application
 
 The script takes a plain-text file.  Modify the variable *$followfriday_file* on line 9 as necessary.  Most people who do #followfriday posts are usually members of a [http://www.twibes.com/ twibe] or hashtag group.  If you're not one of these people, don't worry.  You can still use the script.
 
-The #followfriday file format should look like this:
+The #followfriday [http://code.google.com/p/tailgate/source/browse/twitter_tools/trunk/followfriday_list file format] should look like this:
 {{{
 #followfriday #sometag #othertag @twitter @twitterapi @twitter @etc...
 #followfriday #anothertag @abc123 @def456...
@@ -25,4 +25,4 @@ Once the file is completed, you can run the script.  The script will automatical
 
 [http://img835.imageshack.us/img835/5276/examplex.jpg]
 
-Notice that the first post contains a different hashtag than the six below it.  This is because they were on a seperate line.  You can view my `followfriday_file` to see the format.
+Notice that the first post contains a different hashtag than the six below it.  This is because they were on a seperate line.  You can view my [http://code.google.com/p/tailgate/source/browse/twitter_tools/trunk/followfriday_list followfriday_file] to see the format.
