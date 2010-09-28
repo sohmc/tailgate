@@ -3,7 +3,7 @@
     * Facebook Autopoke
     * Financial Selector
     * Inline Search Cleaner 
-    * MarketForce Manager
+    * !MarketForce Manager
     * *Depricated*
       * Cagle Cartoon Expander for Bloglines
       * Facebook Age Checker 1.1 
