@@ -1,5 +1,5 @@
 #summary Step-by-step directions on obtaining OAuth keys from twitter
-[http://en.wikipedia.org/wiki/File:Oauth_logo.svg]
+<a href="http://oauth.org/"><img src="http://img245.imageshack.us/img245/8438/200pxoauthlogosvg.png" align="right"></a>
 = OAuth is Required for Twitter Applications =
 
 If you plan on using any of the twitter apps here on tailgate, you will need to create an OAuth keys.  These keys allow the app to perform actions on your behalf.  If you want to read the details, go to Twitter's API documentation.  If you just want to get up and running, follow these instructions.
