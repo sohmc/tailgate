@@ -3,12 +3,14 @@
      <ModulePrefs title="Under Construction Macro" />
      <Content type="html">     
 	  <![CDATA[ 
+	  <div align="center">
 	  <h1>I need a nap!</h1>
-	  <p align="center"><img src="http://img691.imageshack.us/img691/74/39635337703c0ed2941a.jpg"></p>
+	  <p><img src="http://img691.imageshack.us/img691/74/39635337703c0ed2941a.jpg"></p>
 	  
 	  <p>This page isn't built yet because I'm taking a nap. (Page is still under construction)</p>
 
 	  <p><a href="http://www.flickr.com/photos/bowielover1962/3963533770/">Image</a> used under CreativeCommons <a href="http://creativecommons.org/licenses/by-nc-nd/2.0/">BY-NC-ND</a> License.</p>
+	  </div>
 	  ]]>
      </Content>
 </Module>
