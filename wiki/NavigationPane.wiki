@@ -10,7 +10,7 @@
       * Fairfax County Library Holding Selector 
       * Financial Selector
       * Verizon Wireless Payment Method
-  * [TwitterTools List of all Twitter Tools]
+  * [TwitterTools Twitter Tools]
     * [FaithfulFollowFriday Faithful Follow Friday]
     * Twitter Archive _(Coming Soon)_
     * [ObtainingOAuthKeys Obtaining OAuth Keys]
