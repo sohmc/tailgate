@@ -1,13 +1,19 @@
 #summary Step-by-step directions on obtaining OAuth keys from twitter
+[http://en.wikipedia.org/wiki/File:Oauth_logo.svg]
+= OAuth is Required for Twitter Applications =
 
-= Nothing here yet =
+If you plan on using any of the twitter apps here on tailgate, you will need to create an OAuth keys.  These keys allow the app to perform actions on your behalf.  If you want to read the details, go to Twitter's API documentation.  If you just want to get up and running, follow these instructions.
 
-Add your content here.
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  # *Go to http://dev.twitter.com/apps *.  If you are not logged in, you will be asked for your twitter credentials.  If you already have an app, you can use your existing keys.  
+  # Click *[http://dev.twitter.com/apps/new Register a new app]*.
+  # Fill out the form:
+    * Type in a *name* for your app.  
+    * *Description* can be left blank.
+    * For the *application website*, please link to the appropriate wiki page on tailgate.  You don't have to, but it would be appreciated.
+    * *Organization* can be left blank.
+    * *Application Type* must be set to "client"
+    * *Default Access Type* must be set to "read & write"
+  # Click *Save*.
+  # On the following page, you will be given the script Consumer OAuth Keys.  Copy and paste them into the script where appropriate.
+  # Once complete, click *My Access Token* on the right side of the screen.
+  # Copy your access tokens into the script where appropriate.
