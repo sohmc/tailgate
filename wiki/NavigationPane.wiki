@@ -12,5 +12,5 @@
       * Verizon Wireless Payment Method
   * [TwitterTools Twitter Tools]
     * [FaithfulFollowFriday Faithful Follow Friday]
-    * Twitter Archive _(Coming Soon)_
+    * [Twitter Archive]
     * [ObtainingOAuthKeys Obtaining OAuth Keys]
