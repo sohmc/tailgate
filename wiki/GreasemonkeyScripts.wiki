@@ -9,4 +9,8 @@ Listed in alphabetical order with current version number.  Link goes to script w
   * [Greasemonkey_MarketForceManager MarketForce Manager] -- v. <a href="#">0.4</a> (29 Apr 2010)
 
 
-<wiki:gadget url="http://tailgate.googlecode.com/svn/google_gadgets/trunk/under_construction.xml" width="100%" height="600px" border="0"/>
+The following scripts are *depricated* and are no longer maintained.  It is provided as a reference only.  Links go to userscript.org page.
+  * [http://userscripts.org/scripts/show/69247 Cagle Cartoon Expander for Bloglines] -- v. <a href="#">0.5</a> (13 Apr 2010)
+  * [http://userscripts.org/scripts/show/4581 Facebook Age Checker] -- v. <a href="#">1.1</a> (6 Jul 2006) 
+  * [http://userscripts.org/scripts/show/11195 Fairfax County Library Holding Selector] -- v. <a href="#">0.1</a> (6 Aug 2007)
+  * [http://userscripts.org/scripts/show/5212 Verizon Wireless Payment Method] -- v. <a href="#">0.2</a> (18 Aug 2008)
