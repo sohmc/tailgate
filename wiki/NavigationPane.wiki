@@ -8,7 +8,6 @@
       * Cagle Cartoon Expander for Bloglines
       * Facebook Age Checker 1.1 
       * Fairfax County Library Holding Selector 
-      * Financial Selector
       * Verizon Wireless Payment Method
   * [TwitterTools Twitter Tools]
     * [FaithfulFollowFriday Faithful Follow Friday]
