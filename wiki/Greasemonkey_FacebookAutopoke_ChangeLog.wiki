@@ -53,4 +53,4 @@
   * Seperated the code to two sections: one for getting the  confirmation poke page and one for doing the actual poking.
   * Fixed poking for facebook's new code:
     * Retreives post_form_id from the confirmation page and then passes it along to the POST function in the script.
-  * Provided more descriptive errors with error codes.  Anytime the script fails, autopoke will provide a failure code in brackets.  The full-text of the failure is noted in the JavaScript console.  Provide this information when submitting bug reports.
+  * Provided more descriptive errors with error codes.  Anytime the script fails, autopoke will provide a failure code in brackets.  The full-text of the failure is noted in the `JavaScript` console.  Provide this information when submitting bug reports.
