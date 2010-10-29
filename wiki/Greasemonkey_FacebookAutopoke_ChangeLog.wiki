@@ -1,0 +1,56 @@
+#summary Change Log of the Facebook Autopoke Greasemonkey script.
+
+== 3.4 (9/14/2010)==
+  * *MODIFIED:* Set debug to 0. Debug functions were left in-tact and can be activated by either URL or changing the debug variable within the script.
+
+== 3.3 (8/5/2010) ==
+  * *ADDED:* Various DEBUGGING functions were added.  Please [http://userscripts.org/topics/57119 read this thread] for more information.
+
+== 3.2.1 (8/5/2010) ==
+  * *MODIFIED:* The usoCheckup URL was changed.
+
+== 3.2 (6/24/2010) ==
+  * *MODIFIED:* Script will now look for pokes 40 times, pausing for 1.5 seconds.  This works out to a total of one minute.
+
+== 3.1 (6/20/2010) ==
+  * *REMOVED:* Language test was not working properly and was disabled.
+
+== 3.0 (6/18/2010) ==
+  * *MAJOR VERSION CHANGE:* Poke confirmation function and poke function were rewritten from the ground up.  The functions have sufficiently changed that they no longer are similar to Lukas Fragodt's Auto-Poke and EZ-Poke.  However, since this script was inspired by them, I've still made an attribution.
+  * *ADDED:* Various debugging lines were added so that users can assist in debugging the script.  To activate, either edit the script and change the debug variable value or add "autopoke_debug=<i>x</i>" where *x* is a value of 1 or greater.  The highest value the script checks for is 2.  Higher values show more detail.
+  * *ADDED:* @license metadata.  All scripts I author are licensed under the [http://www.gnu.org/licenses/gpl.html General Public License] 3.0.
+
+== 2.5 (5/28/2010) ==
+  * *MODIFIED:* Script will wait 1.5 seconds before auto-poking begins.  This fixes the issue of the script not picking up any pokes as soon as the page loads.
+
+== 2.4.3 (4/21/2010) ==
+  * *FIXED:* Script searches for the poke back URL instead of the [http://userscripts.org/topics/51157 text].
+
+== 2.4.2--debug (4/12/2010 @ 1148 ET) ==
+  * *UPDATE:* I apparently left out a curly bracket.  It's been fixed.  Please download again
+  * This is a debug version of the current code.  This will allow me to see why the pokes are not automatically being handled.  Please install this script.  If you find that a poke does not properly go through, please open up the Error Console (Ctrl-Shift-J or Tools, Error Console) and provide the error codes.  Debug messages from the autopoke script will start with *autopoke-5200:*.
+
+
+== 2.4.1 (3/3/2010) ==
+  * Added two includes: `http*://*.facebook.com/?*` and `http*://*.facebook.com/#*`  This should allow the script to run on the main page.  If you're still having problems, please submit an [http://userscripts.org/topics/47098 @include request] and I'll add it to the next release.
+
+
+== 2.4 (2/26/2010) ==
+  * Copied [http://userscripts.org/users/TaggedWink TaggWink's] [http://userscripts.org/topics/47048#posts-224143 suggestion].
+  * *UPDATED:* Script includes.  Script will now run on HTTPS.  The script <i>should</i> run on facebook's main page.  If it doesn't, please submit an http://userscripts.org/topics/47098 @include request] and I'll add it to the next release.
+  * *ADDED:* Script will now be updated via [http://userscripts.org/groups/90 usoCheckup Automatic Script Updater].
+
+== 2.3 (2/24/2010) ==
+  * Copied [http://userscripts.org/users/133364 the-ownage]'s [http://userscripts.org/topics/34806#posts-221902 suggestion]. *VERIFIED to work on the February 2010 re-design.*
+
+== 2.2 (2/17/2010) ==
+  * Copied [http://userscripts.org/users/44197 calibius's] [http://userscripts.org/topics/34806#posts-167440 suggestion].  &nbsp;*VERIFIED to work on the February 2010 re-design.*
+
+== 2.1 (10/19/2006) ==
+  * Modified regular expression for post_form_id to better capture the confirmation code.
+
+== 2.0 (8/17/2006) ==
+  * Seperated the code to two sections: one for getting the  confirmation poke page and one for doing the actual poking.
+  * Fixed poking for facebook's new code:
+    * Retreives post_form_id from the confirmation page and then passes it along to the POST function in the script.
+  * Provided more descriptive errors with error codes.  Anytime the script fails, autopoke will provide a failure code in brackets.  The full-text of the failure is noted in the JavaScript console.  Provide this information when submitting bug reports.
