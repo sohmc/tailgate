@@ -1,18 +1,37 @@
-#labels Featured
-This [https://addons.mozilla.org/en-US/firefox/addon/748/ Greasemonkey script] automatically pokes people who have already poked you on Facebook.  It was inspired by Lukas Fragodt's Auto-Poke and EZ-Poke script, which are now defunct.
+﻿#labels Featured
+
+This [https://addons.mozilla.org/en-US/firefox/addon/748/ Greasemonkey
+script] automatically pokes people who have already poked you on
+Facebook.  It was inspired by Lukas Fragodt's Auto-Poke and EZ-Poke
+script, which are now defunct.
 
 = Please make use of the bug reporting system here =
 
-Google Code provides a [http://code.google.com/p/tailgate/issues/list bug reporting system] that you can use to submit bug reports.  Let's try to stay away from the forums.
+Google Code provides a [http://code.google.com/p/tailgate/issues/list
+bug reporting system] that you can use to submit bug reports.  Let's
+try to stay away from the forums.
 
-== Welcome to version 3.0 ==
-I was hoping to release version 3.0 later in the year but Facebook forced me to move my time table.  In case you have missed the conversation, [http://userscripts.org/topics/54659 Facebook has changed the way that pokes are processed.]
+== Welcome to version 3.0 == I was hoping to release version 3.0 later
+in the year but Facebook forced me to move my time table.  In case you
+have missed the conversation, [http://userscripts.org/topics/54659
+Facebook has changed the way that pokes are processed.]
 
-*This script works for ENGLISH ONLY!*  If you would like to help making this script more language-independent, please send me a [http://userscripts.org/messages/new?user_id=7743 direct message].
+*This script works for ENGLISH ONLY!*  If you would like to help
+making this script more language-independent, please send me a
+[http://userscripts.org/messages/new?user_id=7743 direct message].
 
-This script is likely to break again very soon.  The way Facebook made their change allows them to change ONE variable to make this script obsolete.  I'm working on this and will keep a close eye on any changes Facebook may make.  Please be patient with me, but feel free to [http://userscripts.org/scripts/discuss/5200 submit a bug report in the forums].
+This script is likely to break again very soon.  The way Facebook made
+their change allows them to change ONE variable to make this script
+obsolete.  I'm working on this and will keep a close eye on any
+changes Facebook may make.  Please be patient with me, but feel free
+to [http://userscripts.org/scripts/discuss/5200 submit a bug report in
+the forums].
 
-== Developers: please read this! ==
-If you plan on using my method to process pokes, please leave a message in the forums.  I believe Facebook is attempting to prevent autopoke scripts such as this from automating the poke process.  Leaving a message will allow me to see how many people are using the script.  And as always, please remember to attribute.
+== Developers: please read this! == If you plan on using my method to
+process pokes, please leave a message in the forums.  I believe
+Facebook is attempting to prevent autopoke scripts such as this from
+automating the poke process.  Leaving a message will allow me to see
+how many people are using the script.  And as always, please remember
+to attribute.
 
 [Greasemonkey_FacebookAutopoke_ChangeLog View the Change Log]
