@@ -1,5 +1,9 @@
 #summary Change Log of the Facebook Autopoke Greasemonkey script.
 
+== 3.5 (10/30/2010) ==
+  * *FIXED:* Script fixes [http://code.google.com/p/facebook-autopoke/issues/detail?id=3&can=1 issue #3] where autopokes were no longer being processed due to Facebook's new protocol.
+  * *REMOVED:* Removed the ability to submit bug reports via the script.
+
 == 3.4 (9/14/2010)==
   * *MODIFIED:* Set debug to 0. Debug functions were left in-tact and can be activated by either URL or changing the debug variable within the script.
 
