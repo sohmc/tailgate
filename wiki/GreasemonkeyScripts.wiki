@@ -1,16 +1,16 @@
-#summary List of all of my scripts written for Greasemonkey
+﻿#summary List of all of my scripts written for Greasemonkey
 
-Listed in alphabetical order with current version number.  Link goes to script wiki, version number prompts for install.
+Listed in alphabetical order with current version number.  Link goes to script wiki, version number goes to Greasemonkey.
 
-  * [Greasemonkey_CagleCartoonExpander Cagle Cartoon Expander] -- v. <a href="#">0.3</a> (9 Aug 2010)
-  * [Greasemonkey_FacebookAutopoke Facebook Autopoke] -- v. <a href="#">3.4</a> (14 Sept 2010)
-  * [Greasemonkey_FinancialSelector Financial Selector] -- v. <a href="#">1.0</a> (8 May 2007)
-  * [Greasemonkey_InlineSearchCleaner Inline Search Cleaner] -- v. <a href="#">0.1</a> (15 Apr 2010)
-  * [Greasemonkey_MarketForceManager MarketForce Manager] -- v. <a href="#">0.4</a> (29 Apr 2010)
+  * [Greasemonkey_CagleCartoonExpander Cagle Cartoon Expander] -- v. [http://userscripts.org/scripts/show/83304 0.3 (9 Aug 2010)]
+  * [Greasemonkey_FacebookAutopoke Facebook Autopoke] -- v. [http://userscripts.org/scripts/show/5200 3.4 (14 Sept 2010)]
+  * [Greasemonkey_FinancialSelector Financial Selector] -- v. [http://userscripts.org/scripts/show/9119 1.0 (8 May 2007)]
+  * [Greasemonkey_InlineSearchCleaner Inline Search Cleaner] -- v. [http://userscripts.org/scripts/show/74432 0.1 (15 Apr 2010)]
+  * [Greasemonkey_MarketForceManager MarketForce Manager] -- v. [http://userscripts.org/scripts/show/74460 0.4 (29 Apr 2010)]
 
 
 The following scripts are *depricated* and are no longer maintained.  It is provided as a reference only.  Links go to userscript.org page.
-  * [http://userscripts.org/scripts/show/69247 Cagle Cartoon Expander for Bloglines] -- v. <a href="#">0.5</a> (13 Apr 2010)
-  * [http://userscripts.org/scripts/show/4581 Facebook Age Checker] -- v. <a href="#">1.1</a> (6 Jul 2006) 
-  * [http://userscripts.org/scripts/show/11195 Fairfax County Library Holding Selector] -- v. <a href="#">0.1</a> (6 Aug 2007)
-  * [http://userscripts.org/scripts/show/5212 Verizon Wireless Payment Method] -- v. <a href="#">0.2</a> (18 Aug 2008)
+  * Cagle Cartoon Expander for Bloglines -- v. [http://userscripts.org/scripts/show/69247 0.5 (13 Apr 2010)]
+  * Facebook Age Checker -- v. [http://userscripts.org/scripts/show/4581 1.1 (6 Jul 2006)] 
+  * Fairfax County Library Holding Selector -- v. [http://userscripts.org/scripts/show/11195 0.1 (6 Aug 2007)]
+  * Verizon Wireless Payment Method -- v. [http://userscripts.org/scripts/show/5212 0.2 (18 Aug 2008)]
