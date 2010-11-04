@@ -1,9 +1,9 @@
   * [GreasemonkeyScripts Greasemonkey Scripts]
-    * Cagle Cartoon Expander
-    * Facebook Autopoke
-    * Financial Selector
-    * Inline Search Cleaner 
-    * !MarketForce Manager
+    * [Greasemonkey_CagleCartoonExpander Cagle Cartoon Expander]
+    * [Greasemonkey_FacebookAutopoke Facebook Autopoke]
+    * [Greasemonkey_FinancialSelector Financial Selector]
+    * [Greasemonkey_InlineSearchCleaner Inline Search Cleaner]
+    * [Greasemonkey_MarketForceManager MarketForce Manager]
     * *Depricated*
       * Cagle Cartoon Expander for Bloglines
       * Facebook Age Checker 1.1 
