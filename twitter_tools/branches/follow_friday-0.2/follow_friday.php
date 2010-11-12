@@ -37,16 +37,12 @@ foreach ($followfriday_array as $l) {
         $followfriday_status_array = explode("\n", wordwrap($follow_friends, $max_line, "\n"));
 
         foreach ($followfriday_status_array as $s) {
-            if ($debug == 0) {
-                $content = twitter_update($s . " $line");
-                if (isset($content->id)) {
-                    echo "SUCCESS: " . print_r("$s $line", TRUE) . "\n";
-                    sleep(60);
-                } else {
-                    die ("Unable to update twitter: " . print_r($content, TRUE) . "\n");
-                }
-            } else {
-                echo "DEBUG $debug: " . print_r("$s $line", TRUE) . "\n";
+            $content = twitter_update($s . " $line");
+            if (isset($content->id)) {
+                echo "SUCCESS: " . print_r("$s $line", TRUE) . "\n";
+                sleep(60);
+            } else if ($debug == 0) {
+                die ("Unable to update twitter: " . print_r($content, TRUE) . "\n");
             }
         }
     }
@@ -63,7 +59,12 @@ function getConnectionWithAccessToken() {
 function twitter_update($status) {
     $params = array('status' => $status);
     $connection = getConnectionWithAccessToken();
-    $content = $connection->post("statuses/update", $params);
+
+    if ($debug == 0) {
+        $content = $connection->post("statuses/update", $params);
+    } else {
+        echo "DEBUG $debug: " . print_r("$s $line", TRUE) . "\n";
+    }
 
     if (isset($content->error)) {
 	die("OAuth error: " . $content->error . "\n");
