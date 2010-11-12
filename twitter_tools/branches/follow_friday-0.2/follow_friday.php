@@ -19,10 +19,10 @@ if (is_readable($followfriday_file)) {
 foreach ($followfriday_array as $l) {
     $num_of_matches = preg_match_all("/%(.*)/", $l, $status, PREG_PATTERN_ORDER);
     if ($num_of_matches > 0) {
-        if (strlen($status[0]) > $max) {
-            echo "Unable to post status because it is too long: {$status[0]} (" . strlen($status[0]) . ")\n";
+        if (strlen($status[1][0]) > $max) {
+            echo "Unable to post status because it is too long: {$status[1][0]} (" . strlen($status[1][0]) . ")\n";
         } else {
-            twitter_update($status[0]);
+            twitter_update($status[1][0]);
         }
     } else {
         preg_match_all("/(\#\w+)/", $l, $hash_tags, PREG_PATTERN_ORDER);
@@ -59,11 +59,12 @@ function getConnectionWithAccessToken() {
 function twitter_update($status) {
     $params = array('status' => $status);
     $connection = getConnectionWithAccessToken();
+    global $debug;
 
     if ($debug == 0) {
         $content = $connection->post("statuses/update", $params);
     } else {
-        echo "DEBUG $debug: " . print_r("$s $line", TRUE) . "\n";
+        echo "DEBUG $debug: " . print_r("$status", TRUE) . "\n";
     }
 
     if (isset($content->error)) {
