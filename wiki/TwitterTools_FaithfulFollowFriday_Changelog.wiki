@@ -1,0 +1,7 @@
+#summary Changelog for Faithful Follow Friday
+
+= Latest Release: 0.2 =
+  * Initial public release using OAuth
+
+== Initial private release: 0.1 = 
+  * Not released to the public
