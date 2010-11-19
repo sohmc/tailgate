@@ -1,11 +1,11 @@
 // ==UserScript== 
-// @name        somescript_name
+// @name        wikiHow Helper
 // @author      Michael Soh 
-// @namespace   autopoke_5200 
-// @description description
+// @namespace   wikihow_helper
+// @description Helps you do the more tedious tasks in wikiHow.
 // @version     0.1
 // @license     GPL 3.0 
-// @include     http://*.example.com/#* 
+// @include     http://*.wikihow.com/* 
 //  
 // @require     http://usocheckup.redirectme.net/UID.js
 // 
