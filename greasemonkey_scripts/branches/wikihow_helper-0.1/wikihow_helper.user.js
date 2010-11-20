@@ -7,9 +7,18 @@
 // @license     GPL 3.0 
 // @include     http://*.wikihow.com/* 
 //  
-// @require     http://usocheckup.redirectme.net/UID.js
 // 
 // ==/UserScript== 
+
+// @require     http://usocheckup.redirectme.net/UID.js
+
+var addressRegExp = /http:\/\/.*wikihow.com\/(.*)$/;
+var current_page = '';
+
+addressRegExp.exec(document.location);
+current_page = RegExp.$1;
+
+GM_log('current page: ' + current_page);
 
 
 
