@@ -16,13 +16,23 @@ var addressRegExp = /http:\/\/.*wikihow.com\/(.*)$/;
 var current_page = '';
 
 addressRegExp.exec(document.location);
-current_page = RegExp.$1;
+parse_address(RegExp.$1);
 
-GM_log('current page: ' + current_page);
 
 
 
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
+function RCpatrol() {
+    
+}
 
+function parse_address(page) {
+    if (page == "Special:RCPatrol") {
+        RCpatrol();
+    } else {
+        alert("Unknown Page");
+    }
+
+}
