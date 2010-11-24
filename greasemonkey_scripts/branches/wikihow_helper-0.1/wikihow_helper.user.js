@@ -66,6 +66,10 @@ function parse_address(page) {
 }
 
 // =-=-=-=-=- wikiHow-specific functions -=-=-=-=-= //
+// Functions within this section was copied from wikiHow's version of
+// MediaWiki, available http://src.wikihow.com/
+//
+// Functions licensed under GPL 2.0
 
 function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
         article = urldecode(qnArticle);
