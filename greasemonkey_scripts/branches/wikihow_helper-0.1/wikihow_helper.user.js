@@ -29,14 +29,26 @@ function RCpatrol() {
     
 }
 
+function new_users() {
+    var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][not(@class[starts-with(.,'new')])]/..");
+    show_only_new_users(nodes);
+}
+
 function new_contributors() {
     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][not(@class[starts-with(.,'new')])]/..");
-    var parent_node = nodes.snapshotItem(0).parentNode;
+    show_only_new_users(nodes);
+}
+
+function create_quick_edits() {
+        
+}
+
+function show_only_new_users(nodes_to_remove) {
+    var parent_node = nodes_to_remove.snapshotItem(0).parentNode;
     
-    for (var i = 0; i < nodes.snapshotLength; i++) {
-        parent_node.removeChild(nodes.snapshotItem(i));
+    for (var i = 0; i < nodes_to_remove.snapshotLength; i++) {
+        parent_node.removeChild(nodes_to_remove.snapshotItem(i));
     }
-    
 }
 
 
@@ -45,11 +57,51 @@ function parse_address(page) {
         RCpatrol();
     } else if (page == "Special:Newcontributors") {
         new_contributors();
+    } else if (page == "Special:Log/newusers") {
+        new_users();
     } else {
-        alert("Unknown Page");
+        GM_log("Unknown Page: " + page);
     }
 
 }
+
+// =-=-=-=-=- wikiHow-specific functions -=-=-=-=-= //
+
+function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
+        article = urldecode(qnArticle);
+
+        var mesid = document.getElementById('comment_text');
+        var message = qnMsgBody.replace(/\<nowiki\>|\<\/nowiki\>/ig, '');
+        message = message.replace(/\[\[ARTICLE\]\]/, '[['+article+']]');
+        mesid.value = message;
+        maxChar2 = maxChar + message.length;
+
+        users           = qnUser.split("|");
+        regdates        = regdate.split("|");
+        contribs        = contrib.split("|");
+
+        html = "Leave a quick note for ";
+
+        if (users.length > 1) {
+                html += "<select id='userdropdown' onchange='switchUser();'>";
+                for (i = 0; i < users.length; i++) {
+                        html += "<OPTION value='" + i + "'>" + users[i] + "</OPTION>";
+                }
+                html += "</select>";
+        } else {
+                html += "<input type='hidden' name='userdropdown' id='userdropdown' value'" + users[0] +"'/><b>" + users[0] + "</b>."
+        }
+        html += "<br/><span id='contribsreg'>";
+
+        $('#qnTarget').val("User_talk:"+users[0]);
+
+        var editorid = $('#qnEditorInfo');
+        editorid.html(html);
+
+        document.getElementById('modalPage').style.display = 'block';
+        return false;
+}
+
 
 // =-=-=-=-=- Standard Functions -=-=-=-=-= //
 
