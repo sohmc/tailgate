@@ -119,6 +119,11 @@ function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
         return false;
 }
 
+function insert_comment_div() {
+    var comment_div = document.createElement('div');
+
+}
+
 
 // =-=-=-=-=- Standard Functions -=-=-=-=-= //
 
