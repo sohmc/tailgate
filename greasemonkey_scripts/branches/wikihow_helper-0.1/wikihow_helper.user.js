@@ -32,6 +32,19 @@ function RCpatrol() {
 function new_users() {
     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][not(@class[starts-with(.,'new')])]/..");
     show_only_new_users(nodes);
+
+    var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][@class[starts-with(.,'new')]]");
+
+    for (var i = 0; i < nodes.snapshotLength; i++) {
+        var current_node = nodes.snapshotItem(i);
+
+        current_node.addEventListener('click', leave_message, true);
+        current_node.setAttribute('href', '#');
+    }
+}
+
+function leave_message() {
+    GM_log(this.getAttribute('title'));
 }
 
 function new_contributors() {
@@ -72,7 +85,7 @@ function parse_address(page) {
 // Functions licensed under GPL 2.0
 
 function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
-        article = urldecode(qnArticle);
+   //     article = urldecode(qnArticle);
 
         var mesid = document.getElementById('comment_text');
         var message = qnMsgBody.replace(/\<nowiki\>|\<\/nowiki\>/ig, '');
