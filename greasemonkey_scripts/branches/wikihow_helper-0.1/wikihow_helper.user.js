@@ -123,7 +123,7 @@ function insert_comment_div() {
     comment_div.setAttribute('id', 'modalContainer');
     comment_div.setAttribute('class', 'modalContainer');
     comment_div.innerHTML = " \
-        <link href="http://pad3.whstatic.com/extensions/min/?f=extensions/wikihow/popupEdit.css,skins/WikiHow/articledialog.css&rev=2110" rel="stylesheet">
+        <link href=\"http://pad3.whstatic.com/extensions/min/?f=extensions/wikihow/popupEdit.css,skins/WikiHow/articledialog.css&rev=2110\" rel=\"stylesheet\"> \
         <img height=\"10\" width=\"679\" style=\"display: block;\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_top.png\"> \
         <div class=\"modalContent\" id=\"quicknotecontent\"> \
         <div id=\"modalHeader\"> \
@@ -131,6 +131,11 @@ function insert_comment_div() {
                 <img alt=\"wikiHow\" id=\"modal_logo\" src=\"http://pad1.whstatic.com/skins/WikiHow/images/wikihow.gif\"> \
         </div><!--end editModalHeader--> \
         <div class=\"modalBody\"> \
+        <div id=\"qnEditorInfo\">Leave a quick note for <input type=\"hidden\" perrytheplatypus=\"\" value=\"\" id=\"userdropdown\" name=\"userdropdown\"><b>Perrytheplatypus</b>.<br><span id=\"contribsreg\"></span></div> \
+        <form onsubmit=\"return qnSend('postcomment_newmsg_1683', document.postcommentForm_1683);\" target=\"_blank\" action=\"http://www.wikihow.com/Special:Postcomment\" method=\"POST\" name=\"postcommentForm_1683\"> \
+                <input type=\"hidden\" value=\"User_talk:Perrytheplatypus\" name=\"target\" id=\"qnTarget\"> \
+                <br>Or customize your own message.<br> \
+                <textarea onkeyup=\"qnCountchars(this);\" rows=\"8\" cols=\"40\" name=\"comment_text\" id=\"comment_text\" tabindex=\"4\"></textarea> \
         </div> \
 </div>";
     document.body.insertBefore(comment_div, document.body.firstChild);
