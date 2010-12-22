@@ -1,12 +1,13 @@
 // ==UserScript== 
 // @name        Hide Wikia Toolbar
 // @author      Michael Soh 
-// @namespace   hide_wikia_toolbar_xxx
-// @description description
+// @namespace   hide_wikia_toolbar_93315
+// @description Hids the annoying toolbar at the bottom of all Wikia articles
 // @version     0.1
 // @license     GPL 3.0 
 // @include     http://*.wikia.com/*
 //  
+// @require     http://usocheckup.redirectme.net/93315.js
 // 
 // ==/UserScript== 
 
@@ -14,9 +15,6 @@ var nodes = evaluate_xpath(".//*[@id='WikiaFooter']/div");
 if (nodes.snapshotLength > 0) {
     nodes.snapshotItem(0).setAttribute("style", "display: none");
 }
-
-// @require     http://usocheckup.redirectme.net/UID.js
-
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
@@ -27,4 +25,3 @@ function evaluate_xpath(xpath_query) {
  
      return nodes; 
 } 
-
