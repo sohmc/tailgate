@@ -127,16 +127,22 @@ function insert_comment_div() {
         <img height=\"10\" width=\"679\" style=\"display: block;\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_top.png\"> \
         <div class=\"modalContent\" id=\"quicknotecontent\"> \
         <div id=\"modalHeader\"> \
-                <a id=\"modal_x\" onclick=\"document.getElementById('modalPage').style.display = 'none';\"></a> \
+                <a id=\"modal_x\" onclick=\"document.getElementById('modalPage').style.display = 'none';\"><img height=\"21\" width=\"21\" alt=\"X\" src=\"http://pad3.whstatic.com/extensions/wikihow/winpop_x.gif\"></a> \
                 <img alt=\"wikiHow\" id=\"modal_logo\" src=\"http://pad1.whstatic.com/skins/WikiHow/images/wikihow.gif\"> \
         </div><!--end editModalHeader--> \
         <div class=\"modalBody\"> \
-        <div id=\"qnEditorInfo\">Leave a quick note for <input type=\"hidden\" perrytheplatypus=\"\" value=\"\" id=\"userdropdown\" name=\"userdropdown\"><b>Perrytheplatypus</b>.<br><span id=\"contribsreg\"></span></div> \
+        <div id=\"qnEditorInfo\">Leave a quick note for <input type=\"hidden\" Sohmc=\"\" value=\"\" id=\"userdropdown\" name=\"userdropdown\"><b>Sohmc</b>.<br><span id=\"contribsreg\"></span></div> \
         <form onsubmit=\"return qnSend('postcomment_newmsg_1683', document.postcommentForm_1683);\" target=\"_blank\" action=\"http://www.wikihow.com/Special:Postcomment\" method=\"POST\" name=\"postcommentForm_1683\"> \
-                <input type=\"hidden\" value=\"User_talk:Perrytheplatypus\" name=\"target\" id=\"qnTarget\"> \
+                <input type=\"hidden\" value=\"User_talk:Sohmc\" name=\"target\" id=\"qnTarget\"> \
                 <br>Or customize your own message.<br> \
                 <textarea onkeyup=\"qnCountchars(this);\" rows=\"8\" cols=\"40\" name=\"comment_text\" id=\"comment_text\" tabindex=\"4\"></textarea> \
         </div> \
+        <input type=\"submit\" style=\"font-size: 110%; margin-left: 0pt; float: right;\" id=\"postcommentbutton_1683\" onmouseover=\"button_swap(this);\" onmouseout=\"button_unswap(this);\" class=\"button button100 submit_button\" value=\"Post\" tabindex=\"5\"> \
+         <a style=\"float: right; margin-right: 10px; line-height: 25px;\" onclick=\"return qnClose();\" tabindex=\"6\" href=\"#\">Cancel</a><br class=\"clearall\"> \
+         </form> \
+         </div> \
+         </div><!--end modalContent--> \
+         <img height=\"10\" width=\"679\" style=\"display: block;\" alt=\"\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_bottom_wh.png\"> \
 </div>";
     document.body.insertBefore(comment_div, document.body.firstChild);
 
