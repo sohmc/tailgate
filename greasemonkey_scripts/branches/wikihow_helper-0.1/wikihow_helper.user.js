@@ -120,10 +120,12 @@ function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
 
 function insert_comment_div() {
     var comment_div = document.createElement('div');
+    var style_link = document.createElement('link');
+    
     comment_div.setAttribute('id', 'modalContainer');
     comment_div.setAttribute('class', 'modalContainer');
     comment_div.innerHTML = " \
-        <link href=\"http://pad3.whstatic.com/extensions/min/?f=extensions/wikihow/popupEdit.css,skins/WikiHow/articledialog.css&rev=2110\" rel=\"stylesheet\"> \
+        <link rel=\"stylesheet\" type=\"text\/css\" href=\"http://pad3.whstatic.com/extensions/min/f/extensions/wikihow/quicknote.css?2471\"> \
         <img height=\"10\" width=\"679\" style=\"display: block;\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_top.png\"> \
         <div class=\"modalContent\" id=\"quicknotecontent\"> \
         <div id=\"modalHeader\"> \
