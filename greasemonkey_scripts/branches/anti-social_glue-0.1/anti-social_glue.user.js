@@ -2,7 +2,7 @@
 // @name        Anti-Social Glue
 // @author      Michael Soh 
 // @namespace   antisocial_glue__93916
-// @description description
+// @description Unchecks notification checkboxes for social networks.
 // @version     0.1
 // @license     GPL 3.0 
 // @include     http://getglue.com/*
