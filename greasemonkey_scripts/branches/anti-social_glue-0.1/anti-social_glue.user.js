@@ -1,16 +1,16 @@
 // ==UserScript== 
 // @name        Anti-Social Glue
 // @author      Michael Soh 
-// @namespace   antisocial_glue__
+// @namespace   antisocial_glue__93916
 // @description description
 // @version     0.1
 // @license     GPL 3.0 
 // @include     http://getglue.com/*
+// @require     http://usocheckup.redirectme.net/93916.js
 //  
 // 
 // ==/UserScript== 
 
-// @require     http://usocheckup.redirectme.net/UID.js
 var nodes = evaluate_xpath('.//fieldset/input[@type="checkbox"]');
 
 for (var i = 0; i < nodes.snapshotLength; i++) {
