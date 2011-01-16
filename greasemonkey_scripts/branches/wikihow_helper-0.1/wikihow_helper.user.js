@@ -65,6 +65,7 @@ function show_only_new_users(nodes_to_remove) {
 
 
 function parse_address(page) {
+
     if (page == "Special:RCPatrol") {
         RCpatrol();
     } else if (page == "Special:Newcontributors") {
