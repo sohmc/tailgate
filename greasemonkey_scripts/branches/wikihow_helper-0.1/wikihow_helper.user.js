@@ -65,12 +65,11 @@ function show_only_new_users(nodes_to_remove) {
 
 
 function parse_address(page) {
-
-    if (page == "Special:RCPatrol") {
+    if (page.match(/Special:RCPatrol/)) {
         RCpatrol();
-    } else if (page == "Special:Newcontributors") {
+    } else if (page.match(/Special:Newcontributors/)) {
         new_contributors();
-    } else if (page == "Special:Log/newusers") {
+    } else if (page.match(/Special:Log\/newusers/)) {
         new_users();
     } else {
         GM_log("Unknown Page: " + page);
