@@ -69,7 +69,7 @@ function parse_address(page) {
         RCpatrol();
     } else if (page.match(/Special:Newcontributors/)) {
         new_contributors();
-    } else if (page.match(/Special:Log\/newusers/)) {
+    } else if (page.match(/Special:Log\/newusers/) || (page.match(/Special:Log.*type=newusers/))) {
         new_users();
     } else {
         GM_log("Unknown Page: " + page);
