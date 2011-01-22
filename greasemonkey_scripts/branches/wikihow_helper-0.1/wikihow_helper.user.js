@@ -48,7 +48,16 @@ function leave_message() {
 function new_contributors() {
     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][not(@class[starts-with(.,'new')])]/..");
     show_only_new_users(nodes);
-    insert_comment_div();
+    
+    nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][@class[starts-with(.,'new')]]");
+    for (var i = 0; i < nodes.snapshotLength; i++) {
+        var talk_link = nodes.snapshotItem(i).getAttribute("title");
+        var reg = /User_talk:(\S+)/;
+        reg.exec(talk_link);
+        nodes.snapshotItem(i).setAttribute("title", "Click to send a message to " + RegExp.$1);
+    }
+
+//    insert_comment_div();
 }
 
 function create_quick_edits() {
