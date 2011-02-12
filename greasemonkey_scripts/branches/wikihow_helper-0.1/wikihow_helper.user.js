@@ -53,18 +53,19 @@ function new_contributors() {
     for (var i = 0; i < nodes.snapshotLength; i++) {
         var this_node = nodes.snapshotItem(i);
         var talk_link = this_node.getAttribute("title");
-        var reg = /User_talk:(\S+)/;
+        var reg = /User_talk:(.+)/;
         reg.exec(talk_link);
         this_node.setAttribute("title", "Click to send a message to " + RegExp.$1);
-        this_node.addEventListener("click", create_quick_edits('foobar'), true);
+        this_node.addEventListener("click", create_quick_edits, true);
         this_node.setAttribute("href", "#");
+        this_node.setAttribute("user", talk_link);
     }
 
 //    insert_comment_div();
 }
 
-function create_quick_edits(text) {
-    alert(text);
+function create_quick_edits() {
+    alert(this.getAttribute("user"));
 }
 
 function show_only_new_users(nodes_to_remove) {
