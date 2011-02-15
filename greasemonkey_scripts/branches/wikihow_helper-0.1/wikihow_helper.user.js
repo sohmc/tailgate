@@ -19,8 +19,8 @@ var debug = 5;
 insert_comment_div();
 
 
-//addressRegExp.exec(document.location);
-//parse_address(RegExp.$1);
+addressRegExp.exec(document.location);
+parse_address(RegExp.$1);
 
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
@@ -50,6 +50,7 @@ function leave_message() {
 function new_contributors() {
     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][not(@class[starts-with(.,'new')])]/..");
     show_only_new_users(nodes);
+    insert_comment_div();
     
     nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][@class[starts-with(.,'new')]]");
     for (var i = 0; i < nodes.snapshotLength; i++) {
@@ -58,16 +59,16 @@ function new_contributors() {
         var reg = /User_talk:(.+)/;
         reg.exec(talk_link);
         this_node.setAttribute("title", "Click to send a message to " + RegExp.$1);
-        this_node.addEventListener("click", create_quick_edits, true);
+        this_node.addEventListener("click", quickNote, true);
         this_node.setAttribute("href", "#");
         this_node.setAttribute("user", talk_link);
     }
 
-//    insert_comment_div();
 }
 
-function create_quick_edits() {
-    alert(this.getAttribute("user"));
+function quickNote() {
+     document.getElementById('modalBackground').style.display = 'block';
+     document.getElementById('modalContainer').style.display = 'block';
 }
 
 function show_only_new_users(nodes_to_remove) {
@@ -136,12 +137,13 @@ function insert_comment_div() {
     var background_div = document.createElement('div');
     background_div.setAttribute('id', 'modalBackground');
     background_div.setAttribute('class', 'modalBackground');
+    background_div.setAttribute('style', 'display: none;');
 
     var comment_div = document.createElement('div');
-    var style_link = document.createElement('link');
-    
     comment_div.setAttribute('id', 'modalContainer');
     comment_div.setAttribute('class', 'modalContainer');
+    comment_div.setAttribute('style', 'display: none;');
+
     comment_div.innerHTML = " \
         <link rel=\"stylesheet\" type=\"text\/css\" href=\"http://pad3.whstatic.com/extensions/min/f/extensions/wikihow/quicknote.css?2471\"> \
         <link rel=\"stylesheet\" type=\"text\/css\" href=\"http://pad3.whstatic.com/extensions/min/f/extensions/wikihow/popupEdit.css,skins/WikiHow/articledialog.css&rev=3052\"> \
