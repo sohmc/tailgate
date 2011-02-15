@@ -16,9 +16,11 @@ var addressRegExp = /http:\/\/.*wikihow.com\/(.*)$/;
 var current_page = '';
 var debug = 5;
 
+insert_comment_div();
 
-addressRegExp.exec(document.location);
-parse_address(RegExp.$1);
+
+//addressRegExp.exec(document.location);
+//parse_address(RegExp.$1);
 
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
@@ -132,6 +134,10 @@ function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
 }
 
 function insert_comment_div() {
+    var background_div = document.createElement('div');
+    background_div.setAttribute('id', 'modalBackground');
+    background_div.setAttribute('class', 'modalBackground');
+
     var comment_div = document.createElement('div');
     var style_link = document.createElement('link');
     
@@ -139,6 +145,7 @@ function insert_comment_div() {
     comment_div.setAttribute('class', 'modalContainer');
     comment_div.innerHTML = " \
         <link rel=\"stylesheet\" type=\"text\/css\" href=\"http://pad3.whstatic.com/extensions/min/f/extensions/wikihow/quicknote.css?2471\"> \
+        <link rel=\"stylesheet\" type=\"text\/css\" href=\"http://pad3.whstatic.com/extensions/min/f/extensions/wikihow/popupEdit.css,skins/WikiHow/articledialog.css&rev=3052\"> \
         <img height=\"10\" width=\"679\" style=\"display: block;\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_top.png\"> \
         <div class=\"modalContent\" id=\"quicknotecontent\"> \
         <div id=\"modalHeader\"> \
@@ -159,7 +166,11 @@ function insert_comment_div() {
          </div><!--end modalContent--> \
          <img height=\"10\" width=\"679\" style=\"display: block;\" alt=\"\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_bottom_wh.png\"> \
 </div>";
-    document.body.insertBefore(comment_div, document.body.firstChild);
+//    document.body.insertBefore(comment_div, document.body.firstChild);
+//    document.body.insertBefore(background_div, document.getElementById('modalContainer'));
+
+    document.getElementById('bodycontents').appendChild(comment_div);
+    document.getElementById('bodycontents').appendChild(background_div);
 
 }
 
