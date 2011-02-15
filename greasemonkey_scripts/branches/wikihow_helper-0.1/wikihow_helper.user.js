@@ -78,7 +78,6 @@ function show_only_new_users(nodes_to_remove) {
     }
 }
 
-
 function parse_address(page) {
     if (page.match(/Special:RCPatrol/)) {
         RCpatrol();
@@ -101,36 +100,36 @@ function parse_address(page) {
 function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
    //     article = urldecode(qnArticle);
 
-        var mesid = document.getElementById('comment_text');
-        var message = qnMsgBody.replace(/\<nowiki\>|\<\/nowiki\>/ig, '');
-        message = message.replace(/\[\[ARTICLE\]\]/, '[['+article+']]');
-        mesid.value = message;
-        maxChar2 = maxChar + message.length;
+    var mesid = document.getElementById('comment_text');
+    var message = qnMsgBody.replace(/\<nowiki\>|\<\/nowiki\>/ig, '');
+    message = message.replace(/\[\[ARTICLE\]\]/, '[['+article+']]');
+    mesid.value = message;
+    maxChar2 = maxChar + message.length;
 
-        users           = qnUser.split("|");
-        regdates        = regdate.split("|");
-        contribs        = contrib.split("|");
+    users           = qnUser.split("|");
+    regdates        = regdate.split("|");
+    contribs        = contrib.split("|");
 
-        html = "Leave a quick note for ";
+    html = "Leave a quick note for ";
 
-        if (users.length > 1) {
-                html += "<select id='userdropdown' onchange='switchUser();'>";
-                for (i = 0; i < users.length; i++) {
-                        html += "<OPTION value='" + i + "'>" + users[i] + "</OPTION>";
-                }
-                html += "</select>";
-        } else {
-                html += "<input type='hidden' name='userdropdown' id='userdropdown' value'" + users[0] +"'/><b>" + users[0] + "</b>."
-        }
-        html += "<br/><span id='contribsreg'>";
+    if (users.length > 1) {
+         html += "<select id='userdropdown' onchange='switchUser();'>";
+    for (i = 0; i < users.length; i++) {
+         html += "<OPTION value='" + i + "'>" + users[i] + "</OPTION>";
+    }
+         html += "</select>";
+    } else {
+         html += "<input type='hidden' name='userdropdown' id='userdropdown' value'" + users[0] +"'/><b>" + users[0] + "</b>."
+    }
+    html += "<br/><span id='contribsreg'>";
 
-        $('#qnTarget').val("User_talk:"+users[0]);
+    $('#qnTarget').val("User_talk:"+users[0]);
 
-        var editorid = $('#qnEditorInfo');
-        editorid.html(html);
+    var editorid = $('#qnEditorInfo');
+    editorid.html(html);
 
-        document.getElementById('modalPage').style.display = 'block';
-        return false;
+//    document.getElementById('modalPage').style.display = 'block';
+    return false;
 }
 
 function insert_comment_div() {
@@ -149,7 +148,7 @@ function insert_comment_div() {
         <img height=\"10\" width=\"679\" style=\"display: block;\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_top.png\"> \
         <div class=\"modalContent\" id=\"quicknotecontent\"> \
         <div id=\"modalHeader\"> \
-                <a id=\"modal_x\" onclick=\"document.getElementById('modalPage').style.display = 'none';\"><img height=\"21\" width=\"21\" alt=\"X\" src=\"http://pad3.whstatic.com/extensions/wikihow/winpop_x.gif\"></a> \
+                <a id=\"modal_x\"><img height=\"21\" width=\"21\" alt=\"X\" src=\"http://pad3.whstatic.com/extensions/wikihow/winpop_x.gif\"></a> \
                 <img alt=\"wikiHow\" id=\"modal_logo\" src=\"http://pad1.whstatic.com/skins/WikiHow/images/wikihow.gif\"> \
         </div><!--end editModalHeader--> \
         <div class=\"modalBody\"> \
@@ -159,28 +158,43 @@ function insert_comment_div() {
                 <br>Or customize your own message.<br> \
                 <textarea onkeyup=\"qnCountchars(this);\" rows=\"8\" cols=\"40\" name=\"comment_text\" id=\"comment_text\" tabindex=\"4\"></textarea> \
         </div> \
-        <input type=\"submit\" style=\"font-size: 110%; margin-left: 0pt; float: right;\" id=\"postcommentbutton_1683\" onmouseover=\"button_swap(this);\" onmouseout=\"button_unswap(this);\" class=\"button button100 submit_button\" value=\"Post\" tabindex=\"5\"> \
-         <a style=\"float: right; margin-right: 10px; line-height: 25px;\" onclick=\"return qnClose();\" tabindex=\"6\" href=\"#\">Cancel</a><br class=\"clearall\"> \
-         </form> \
-         </div> \
-         </div><!--end modalContent--> \
-         <img height=\"10\" width=\"679\" style=\"display: block;\" alt=\"\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_bottom_wh.png\"> \
+        <input type=\"submit\" style=\"font-size: 110%; margin-left: 0pt; float: right;\" id=\"postcommentbutton\" class=\"button button100 submit_button\" value=\"Post\" tabindex=\"5\"> \
+        <a style=\"float: right; margin-right: 10px; line-height: 25px;\" id=\"modal_cancel\" tabindex=\"6\" href=\"#\">Cancel</a><br class=\"clearall\"> \
+        </form> \
+        </div> \
+        </div><!--end modalContent--> \
+        <img height=\"10\" width=\"679\" style=\"display: block;\" alt=\"\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_bottom_wh.png\"> \
 </div>";
-//    document.body.insertBefore(comment_div, document.body.firstChild);
-//    document.body.insertBefore(background_div, document.getElementById('modalContainer'));
 
-    document.getElementById('bodycontents').appendChild(comment_div);
-    document.getElementById('bodycontents').appendChild(background_div);
+     document.getElementById('bodycontents').appendChild(comment_div);
+     document.getElementById('bodycontents').appendChild(background_div);
 
+     document.getElementById('modal_x').addEventListener('click', closeQuickNote, true)
+     document.getElementById('modal_cancel').addEventListener('click', closeQuickNote, true)
+     document.getElementById('postcommentbutton').addEventListener('click', closeQuickNote, true)
+
+}
+
+// =-=-=-=-=- END OF WIKIHOW FUNCTIONS -=-=-=-=-= //
+
+// =-=-=- Functions to help wikiHow -=-=-= //
+// The following functions are NOT a part of wikiHow and are used to
+// interact with the wikiHow functions contained above.
+
+function closeQuickNote() {
+     document.getElementById('qnTarget').value = '';
+     document.getElementById('comment_text').value = '';
+     document.getElementById('modalBackground').style.display = 'none';
+     document.getElementById('modalContainer').style.display = 'none';
 }
 
 
 // =-=-=-=-=- Standard Functions -=-=-=-=-= //
 
 function evaluate_xpath(xpath_query) {
-     if (debug >= 2) GM_log(xpath_query);
-     var nodes = document.evaluate(xpath_query, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-     if (debug >= 1) GM_log('number of nodes returned: ' + nodes.snapshotLength);
+    if (debug >= 2) GM_log(xpath_query);
+    var nodes = document.evaluate(xpath_query, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    if (debug >= 1) GM_log('number of nodes returned: ' + nodes.snapshotLength);
 
-     return nodes;
+    return nodes;
 }
