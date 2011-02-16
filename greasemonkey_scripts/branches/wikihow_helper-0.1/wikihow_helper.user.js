@@ -141,31 +141,27 @@ function insert_comment_div() {
         <link rel=\"stylesheet\" type=\"text\/css\" href=\"http://pad3.whstatic.com/extensions/min/f/extensions/wikihow/popupEdit.css,skins/WikiHow/articledialog.css&rev=3052\"> \
         <img height=\"10\" width=\"679\" style=\"display: block;\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_top.png\"> \
         <div class=\"modalContent\" id=\"quicknotecontent\"> \
-        <div id=\"modalHeader\"> \
-                <a id=\"modal_x\"><img height=\"21\" width=\"21\" alt=\"X\" src=\"http://pad3.whstatic.com/extensions/wikihow/winpop_x.gif\"></a> \
-                <img alt=\"wikiHow\" id=\"modal_logo\" src=\"http://pad1.whstatic.com/skins/WikiHow/images/wikihow.gif\"> \
-        </div><!--end editModalHeader--> \
-        <div class=\"modalBody\"> \
-        <div id=\"qnEditorInfo\">Leave a quick note for <span id=\"comment_target\" style=\"font-weight: bold;\">wHUser</span>.</div> \
-        <form onsubmit=\"return target=\"_blank\" action=\"http://www.wikihow.com/Special:Postcomment\" method=\"POST\" name=\"postcommentForm\"> \
-                <input type=\"hidden\" value=\"User_talk:wHUser\" name=\"target\" id=\"qnTarget\"> \
-                <br>Or customize your own message.<br> \
-                <textarea onkeyup=\"qnCountchars(this);\" rows=\"8\" cols=\"40\" name=\"comment_text\" id=\"comment_text\" tabindex=\"4\"></textarea> \
-        </div> \
-        <input type=\"submit\" style=\"font-size: 110%; margin-left: 0pt; float: right;\" id=\"postcommentbutton\" class=\"button button100 submit_button\" value=\"Post\" tabindex=\"5\"> \
-        <a style=\"float: right; margin-right: 10px; line-height: 25px;\" id=\"modal_cancel\" tabindex=\"6\" href=\"#\">Cancel</a><br class=\"clearall\"> \
-        </form> \
-        </div> \
+               <div id=\"modalHeader\"> \
+                    <a id=\"modal_x\"><img height=\"21\" width=\"21\" alt=\"X\" src=\"http://pad3.whstatic.com/extensions/wikihow/winpop_x.gif\"></a> \
+                    <img alt=\"wikiHow\" id=\"modal_logo\" src=\"http://pad1.whstatic.com/skins/WikiHow/images/wikihow.gif\"> \
+               </div><!--end editModalHeader--> \
+               <div class=\"modalBody\"> \
+                    <div id=\"qnEditorInfo\">Leave a quick note for <span id=\"comment_target\" style=\"font-weight: bold;\">wHUser</span>.</div> \
+                    <form onsubmit=\"return target=\"_blank\" action=\"http://www.wikihow.com/Special:Postcomment\" method=\"POST\" name=\"postcommentForm_6530\"> \
+                         <input type=\"hidden\" value=\"User_talk:wHUser\" name=\"target\" id=\"qnTarget\"> \
+                         <textarea rows=\"8\" cols=\"40\" name=\"comment_text\" id=\"comment_text\" tabindex=\"4\"></textarea> \
+                         <input type=\"submit\" style=\"font-size: 110%; margin-left: 0pt; float: right;\" id=\"postcommentbutton_6530\" class=\"button button100 submit_button\" value=\"Post\" tabindex=\"5\"> \
+                         <a style=\"float: right; margin-right: 10px; line-height: 25px;\" id=\"modal_cancel\" tabindex=\"6\" href=\"#\">Cancel</a><br class=\"clearall\"> \
+                    </form> \
+               </div> \
         </div><!--end modalContent--> \
-        <img height=\"10\" width=\"679\" style=\"display: block;\" alt=\"\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_bottom_wh.png\"> \
-</div>";
+        <img height=\"10\" width=\"679\" style=\"display: block;\" alt=\"\" src=\"http://pad2.whstatic.com/skins/WikiHow/images/article_bottom_wh.png\">";
 
      document.getElementById('bodycontents').appendChild(comment_div);
      document.getElementById('bodycontents').appendChild(background_div);
 
      document.getElementById('modal_x').addEventListener('click', closeQuickNote, true)
      document.getElementById('modal_cancel').addEventListener('click', closeQuickNote, true)
-     document.getElementById('postcommentbutton').addEventListener('click', closeQuickNote, true)
 
 }
 
@@ -185,6 +181,11 @@ function closeQuickNote() {
 function quickNote() {
      document.getElementById('comment_target').innerHTML = this.getAttribute('user');
      document.getElementById('qnTarget').value = "User_talk:" + this.getAttribute('user');
+     
+     if (debug > 2) {
+          document.getElementById('comment_target').innerHTML = 'Sohmc-sock';
+          document.getElementById('qnTarget').value = "User_talk:Sohmc-sock";
+     }
 
      document.getElementById('modalBackground').style.display = 'block';
      document.getElementById('modalContainer').style.display = 'block';
