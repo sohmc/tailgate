@@ -16,9 +16,6 @@ var addressRegExp = /http:\/\/.*wikihow.com\/(.*)$/;
 var current_page = '';
 var debug = 5;
 
-insert_comment_div();
-
-
 addressRegExp.exec(document.location);
 parse_address(RegExp.$1);
 
@@ -66,11 +63,6 @@ function new_contributors() {
 
 }
 
-function quickNote() {
-     document.getElementById('modalBackground').style.display = 'block';
-     document.getElementById('modalContainer').style.display = 'block';
-}
-
 function show_only_new_users(nodes_to_remove) {
     var parent_node = nodes_to_remove.snapshotItem(0).parentNode;
     
@@ -98,40 +90,40 @@ function parse_address(page) {
 //
 // Functions licensed under GPL 2.0
 
-function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
-   //     article = urldecode(qnArticle);
-
-    var mesid = document.getElementById('comment_text');
-    var message = qnMsgBody.replace(/\<nowiki\>|\<\/nowiki\>/ig, '');
-    message = message.replace(/\[\[ARTICLE\]\]/, '[['+article+']]');
-    mesid.value = message;
-    maxChar2 = maxChar + message.length;
-
-    users           = qnUser.split("|");
-    regdates        = regdate.split("|");
-    contribs        = contrib.split("|");
-
-    html = "Leave a quick note for ";
-
-    if (users.length > 1) {
-         html += "<select id='userdropdown' onchange='switchUser();'>";
-    for (i = 0; i < users.length; i++) {
-         html += "<OPTION value='" + i + "'>" + users[i] + "</OPTION>";
-    }
-         html += "</select>";
-    } else {
-         html += "<input type='hidden' name='userdropdown' id='userdropdown' value'" + users[0] +"'/><b>" + users[0] + "</b>."
-    }
-    html += "<br/><span id='contribsreg'>";
-
-    $('#qnTarget').val("User_talk:"+users[0]);
-
-    var editorid = $('#qnEditorInfo');
-    editorid.html(html);
-
-//    document.getElementById('modalPage').style.display = 'block';
-    return false;
-}
+//function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
+//   //     article = urldecode(qnArticle);
+//
+//    var mesid = document.getElementById('comment_text');
+//    var message = qnMsgBody.replace(/\<nowiki\>|\<\/nowiki\>/ig, '');
+//    message = message.replace(/\[\[ARTICLE\]\]/, '[['+article+']]');
+//    mesid.value = message;
+//    maxChar2 = maxChar + message.length;
+//
+//    users           = qnUser.split("|");
+//    regdates        = regdate.split("|");
+//    contribs        = contrib.split("|");
+//
+//    html = "Leave a quick note for ";
+//
+//    if (users.length > 1) {
+//         html += "<select id='userdropdown' onchange='switchUser();'>";
+//    for (i = 0; i < users.length; i++) {
+//         html += "<OPTION value='" + i + "'>" + users[i] + "</OPTION>";
+//    }
+//         html += "</select>";
+//    } else {
+//         html += "<input type='hidden' name='userdropdown' id='userdropdown' value'" + users[0] +"'/><b>" + users[0] + "</b>."
+//    }
+//    html += "<br/><span id='contribsreg'>";
+//
+//    $('#qnTarget').val("User_talk:"+users[0]);
+//
+//    var editorid = $('#qnEditorInfo');
+//    editorid.html(html);
+//
+////    document.getElementById('modalPage').style.display = 'block';
+//    return false;
+//}
 
 function insert_comment_div() {
     var background_div = document.createElement('div');
@@ -154,9 +146,9 @@ function insert_comment_div() {
                 <img alt=\"wikiHow\" id=\"modal_logo\" src=\"http://pad1.whstatic.com/skins/WikiHow/images/wikihow.gif\"> \
         </div><!--end editModalHeader--> \
         <div class=\"modalBody\"> \
-        <div id=\"qnEditorInfo\">Leave a quick note for <input type=\"hidden\" Sohmc=\"\" value=\"\" id=\"userdropdown\" name=\"userdropdown\"><b>Sohmc</b>.<br><span id=\"contribsreg\"></span></div> \
-        <form onsubmit=\"return qnSend('postcomment_newmsg_1683', document.postcommentForm_1683);\" target=\"_blank\" action=\"http://www.wikihow.com/Special:Postcomment\" method=\"POST\" name=\"postcommentForm_1683\"> \
-                <input type=\"hidden\" value=\"User_talk:Sohmc\" name=\"target\" id=\"qnTarget\"> \
+        <div id=\"qnEditorInfo\">Leave a quick note for <span id=\"comment_target\" style=\"font-weight: bold;\">wHUser</span>.</div> \
+        <form onsubmit=\"return target=\"_blank\" action=\"http://www.wikihow.com/Special:Postcomment\" method=\"POST\" name=\"postcommentForm\"> \
+                <input type=\"hidden\" value=\"User_talk:wHUser\" name=\"target\" id=\"qnTarget\"> \
                 <br>Or customize your own message.<br> \
                 <textarea onkeyup=\"qnCountchars(this);\" rows=\"8\" cols=\"40\" name=\"comment_text\" id=\"comment_text\" tabindex=\"4\"></textarea> \
         </div> \
@@ -188,6 +180,15 @@ function closeQuickNote() {
      document.getElementById('comment_text').value = '';
      document.getElementById('modalBackground').style.display = 'none';
      document.getElementById('modalContainer').style.display = 'none';
+}
+
+function quickNote() {
+     document.getElementById('comment_target').innerHTML = this.getAttribute('user');
+     document.getElementById('qnTarget').value = "User_talk:" + this.getAttribute('user');
+
+     document.getElementById('modalBackground').style.display = 'block';
+     document.getElementById('modalContainer').style.display = 'block';
+     document.getElementById('modalContainer').style.position = 'fixed';
 }
 
 
