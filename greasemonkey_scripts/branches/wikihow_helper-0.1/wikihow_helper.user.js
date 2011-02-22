@@ -147,10 +147,10 @@ function insert_comment_div() {
                </div><!--end editModalHeader--> \
                <div class=\"modalBody\"> \
                     <div id=\"qnEditorInfo\">Leave a quick note for <span id=\"comment_target\" style=\"font-weight: bold;\">wHUser</span>.</div> \
-                    <form onsubmit=\"return target=\"_blank\" action=\"http://www.wikihow.com/Special:Postcomment\" method=\"POST\" name=\"postcommentForm_6530\"> \
+                    <form name=\"postcommentForm\" id=\"postcommentForm\"> \
                          <input type=\"hidden\" value=\"User_talk:wHUser\" name=\"target\" id=\"qnTarget\"> \
                          <textarea rows=\"8\" cols=\"40\" name=\"comment_text\" id=\"comment_text\" tabindex=\"4\"></textarea> \
-                         <input type=\"submit\" style=\"font-size: 110%; margin-left: 0pt; float: right;\" id=\"postcommentbutton_6530\" class=\"button button100 submit_button\" value=\"Post\" tabindex=\"5\"> \
+                         <input type=\"button\" style=\"font-size: 110%; margin-left: 0pt; float: right;\" id=\"postcommentbutton\" class=\"button button100 submit_button\" value=\"Post\" tabindex=\"5\"> \
                          <a style=\"float: right; margin-right: 10px; line-height: 25px;\" id=\"modal_cancel\" tabindex=\"6\" href=\"#\">Cancel</a><br class=\"clearall\"> \
                     </form> \
                </div> \
@@ -160,9 +160,9 @@ function insert_comment_div() {
      document.getElementById('bodycontents').appendChild(comment_div);
      document.getElementById('bodycontents').appendChild(background_div);
 
-     document.getElementById('modal_x').addEventListener('click', closeQuickNote, true)
-     document.getElementById('modal_cancel').addEventListener('click', closeQuickNote, true)
-
+     document.getElementById('modal_x').addEventListener('click', closeQuickNote, true);
+     document.getElementById('modal_cancel').addEventListener('click', closeQuickNote, true);
+     document.getElementById('postcommentbutton').addEventListener('click', submitNote, true);
 }
 
 // =-=-=-=-=- END OF WIKIHOW FUNCTIONS -=-=-=-=-= //
@@ -192,8 +192,45 @@ function quickNote() {
      document.getElementById('modalContainer').style.position = 'fixed';
 }
 
+function submitNote() {
+     var comment = document.getElementById('comment_text').value;
+     var comment_target = document.getElementById('qnTarget').value;
+
+     var post_data = 'comment_text=' + encodeURIComponent(comment) + "&target=" + encodeURIComponent(comment_target);
+     alert('submitting note.');
+
+     GM_xmlhttpRequest({
+          method:'POST',
+          url:'/Special:Postcomment?fromajax=true',
+          headers:{
+               'Content-Type':'application/x-www-form-urlencoded',
+          },
+          data:post_data,
+          onload: function (response) {
+               if (response.status == 200) {
+                    if (response.responseText.indexOf(comment) != -1) {
+                         alert('Comment successfully posted');
+                    } else {
+                         alert('Comment could not be posted.  Please check the console.');
+                         GM_log(response.responseText);
+                    }
+               } else {
+                    alert('wikiHow returned error code ' + response.status);
+               }
+          },
+          onerror: function (response) {
+               alert('An unexpected error has occured.');
+               GM_log(response.responseText);
+         }
+     });
+     closeQuickNote();
+     return false;
+}
+
 
 // =-=-=-=-=- Standard Functions -=-=-=-=-= //
+// The following functions are ones that I've created and use in pretty
+// much every script I write.
 
 function evaluate_xpath(xpath_query) {
     if (debug >= 2) GM_log(xpath_query);
