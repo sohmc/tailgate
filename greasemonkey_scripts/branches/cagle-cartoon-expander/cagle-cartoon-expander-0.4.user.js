@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           Cagle Cartoon Expander
-// @version        0.3
+// @version        0.4
 // @author         Michael Soh
 // @namespace      cagle_83304
 // @description    Expands Cagle editorial cartoons
@@ -8,8 +8,8 @@
 // @include        http://www.google.com/reader/*
 // @include        https://www.google.com/reader/*
 //
-// @require        http://usocheckup.redirectme.net/83304.js
 // ==/UserScript==
+// @require        http://usocheckup.redirectme.net/83304.js
 
 var debug = 3;
 
@@ -24,7 +24,7 @@ function initialize() {
      
      var cagle_thumbs = evaluate_xpath(".//img[@src[contains(.,'cagle.com/thumbs')]]");
      if (cagle_thumbs.snapshotLength > 0) {
-	  expand_thumbs();
+	  //expand_thumbs();
      }
 
      if (cagle_links.snapshotLength > 0) {
@@ -35,13 +35,14 @@ function initialize() {
 	  }
      }
      
+/*
      var my_span = document.createElement('span');
      my_span.innerHTML = '<a href="#" id="cagle_tb">Embiggen Cagle Thumbnails</a>';
 
      var top_controls_div = document.getElementById('viewer-top-controls');
      top_controls_div.appendChild(my_span);
 
-     document.getElementById('cagle_tb').addEventListener("click", expand_thumbs, true);
+     document.getElementById('cagle_tb').addEventListener("click", expand_thumbs, true); */
 }
 
 function start_expanding() {
@@ -49,7 +50,7 @@ function start_expanding() {
 }
 
 function expand_thumbs() {
-     var cagle_thumbs = evaluate_xpath(".//img[@src[contains(.,'cagle.com/')]]");
+     var cagle_thumbs = evaluate_xpath(".//img[@src[contains(.,'www.cagle.com/thumbs')]]");
      var images_changed = 0;
      
      GM_log("Found images: " + cagle_thumbs.snapshotLength);
@@ -85,8 +86,6 @@ function expand_thumbs() {
 	       images_changed++;
 	  }
      }
-
-     setTimeout(expand_thumbs, 3000);
 }
 
 function evaluate_xpath(xpath_query) {
