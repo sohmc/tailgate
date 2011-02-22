@@ -197,7 +197,6 @@ function submitNote() {
      var comment_target = document.getElementById('qnTarget').value;
 
      var post_data = 'comment_text=' + encodeURIComponent(comment) + "&target=" + encodeURIComponent(comment_target);
-     alert('submitting note.');
 
      GM_xmlhttpRequest({
           method:'POST',
