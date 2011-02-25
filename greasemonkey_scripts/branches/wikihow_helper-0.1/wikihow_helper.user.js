@@ -12,9 +12,9 @@
 
 // @require     http://usocheckup.redirectme.net/UID.js
 
-var addressRegExp = /http:\/\/.*wikihow.com\/(.*)$/;
+var addressRegExp = /http:\/\/.*wikihow.com\/([^&#]+)#?.*$/;
 var current_page = '';
-var debug = 5;
+var debug = 2;
 
 addressRegExp.exec(document.location);
 parse_address(RegExp.$1);
@@ -27,6 +27,7 @@ function RCpatrol() {
 }
 
 function new_users() {
+     GM_log("function new_users");
     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][not(@class[starts-with(.,'new')])]/..");
     show_only_new_users(nodes);
 
@@ -45,6 +46,7 @@ function leave_message() {
 }
 
 function new_contributors() {
+     GM_log("function new_contributors");
     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][not(@class[starts-with(.,'new')])]/..");
     show_only_new_users(nodes);
     insert_comment_div();
@@ -58,7 +60,7 @@ function new_contributors() {
         this_node.setAttribute("title", "Click to send a message to " + RegExp.$1);
         this_node.addEventListener("click", quickNote, true);
         this_node.setAttribute("href", "#");
-        this_node.setAttribute("user", talk_link);
+        this_node.setAttribute("user", RegExp.$1);
     }
 
 }
@@ -81,7 +83,6 @@ function parse_address(page) {
     } else {
         GM_log("Unknown Page: " + page);
     }
-
 }
 
 // =-=-=-=-=- wikiHow-specific functions -=-=-=-=-= //
@@ -89,41 +90,6 @@ function parse_address(page) {
 // MediaWiki, available http://src.wikihow.com/
 //
 // Functions licensed under GPL 2.0
-
-//function initQuickNote( qnArticle, qnUser, contrib, regdate ) {
-//   //     article = urldecode(qnArticle);
-//
-//    var mesid = document.getElementById('comment_text');
-//    var message = qnMsgBody.replace(/\<nowiki\>|\<\/nowiki\>/ig, '');
-//    message = message.replace(/\[\[ARTICLE\]\]/, '[['+article+']]');
-//    mesid.value = message;
-//    maxChar2 = maxChar + message.length;
-//
-//    users           = qnUser.split("|");
-//    regdates        = regdate.split("|");
-//    contribs        = contrib.split("|");
-//
-//    html = "Leave a quick note for ";
-//
-//    if (users.length > 1) {
-//         html += "<select id='userdropdown' onchange='switchUser();'>";
-//    for (i = 0; i < users.length; i++) {
-//         html += "<OPTION value='" + i + "'>" + users[i] + "</OPTION>";
-//    }
-//         html += "</select>";
-//    } else {
-//         html += "<input type='hidden' name='userdropdown' id='userdropdown' value'" + users[0] +"'/><b>" + users[0] + "</b>."
-//    }
-//    html += "<br/><span id='contribsreg'>";
-//
-//    $('#qnTarget').val("User_talk:"+users[0]);
-//
-//    var editorid = $('#qnEditorInfo');
-//    editorid.html(html);
-//
-////    document.getElementById('modalPage').style.display = 'block';
-//    return false;
-//}
 
 function insert_comment_div() {
     var background_div = document.createElement('div');
@@ -198,6 +164,9 @@ function submitNote() {
 
      var post_data = 'comment_text=' + encodeURIComponent(comment) + "&target=" + encodeURIComponent(comment_target);
 
+     GM_log("comment (" + comment.length + "): " + comment);
+     GM_log("target: " + comment_target);
+
      GM_xmlhttpRequest({
           method:'POST',
           url:'/Special:Postcomment?fromajax=true',
@@ -207,14 +176,20 @@ function submitNote() {
           data:post_data,
           onload: function (response) {
                if (response.status == 200) {
-                    if (response.responseText.indexOf(comment) != -1) {
-                         alert('Comment successfully posted');
+                    if (response.responseText.indexOf('Reply to') != -1) {
+                         alert('Comment successfully posted.');
+                         var reg = /User_talk:(.+)/;
+                         reg.exec(comment_target);
+                         var talk_link = evaluate_xpath('.//a[@user="' + RegExp.$1 + '"]').snapshotItem(0);
+                         talk_link.setAttribute('href', "http://www.wikihow.com/" + comment_target);
+                         talk_link.removeAttribute('class');
                     } else {
                          alert('Comment could not be posted.  Please check the console.');
                          GM_log(response.responseText);
                     }
                } else {
                     alert('wikiHow returned error code ' + response.status);
+                    GM_log(response.responseText);
                }
           },
           onerror: function (response) {
