@@ -21,8 +21,18 @@ for (var i = 0; i < 1; i++) {
      var p = replace_links.snapshotItem(i);
      GM_log('href: ' + p.getAttribute('href'));
 
-     xmlhttp.overrideMimeType('text/xml');
-     xmlhttp.send(null);
+     var req = new XMLHttpRequest();
+     req.overrideMimeType('text/xml');
+     req.open("GET", "https://www.zagg.com/support/account/" + p.getAttribute('href'), false);
+     req.send(null);
+
+     var xmlDoc = req.responseXML;
+     var nsResolver = xmlDoc.createNSResolver( xmlDoc.ownerDocument == null ? xmlDoc.documentElement : xmlDoc.ownerDocument.documentElement);
+
+     var img_nodes = xmlDoc.evaluate('//*', xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+     for (var i = 0; i < img_nodes.snapshotLength; i++) {
+          GM_log(i + ": " + img_nodes.snapshotItem(i).innerHTML);
+     }
 }
 
 
@@ -35,7 +45,7 @@ for (var i = 0; i < 1; i++) {
 
 function evaluate_xpath(xml, xpath_query) {
     if (debug >= 2) GM_log(xpath_query);
-    var nodes = xml.evaluate(xpath_query, xml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var nodes = document.evaluate(xpath_query, xml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     if (debug >= 1) GM_log('number of nodes returned: ' + nodes.snapshotLength);
 
     return nodes;
