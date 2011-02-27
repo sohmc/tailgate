@@ -13,10 +13,9 @@
 
 var debug = 5;
 
-var replace_links = evaluate_xpath(document, ".//a[@href[contains(.,'view_order.php?id=')]]/..[a='Replace']/a");
+var replace_links = evaluate_xpath(".//a[@href[contains(.,'view_order.php?id=')]]/..[a='Replace']/a");
 
 for (var i = 0; i < replace_links.snapshotLength; i++) {
-//for (var i = 0; i < 1; i++) {
      GM_log('inspecting item: ' + i);
      var p = replace_links.snapshotItem(i);
      GM_log('href: ' + p.getAttribute('href'));
@@ -25,15 +24,14 @@ for (var i = 0; i < replace_links.snapshotLength; i++) {
           method:'GET',
           url:p.getAttribute('href'),
           onload: function(r) {
-               GM_log('connection status: ' + r.status);
+               GM_log(i + ': contacting ' + p.getAttribute);
+               GM_log(i + ': connection status: ' + r.status);
                if (r.status == 200) {
-                    GM_log('site returned ' + r.responseText.length + ' characters.');
+                    GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
                     if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') != -1) {
                          GM_log(i + ': Unavailable');
-                         p.style.display = 'none';
                     } else {
                          GM_log(i + ': AVAILABLE');
-                         p.style.color = 'green';
                     }
                }
 
@@ -48,9 +46,9 @@ for (var i = 0; i < replace_links.snapshotLength; i++) {
 // The following functions are ones that I've created and use in pretty
 // much every script I write.
 
-function evaluate_xpath(xml, xpath_query) {
+function evaluate_xpath(xpath_query) {
     if (debug >= 2) GM_log(xpath_query);
-    var nodes = document.evaluate(xpath_query, xml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var nodes = document.evaluate(xpath_query, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     if (debug >= 1) GM_log('number of nodes returned: ' + nodes.snapshotLength);
 
     return nodes;
