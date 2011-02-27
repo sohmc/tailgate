@@ -20,23 +20,23 @@ for (var i = 0; i < replace_links.snapshotLength; i++) {
      var p = replace_links.snapshotItem(i);
      GM_log('href: ' + p.getAttribute('href'));
 
-     GM_xmlhttpRequest({
-          method:'GET',
-          url:p.getAttribute('href'),
-          onload: function(r) {
-               GM_log(i + ': contacting ' + p.getAttribute);
-               GM_log(i + ': connection status: ' + r.status);
-               if (r.status == 200) {
-                    GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
-                    if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') != -1) {
-                         GM_log(i + ': Unavailable');
-                    } else {
-                         GM_log(i + ': AVAILABLE');
-                    }
+     var r = new XMLHttpRequest();
+     r.open('GET', p.getAttribute('href'), false);
+     r.send(null);
+     if (r.status == 200) {
+          GM_log(i + ': contacting ' + p.getAttribute);
+          GM_log(i + ': connection status: ' + r.status);
+          if (r.status == 200) {
+               GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
+               if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') != -1) {
+                    GM_log(i + ': Unavailable');
+                    p.style.display = 'none';
+               } else {
+                    GM_log(i + ': AVAILABLE');
+                    p.style.color = 'green';
                }
-
           }
-     });
+     }
 }
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
