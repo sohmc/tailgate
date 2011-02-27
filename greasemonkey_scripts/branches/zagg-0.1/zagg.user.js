@@ -1,8 +1,8 @@
 // ==UserScript== 
-// @name        Zagg Profiler
+// @name        Zagg Replacement Availability
 // @author      Michael Soh 
-// @namespace   zagg
-// @description description
+// @namespace   zagg-
+// @description Shows you which products you have are available for replacement
 // @version     0.1
 // @license     GPL 3.0 
 // @include     https://www.zagg.com/support/account/orders.php*
