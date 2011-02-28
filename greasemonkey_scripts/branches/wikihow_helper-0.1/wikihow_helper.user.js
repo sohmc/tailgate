@@ -12,6 +12,8 @@
 
 // @require     http://usocheckup.redirectme.net/UID.js
 
+GM_log('Starting wikiHow Helper -- v. 0.1 ALPHA 1');
+
 var addressRegExp = /http:\/\/.*wikihow.com\/([^&#]+)#?.*$/;
 var current_page = '';
 var debug = 2;
@@ -62,7 +64,6 @@ function new_contributors() {
         this_node.setAttribute("href", "#");
         this_node.setAttribute("user", RegExp.$1);
     }
-
 }
 
 function show_only_new_users(nodes_to_remove) {
