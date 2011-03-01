@@ -30,40 +30,39 @@ function RCpatrol() {
 
 function new_users() {
      GM_log("function new_users");
-    var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][not(@class[starts-with(.,'new')])]/..");
-    show_only_new_users(nodes);
+     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][not(@class[starts-with(.,'new')])]/..");
+     show_only_new_users(nodes);
+     insert_comment_div();
 
-    var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][@class[starts-with(.,'new')]]");
+     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/ul/.//a[2][@class[starts-with(.,'new')]]");
 
-    for (var i = 0; i < nodes.snapshotLength; i++) {
-        var current_node = nodes.snapshotItem(i);
-
-        current_node.addEventListener('click', leave_message, true);
-        current_node.setAttribute('href', '#');
-    }
-}
-
-function leave_message() {
-    GM_log(this.getAttribute('title'));
+     for (var i = 0; i < nodes.snapshotLength; i++) {
+          set_talk_link(nodes.snapshotItem(i));
+     }
 }
 
 function new_contributors() {
      GM_log("function new_contributors");
-    var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][not(@class[starts-with(.,'new')])]/..");
-    show_only_new_users(nodes);
-    insert_comment_div();
-    
-    nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][@class[starts-with(.,'new')]]");
-    for (var i = 0; i < nodes.snapshotLength; i++) {
-        var this_node = nodes.snapshotItem(i);
-        var talk_link = this_node.getAttribute("title");
-        var reg = /User_talk:(.+)/;
-        reg.exec(talk_link);
-        this_node.setAttribute("title", "Click to send a message to " + RegExp.$1);
-        this_node.addEventListener("click", quickNote, true);
-        this_node.setAttribute("href", "#");
-        this_node.setAttribute("user", RegExp.$1);
-    }
+     var nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][not(@class[starts-with(.,'new')])]/..");
+     show_only_new_users(nodes);
+     insert_comment_div();
+
+     nodes = evaluate_xpath(".//*[@id='bodycontents']/div/div/ol/.//a[2][@class[starts-with(.,'new')]]");
+     for (var i = 0; i < nodes.snapshotLength; i++) {
+          set_talk_link(nodes.snapshotItem(i));
+     }
+}
+
+function set_talk_link(link_node) {
+     var talk_link = link_node.getAttribute("title");
+     var reg = /User_talk:(.+)/;
+     reg.exec(talk_link);
+     link_node.setAttribute("title", "Click to send a message to " + RegExp.$1);
+     link_node.addEventListener("click", quickNote, true);
+     link_node.setAttribute("href", "#");
+     link_node.setAttribute("user", RegExp.$1);
+
+     return 1;
 }
 
 function show_only_new_users(nodes_to_remove) {
