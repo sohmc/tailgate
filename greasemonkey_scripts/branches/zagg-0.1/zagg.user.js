@@ -1,15 +1,16 @@
 // ==UserScript== 
 // @name        Zagg Replacement Availability
 // @author      Michael Soh 
-// @namespace   zagg-
+// @namespace   zagg-98173
 // @description Shows you which products you have are available for replacement
 // @version     0.1
 // @license     GPL 3.0 
 // @include     https://www.zagg.com/support/account/orders.php*
+// @require     http://usocheckup.redirectme.net/98173.js
 //  
 // 
 // ==/UserScript== 
-// @require     http://usocheckup.redirectme.net/UID.js
+
 
 var debug = 5;
 
