@@ -12,7 +12,7 @@
 // ==/UserScript== 
 
 
-var debug = 5;
+var debug = 0;
 
 var replace_links = evaluate_xpath(".//a[@href[contains(.,'view_order.php?id=')]]/..[a='Replace']/a");
 
@@ -30,10 +30,10 @@ for (var i = 0; i < replace_links.snapshotLength; i++) {
           if (r.status == 200) {
                GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
                if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') != -1) {
-                    GM_log(i + ': Unavailable');
+                    if (DEBUG) GM_log(i + ': Unavailable');
                     p.style.display = 'none';
                } else {
-                    GM_log(i + ': AVAILABLE');
+                    if (DEBUG) GM_log(i + ': AVAILABLE');
                     p.style.color = 'green';
                }
           }
