@@ -3,7 +3,7 @@
 // @author      Michael Soh 
 // @namespace   zagg-98173
 // @description Shows you which products you have are available for replacement
-// @version     0.1
+// @version     0.1.1
 // @license     GPL 3.0 
 // @include     https://www.zagg.com/support/account/orders.php*
 // @require     http://usocheckup.redirectme.net/98173.js
@@ -17,23 +17,23 @@ var debug = 0;
 var replace_links = evaluate_xpath(".//a[@href[contains(.,'view_order.php?id=')]]/..[a='Replace']/a");
 
 for (var i = 0; i < replace_links.snapshotLength; i++) {
-     GM_log('inspecting item: ' + i);
+     if (debug) GM_log('inspecting item: ' + i);
      var p = replace_links.snapshotItem(i);
-     GM_log('href: ' + p.getAttribute('href'));
+     if (debug) GM_log('href: ' + p.getAttribute('href'));
 
      var r = new XMLHttpRequest();
      r.open('GET', p.getAttribute('href'), false);
      r.send(null);
      if (r.status == 200) {
-          GM_log(i + ': contacting ' + p.getAttribute);
-          GM_log(i + ': connection status: ' + r.status);
+          if (debug) GM_log(i + ': contacting ' + p.getAttribute);
+          if (debug) GM_log(i + ': connection status: ' + r.status);
           if (r.status == 200) {
-               GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
+               if (debug) GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
                if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') != -1) {
-                    if (DEBUG) GM_log(i + ': Unavailable');
+                    if (debug) GM_log(i + ': Unavailable');
                     p.style.display = 'none';
                } else {
-                    if (DEBUG) GM_log(i + ': AVAILABLE');
+                    if (debug) GM_log(i + ': AVAILABLE');
                     p.style.color = 'green';
                }
           }
