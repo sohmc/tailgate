@@ -47,13 +47,21 @@ function new_init() {
 
      r.onreadystatechange = function (aEvt) {
           if (r.readyState == 4) {
-               if (r.status == 200) 
-                    FB_log(r.responseText);
-               else 
+               if (r.status == 200) {
+//                    FB_log(r.responseText);
+                    var poke_divs = evaluate_xpath(".//script[contains(.,'pokes')]");
+                    if (poke_divs.snapshotLength == 1) {
+                         var div_regex = /"pagelet_netego_pokes":"(.*)"/;
+                         div_regex.exec(poke_divs.snapshotItem(0).innerHTML);
+                         FB_log(RegExp.$1);
+                    }
+               } else {
                     FB_log("Error loading page");
+               }
           }
      };
-
+     
+     r.withCredentials = true;
      r.overrideMimeType('text/xml');
      r.send(null);
 }
