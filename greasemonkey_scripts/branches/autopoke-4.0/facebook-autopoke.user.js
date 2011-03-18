@@ -3,7 +3,7 @@
 // @author      Michael Soh 
 // @namespace   autopoke_5200 
 // @description Automatically pokes back people listed on your home page. This script was inspired by Lukas Fragodt's Auto-Poke and EZ-Poke. 
-// @version     3.5 (30 Oct 2010)
+// @version     4.0
 // @license     GPL 3.0 
 // @include     http*://facebook.com/home.php* 
 // @include     http*://*.facebook.com/home.php* 
@@ -11,22 +11,14 @@
 // @include     http*://*.facebook.com/?* 
 // @include     http*://*.facebook.com/#* 
 //  
-// @require     http://usocheckup.redirectme.net/5200.js
 // 
 // ==/UserScript== 
+// @require     http://usocheckup.redirectme.net/5200.js
  
-var debug = 0;
+var debug = 5;
 var retries = 3; 
 var wait = 1500; // 1.5 seconds 
  
-var debug_url = /&autopoke_debug=(\d+)/; 
-if ((debug_url.exec(document.location) != 0) && (RegExp.$1 > debug)) { 
-     debug = RegExp.$1; 
-      
-     alert('Autopoke debugging as been activated to level ' + debug); 
-     GM_log('Autopoke debugging as been activated via URL to level ' + debug); 
-} 
-
 if (debug > 2) { 
      my_div = document.createElement('div'); 
      my_div.innerHTML = '<div style="height: 300px; width: 600px; ' + 
@@ -43,10 +35,30 @@ if (debug > 2) {
 } 
 
 if (debug > 0) FB_log('Current Location: ' + document.location); 
+
+new_init();
+
  
-setTimeout(init, wait); 
- 
-// =-=-=-=-=- FUNCTIONS -=-=-=-=-= // 
+// =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
+
+function new_init() {
+     var r = new XMLHttpRequest();
+     r.open('GET', document.location, true);
+
+     r.onreadystatechange = function (aEvt) {
+          if (r.readyState == 4) {
+               if (r.status == 200) 
+                    FB_log(r.responseText);
+               else 
+                    FB_log("Error loading page");
+          }
+     };
+
+     r.overrideMimeType('text/xml');
+     r.send(null);
+}
+
+
 function init() { 
      var html_tag = evaluate_xpath('.//html'); 
      var fb_lang = html_tag.snapshotItem(0).getAttribute('lang'); 
@@ -195,9 +207,11 @@ function execute_poke(poke_uid, poke_node) {
      }); 
 } 
  
-function evaluate_xpath(xpath_query) { 
+function evaluate_xpath(xpath_query, xml) { 
+     if (!xml) xml = document;
+
      if (debug >= 2) FB_log(xpath_query); 
-     var nodes = document.evaluate(xpath_query, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); 
+     var nodes = xml.evaluate(xpath_query, xml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); 
      if (debug >= 1) FB_log('nodes returned: ' + nodes.snapshotLength); 
  
      return nodes; 
