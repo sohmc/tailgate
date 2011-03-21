@@ -53,12 +53,9 @@ function new_init() {
                     if (poke_divs.snapshotLength == 1) {
                          var div_regex = /"pagelet_netego_pokes":"(.*)"/;
                          div_regex.exec(poke_divs.snapshotItem(0).innerHTML);
-                         var poke_pagelet = RegExp.$1;
+                         var poke_pagelet = new String(RegExp.$1);
 
-                         FB_log("Before:");
-                         FB_log(poke_pagelet);
-                         FB_log("After:");
-                         FB_log(decode_utf8(poke_pagelet));
+                         document.getElementById('my_div').innerHTML = poke_pagelet.toString();
                     }
                } else {
                     FB_log("Error loading page");
@@ -67,7 +64,7 @@ function new_init() {
      };
      
      r.withCredentials = true;
-     r.overrideMimeType('text/xml');
+//     r.overrideMimeType('text/xml');
      r.send(null);
 }
 
