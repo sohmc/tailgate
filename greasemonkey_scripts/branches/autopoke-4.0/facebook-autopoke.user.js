@@ -55,7 +55,8 @@ function new_init() {
                          div_regex.exec(poke_divs.snapshotItem(0).innerHTML);
                          var poke_pagelet = new String(RegExp.$1);
 
-                         document.getElementById('my_div').innerHTML = poke_pagelet.toString();
+                         decode_unicode(poke_pagelet);
+
                     }
                } else {
                     FB_log("Error loading page");
@@ -216,6 +217,18 @@ function execute_poke(poke_uid, poke_node) {
           } 
      }); 
 } 
+
+function FB_log(log_string) {
+     if (debug > 2) {
+	  var logspace = document.getElementById('fb_log'); 
+	  logspace.value += log_string + "\n";
+	  logspace.scrollTop = logspace.scrollHeight;
+     }
+
+     GM_log(log_string);
+}
+
+//=-=-=-=-=- STANDARD FUNCTIONS -=-=-=-=-=//
  
 function evaluate_xpath(xpath_query, xml) { 
      if (!xml) xml = document;
@@ -227,24 +240,19 @@ function evaluate_xpath(xpath_query, xml) {
      return nodes; 
 }
 
-function decode_utf8(s) {
-     return decodeURIComponent(s);
-}
- 
-function FB_log(log_string) {
-     if (debug > 2) {
-	  var logspace = document.getElementById('fb_log'); 
-	  logspace.value += log_string + "\n";
-	  logspace.scrollTop = logspace.scrollHeight;
+function decode_unicode(s) {
+     var s2 = s;
+     var unicode_regex = /\\u([A-Z0-9]{6})/g;
+
+     var new_s = unicode_regex.exec(s2);
+     FB_log(new_s.length + " matches");
+
+     for (var i = 1; i < new_s.length; i++) {
+          var current = "0x" + new_s[i];
+          current -= 0x002500;
+          FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
+          s2.replace('\\u' + new_s[i], String.fromCharCode(current));
      }
 
-     GM_log(log_string);
-}
-
-function FB_log_return(return_value) {
-     if (return_value > 0) {
-	  FB_log("Log successfully submitted. Bytes transferred: " + return_value);
-     } else {
-	  FB_log("Log could not be submitted.  Returned: " + return_value);
-     }
+     FB_log(s2);
 }
