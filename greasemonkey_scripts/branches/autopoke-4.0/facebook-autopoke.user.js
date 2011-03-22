@@ -57,6 +57,7 @@ function new_init() {
 
                          poke_pagelet = decode_unicode(poke_pagelet);
                          if (debug > 3) FB_log('poke_pagelet: ' + poke_pagelet);
+                         find_pokes(string_to_xml(poke_pagelet));
                     }
                } else {
                     FB_log("Error loading page");
@@ -65,7 +66,6 @@ function new_init() {
      };
      
      r.withCredentials = true;
-//     r.overrideMimeType('text/xml');
      r.send(null);
 }
 
@@ -95,12 +95,21 @@ function toggle_fb_log() {
 	  fb_log.style.display = "block";
      }
 }
- 
-function find_pokes() { 
+
+function find_pokes(xml) {
      // Retrieve poke links via XPath
-     var poke_divs = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]');
-     var anchors = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]');
-     if (debug > 0) FB_log('Poke back links found: ' + anchors.snapshotLength) 
+     var f = evaluate_xpath('.//*', xml);
+     
+     for (var i = 0; v < f.snapshotLength; v++) {
+          FB_log(f.snapshotItem(i).innerHTML);
+     }
+
+
+     var poke_divs = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]', xml);
+     var anchors = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]', xml);
+     if (debug > 0) FB_log('Poke back links found: ' + anchors.snapshotLength);
+
+     return 0;
  
      for (var i=0; i < anchors.snapshotLength; i++) {
 	  var ajax_ref = anchors.snapshotItem(i).getAttribute('ajaxify');
@@ -121,7 +130,7 @@ function find_pokes() {
 
 	  post_data = post_data + "&nctr[_mod]=pagelet_netego_pokes&post_form_id=" + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
 
-	  poke_function(ajax_ref, anchors.snapshotItem(i), post_data, poke_uid);
+//	  poke_function(ajax_ref, anchors.snapshotItem(i), post_data, poke_uid);
      } 
      
      if (anchors.snapshotLength == 0) { 
@@ -241,27 +250,7 @@ function evaluate_xpath(xpath_query, xml) {
 }
 
 function decode_unicode(s) {
-     // Match all \u0025xx codes first.  These convert to URI-escaped
-     // strings in the form of %xx.  These are only used when
-     // referencing a link.
-     var unicode_regex = /\\u0025[A-Z0-9]{2}/g;
-
-     var new_s = s.match(unicode_regex);
-     if (debug > 3) FB_log("Matches: " + new_s);
-
-     for (var i = 0; i < new_s.length; i++) {
-          var hex_regex = /\\u0025([A-Z0-9]{2})/;
-          var hex = hex_regex.exec(new_s[i]);
-          
-          var current = "0x" + hex[1];
-          if (debug > 3) FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
-          s = s.replace(new_s[i], String.fromCharCode(current), "g");
-     }
-
-
-     // Next, do all 4-character (UTF-8) unicodes which are all
-     // lower-case.
-     unicode_regex = /\\u[a-z0-9]{4}/g;
+     unicode_regex = /\\u[a-z0-9]{4}/gi;
      new_s = s.match(unicode_regex);
      
      for (var i = 0; i < new_s.length; i++) {
@@ -275,7 +264,13 @@ function decode_unicode(s) {
 
      s = s.replace("\\", "", "g");
      s = s.replace("\\\/", "\/", "g");
-     s = s.replace("&amp;", "&", "g");
 
      return s;
+}
+
+function string_to_xml(s) {
+     var parser = new DOMParser();
+     var dom = parser.parseFromString(s, 'text/xml');
+
+     return dom;
 }
