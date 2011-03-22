@@ -241,18 +241,39 @@ function evaluate_xpath(xpath_query, xml) {
 }
 
 function decode_unicode(s) {
-     var s2 = s;
-     var unicode_regex = /\\u([A-Z0-9]{6})/g;
+     // Do all 6-character (UTF-16) unicodes first since they are all
+     // upper-case
+     var unicode_regex = /\\u[A-Z0-9]{6}/g;
 
-     var new_s = unicode_regex.exec(s2);
-     FB_log(new_s.length + " matches");
+     var new_s = s.match(unicode_regex);
+     FB_log(new_s);
 
-     for (var i = 1; i < new_s.length; i++) {
-          var current = "0x" + new_s[i];
+     for (var i = 0; i < new_s.length; i++) {
+          var hex_regex = /\\u([A-Z0-9]{6})/;
+          var hex = hex_regex.exec(new_s[i]);
+          
+          var current = "0x" + hex[1];
+          // For some reason, Facebook adds 0x002500 to the value of the
+          // hex.  Not sure why.  This must be monitored.
           current -= 0x002500;
           FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
-          s2.replace('\\u' + new_s[i], String.fromCharCode(current));
+          s = s.replace(new_s[i], String.fromCharCode(current), "g");
      }
 
-     FB_log(s2);
+
+     // Next, do all 4-character (UTF-8) unicodes which are all
+     // lower-case.
+     unicode_regex = /\\u[a-z0-9]{4}/g;
+     new_s = s.match(unicode_regex);
+     
+     for (var i = 0; i < new_s.length; i++) {
+          var hex_regex = /\\u([a-z0-9]{4})/;
+          var hex = hex_regex.exec(new_s[i]);
+          
+          var current = "0x" + hex[1];
+          FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
+          s = s.replace(new_s[i], String.fromCharCode(current), "g");
+     }
+
+     FB_log(s);
 }
