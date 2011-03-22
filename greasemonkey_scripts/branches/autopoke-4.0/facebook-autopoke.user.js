@@ -55,8 +55,8 @@ function new_init() {
                          div_regex.exec(poke_divs.snapshotItem(0).innerHTML);
                          var poke_pagelet = new String(RegExp.$1);
 
-                         decode_unicode(poke_pagelet);
-
+                         poke_pagelet = decode_unicode(poke_pagelet);
+                         if (debug > 3) FB_log('poke_pagelet: ' + poke_pagelet);
                     }
                } else {
                     FB_log("Error loading page");
@@ -241,22 +241,20 @@ function evaluate_xpath(xpath_query, xml) {
 }
 
 function decode_unicode(s) {
-     // Do all 6-character (UTF-16) unicodes first since they are all
-     // upper-case
-     var unicode_regex = /\\u[A-Z0-9]{6}/g;
+     // Match all \u0025xx codes first.  These convert to URI-escaped
+     // strings in the form of %xx.  These are only used when
+     // referencing a link.
+     var unicode_regex = /\\u0025[A-Z0-9]{2}/g;
 
      var new_s = s.match(unicode_regex);
-     FB_log(new_s);
+     if (debug > 3) FB_log("Matches: " + new_s);
 
      for (var i = 0; i < new_s.length; i++) {
-          var hex_regex = /\\u([A-Z0-9]{6})/;
+          var hex_regex = /\\u0025([A-Z0-9]{2})/;
           var hex = hex_regex.exec(new_s[i]);
           
           var current = "0x" + hex[1];
-          // For some reason, Facebook adds 0x002500 to the value of the
-          // hex.  Not sure why.  This must be monitored.
-          current -= 0x002500;
-          FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
+          if (debug > 3) FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
           s = s.replace(new_s[i], String.fromCharCode(current), "g");
      }
 
@@ -275,5 +273,9 @@ function decode_unicode(s) {
           s = s.replace(new_s[i], String.fromCharCode(current), "g");
      }
 
-     FB_log(s);
+     s = s.replace("\\", "", "g");
+     s = s.replace("\\\/", "\/", "g");
+     s = s.replace("&amp;", "&", "g");
+
+     return s;
 }
