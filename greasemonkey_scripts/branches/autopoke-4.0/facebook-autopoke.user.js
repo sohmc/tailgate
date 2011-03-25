@@ -65,7 +65,6 @@ function new_init() {
           }
      };
      
-     r.withCredentials = true;
      r.send(null);
 }
 
@@ -122,7 +121,7 @@ function find_pokes(xml) {
 
 	  post_data = post_data + "&nctr[_mod]=pagelet_netego_pokes&post_form_id=" + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
 
-//	  poke_function(ajax_ref, anchors.snapshotItem(i), post_data, poke_uid);
+	  poke_function(ajax_ref, anchors.snapshotItem(i), post_data, poke_uid);
      } 
      
      if (anchors.snapshotLength == 0) { 
@@ -137,7 +136,32 @@ function find_pokes(xml) {
 function poke_function(poke_link, poke_node, poke_post_data, poke_uid) { 
      if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")"); 
      if (debug > 1) FB_log("POST data: " + poke_post_data);
+
+     var r = new XMLHttpRequest();
+     r.open('POST', poke_link, true);
+
+     r.onreadystatechange = function (aEvt) {
+          if (r.readyState == 4) {
+               if (r.status == 200) {
+                    FB_log(r.responseText);
+                    var div_regex = /\\"body\\":{\\"__html\\":\\"(.*)\\"},\\"buttons\\"/;
+                    div_regex.exec(r.responseText);
+
+                    var poke_response = RegExp.$1;
+                    poke_response = decode_unicode(poke_response);
+
+                    FB_log('poke_response: ' + poke_response);
+               } else {
+                    FB_log("Error loading page");
+               }
+          }
+     };
+     r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+     r.setRequestHeader('Referer', document.location);
+     r.setRequestHeader('Cookie', document.cookie);
+     r.send(poke_post_data);
  
+/*
      GM_xmlhttpRequest({ 
           method:'POST', 
           url:poke_link, 
@@ -167,8 +191,7 @@ function poke_function(poke_link, poke_node, poke_post_data, poke_uid) {
                     FB_log("Auto-Poke failed -- Error Code 1.2: The poke confirmation page returned a non-200 OK response\n\nfacebook returned:" + response.status + response.statusText); 
               } 
           } 
-     }); // end of GM_xmlhttpRequest 
- 
+     }); // end of GM_xmlhttpRequest */
 } 
  
 function execute_poke(poke_uid, poke_node) { 
