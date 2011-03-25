@@ -145,6 +145,7 @@ function poke_function(poke_link, poke_node, poke_post_data, poke_uid) {
                if (r.status == 200) {
                     FB_log(r.responseText);
                     var div_regex = /\\"body\\":{\\"__html\\":\\"(.*)\\"},\\"buttons\\"/;
+                    var buttons_regex = /\\"buttons\\":[{(.*)},\\"cancel\\"]/
                     div_regex.exec(r.responseText);
 
                     var poke_response = RegExp.$1;
