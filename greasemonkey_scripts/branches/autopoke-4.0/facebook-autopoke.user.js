@@ -98,8 +98,6 @@ function toggle_fb_log() {
 function find_pokes(xml) {
      // Retrieve poke links via XPath
      var poke_divs = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]', xml);
-     var anchors = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]', xml);
-     if (debug > 0) FB_log('Poke back links found: ' + anchors.snapshotLength);
 
  
      for (var i=0; i < anchors.snapshotLength; i++) {
@@ -145,13 +143,14 @@ function poke_function(poke_link, poke_node, poke_post_data, poke_uid) {
                if (r.status == 200) {
                     FB_log(r.responseText);
                     var div_regex = /\\"body\\":{\\"__html\\":\\"(.*)\\"},\\"buttons\\"/;
-                    var buttons_regex = /\\"buttons\\":[{(.*)},\\"cancel\\"]/
                     div_regex.exec(r.responseText);
 
                     var poke_response = RegExp.$1;
                     poke_response = decode_unicode(poke_response);
-
                     FB_log('poke_response: ' + poke_response);
+
+                    parse_poke_response(string_to_xml(poke_response));
+
                } else {
                     FB_log("Error loading page");
                }
@@ -161,6 +160,29 @@ function poke_function(poke_link, poke_node, poke_post_data, poke_uid) {
      r.setRequestHeader('Referer', document.location);
      r.setRequestHeader('Cookie', document.cookie);
      r.send(poke_post_data);
+
+}
+
+function parse_poke_response(xml) {
+     var poke_node = evaluate_xpath('.//input[name="uid"]', xml);
+
+     if (poke_node.snapshotLength == 1) {
+          var poke_uid = poke_node.snapshotItem(0).value;
+          var poke_link = evaluate_xpath('.//div[@id="poke_' + poke_uid + ']]/div/a[2]');
+
+          if (poke_link.snapshotLength == 1) {
+               var node = poke_link.snapshotItem(0);
+               poke_node.removeAttribute('href');
+               node.innerHTML = "Processing...";
+          } else {
+               FB_log('Poke back link could not be found on the document page.  Continuing anyway.');
+          }
+
+          var r = new XMLHttpRequest();
+
+
+     }
+
  
 /*
      GM_xmlhttpRequest({ 
