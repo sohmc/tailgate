@@ -48,10 +48,11 @@ function new_init() {
      r.onreadystatechange = function (aEvt) {
           if (r.readyState == 4) {
                if (r.status == 200) {
-//                    FB_log(r.responseText);
+                    if (debug > 2) FB_log(r.responseText);
+
                     var poke_divs = evaluate_xpath(".//script[contains(.,'pokes')]");
                     if (poke_divs.snapshotLength == 1) {
-                         var div_regex = /"pagelet_netego_pokes":"(.*)"/;
+                         var div_regex = /"pagelet_pokes":"(.*)"/;
                          div_regex.exec(poke_divs.snapshotItem(0).innerHTML);
                          var poke_pagelet = new String(RegExp.$1);
 
@@ -288,6 +289,8 @@ function evaluate_xpath(xpath_query, xml) {
 }
 
 function decode_unicode(s) {
+     if (debug > 2) FB_log('Decoding the following string (length: ' + s.length + '): ' + s);
+
      unicode_regex = /\\u[a-z0-9]{4}/gi;
      new_s = s.match(unicode_regex);
      
