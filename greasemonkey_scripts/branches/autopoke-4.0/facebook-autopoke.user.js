@@ -99,7 +99,9 @@ function toggle_fb_log() {
 function find_pokes(xml) {
      // Retrieve poke links via XPath
      var poke_divs = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]', xml);
-
+     var anchors = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]', xml);
+     if (debug > 0) FB_log('Poke back links found: ' + anchors.snapshotLength);
+     
  
      for (var i=0; i < anchors.snapshotLength; i++) {
 	  var ajax_ref = anchors.snapshotItem(i).getAttribute('ajaxify');
