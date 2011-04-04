@@ -16,6 +16,7 @@
 // @require     http://usocheckup.redirectme.net/5200.js
  
 var debug = 5;
+var log_limit = 500; // The max number of characters in each log entry.
 var retries = 3; 
 var wait = 1500; // 1.5 seconds 
  
@@ -99,13 +100,13 @@ function toggle_fb_log() {
 function find_pokes(xml) {
      // Retrieve poke links via XPath
      var poke_divs = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]', xml);
-     var anchors = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]', xml);
+     var names     = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[1]', xml);
+     var anchors   = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]', xml);
      if (debug > 0) FB_log('Poke back links found: ' + anchors.snapshotLength);
      
- 
      for (var i=0; i < anchors.snapshotLength; i++) {
 	  var ajax_ref = anchors.snapshotItem(i).getAttribute('ajaxify');
-	  FB_log(i + ":" + ajax_ref);
+	  FB_log(i + " " + names.snapshotItem(i).textContent + ": " + ajax_ref);
 
 	  var post_form_id = evaluate_xpath('.//*[@id="post_form_id"]').snapshotItem(0).value;
 	  var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).value;
@@ -118,7 +119,7 @@ function find_pokes(xml) {
 	  var poke_uid = RegExp.$1;
 
 	  ajax_ref = ajax_ref.replace(/\?.*/, '');
-	  ajax_ref = ajax_ref + "?__a=1";
+	  ajax_ref = ajax_ref + "?uid=" + uid + "&pokeback=1&__a=1&__d=1";
 
 	  post_data = post_data + "&nctr[_mod]=pagelet_netego_pokes&post_form_id=" + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
 
@@ -136,15 +137,15 @@ function find_pokes(xml) {
  
 function poke_function(poke_link, poke_node, poke_post_data, poke_uid) { 
      if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")"); 
-     if (debug > 1) FB_log("POST data: " + poke_post_data);
+     if (debug > 1) FB_log("Data Payload: " + poke_post_data);
 
      var r = new XMLHttpRequest();
-     r.open('POST', poke_link, true);
+     r.open('GET', poke_link, true);
 
      r.onreadystatechange = function (aEvt) {
           if (r.readyState == 4) {
                if (r.status == 200) {
-                    FB_log(r.responseText);
+                    if(debug > 2) FB_log(r.responseText);
                     var div_regex = /\\"body\\":{\\"__html\\":\\"(.*)\\"},\\"buttons\\"/;
                     div_regex.exec(r.responseText);
 
@@ -162,8 +163,7 @@ function poke_function(poke_link, poke_node, poke_post_data, poke_uid) {
      r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
      r.setRequestHeader('Referer', document.location);
      r.setRequestHeader('Cookie', document.cookie);
-     r.send(poke_post_data);
-
+     r.send();
 }
 
 function parse_poke_response(xml) {
@@ -270,8 +270,10 @@ function execute_poke(poke_uid, poke_node) {
 
 function FB_log(log_string) {
      if (debug > 2) {
-	  var logspace = document.getElementById('fb_log'); 
-	  logspace.value += log_string + "\n";
+	  var logspace = document.getElementById('fb_log');
+          if ((debug <= 5) && (log_string.length > log_limit)) logspace.value += log_string.substr(0, log_limit) + "... (" + (log_string.length - log_limit) + " characters)\n";
+          else logspace.value += log_string + "\n";
+
 	  logspace.scrollTop = logspace.scrollHeight;
      }
 
