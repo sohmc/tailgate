@@ -119,7 +119,7 @@ function find_pokes(xml) {
 	  var poke_uid = RegExp.$1;
 
 	  ajax_ref = ajax_ref.replace(/\?.*/, '');
-	  ajax_ref = ajax_ref + "?uid=" + uid + "&pokeback=1&__a=1&__d=1";
+	  ajax_ref = ajax_ref + "?uid=" + poke_uid + "&pokeback=1&__a=1&__d=1";
 
 	  post_data = post_data + "&nctr[_mod]=pagelet_netego_pokes&post_form_id=" + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
 
@@ -145,13 +145,13 @@ function poke_function(poke_link, poke_node, poke_post_data, poke_uid) {
      r.onreadystatechange = function (aEvt) {
           if (r.readyState == 4) {
                if (r.status == 200) {
-                    if(debug > 2) FB_log(r.responseText);
-                    var div_regex = /\\"body\\":{\\"__html\\":\\"(.*)\\"},\\"buttons\\"/;
+                    if(debug > 2) FB_log(r.responseText, 1);
+                    var div_regex = /"body":{"__html":"(.*)"},"buttons"/;
                     div_regex.exec(r.responseText);
 
                     var poke_response = RegExp.$1;
                     poke_response = decode_unicode(poke_response);
-                    FB_log('poke_response: ' + poke_response);
+                    FB_log('poke_response: ' + poke_response, 1);
 
                     parse_poke_response(string_to_xml(poke_response));
 
@@ -268,10 +268,10 @@ function execute_poke(poke_uid, poke_node) {
      }); 
 } 
 
-function FB_log(log_string) {
+function FB_log(log_string, full) {
      if (debug > 2) {
 	  var logspace = document.getElementById('fb_log');
-          if ((debug <= 5) && (log_string.length > log_limit)) logspace.value += log_string.substr(0, log_limit) + "... (" + (log_string.length - log_limit) + " characters)\n";
+          if ((!full) && (debug <= 5) && (log_string.length > log_limit)) logspace.value += log_string.substr(0, log_limit) + "... (" + (log_string.length - log_limit) + " characters)\n";
           else logspace.value += log_string + "\n";
 
 	  logspace.scrollTop = logspace.scrollHeight;
