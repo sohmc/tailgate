@@ -108,12 +108,6 @@ function find_pokes(xml) {
 	  var ajax_ref = anchors.snapshotItem(i).getAttribute('ajaxify');
 	  FB_log(i + " " + names.snapshotItem(i).textContent + ": " + ajax_ref);
 
-	  var post_form_id = evaluate_xpath('.//*[@id="post_form_id"]').snapshotItem(0).value;
-	  var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).value;
-          var p_regexp = /p=(.*)/;
-	  p_regexp.exec(ajax_ref);
-	  var post_data = "p=" + RegExp.$1;
-
 	  var poke_uid_regexp = /poke_(\d+)/;
 	  poke_uid_regexp.exec(poke_divs.snapshotItem(i).getAttribute('id'));
 	  var poke_uid = RegExp.$1;
@@ -121,9 +115,7 @@ function find_pokes(xml) {
 	  ajax_ref = ajax_ref.replace(/\?.*/, '');
 	  ajax_ref = ajax_ref + "?uid=" + poke_uid + "&pokeback=1&__a=1&__d=1";
 
-	  post_data = post_data + "&nctr[_mod]=pagelet_netego_pokes&post_form_id=" + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
-
-	  poke_function(ajax_ref, anchors.snapshotItem(i), post_data, poke_uid);
+	  poke_function(ajax_ref, poke_uid);
      } 
      
      if (anchors.snapshotLength == 0) { 
@@ -135,9 +127,8 @@ function find_pokes(xml) {
 } 
  
  
-function poke_function(poke_link, poke_node, poke_post_data, poke_uid) { 
+function poke_function(poke_link, poke_uid) { 
      if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")"); 
-     if (debug > 1) FB_log("Data Payload: " + poke_post_data);
 
      var r = new XMLHttpRequest();
      r.open('GET', poke_link, true);
