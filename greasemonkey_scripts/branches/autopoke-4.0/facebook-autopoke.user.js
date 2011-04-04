@@ -115,7 +115,7 @@ function find_pokes(xml) {
 	  ajax_ref = ajax_ref.replace(/\?.*/, '');
 	  ajax_ref = ajax_ref + "?uid=" + poke_uid + "&pokeback=1&__a=1&__d=1";
 
-	  poke_function(ajax_ref, poke_uid);
+	  poke_function(ajax_ref)
      } 
      
      if (anchors.snapshotLength == 0) { 
@@ -127,7 +127,7 @@ function find_pokes(xml) {
 } 
  
  
-function poke_function(poke_link, poke_uid) { 
+function poke_function(poke_link) { 
      if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")"); 
 
      var r = new XMLHttpRequest();
@@ -137,86 +137,48 @@ function poke_function(poke_link, poke_uid) {
           if (r.readyState == 4) {
                if (r.status == 200) {
                     if(debug > 2) FB_log(r.responseText, 1);
-                    var div_regex = /"body":{"__html":"(.*)"},"buttons"/;
+                    var div_regex = /"body":{"__html":"(.*)"},"buttons":\[(.*)\],/;
                     div_regex.exec(r.responseText);
 
                     var poke_response = RegExp.$1;
+                    var buttons = RegExp.$2;
+
                     poke_response = decode_unicode(poke_response);
                     FB_log('poke_response: ' + poke_response, 1);
+                    FB_log('buttons: ' + buttons, 1);
 
-                    parse_poke_response(string_to_xml(poke_response));
-
+                    if (parse_poke_response(string_to_xml(poke_response))) execute_poke(string_to_xml(poke_response));
                } else {
                     FB_log("Error loading page");
                }
           }
      };
+
      r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
      r.setRequestHeader('Referer', document.location);
      r.setRequestHeader('Cookie', document.cookie);
      r.send();
 }
 
+// Returns 1 if the user can be poked.
 function parse_poke_response(xml) {
-     var poke_node = evaluate_xpath('.//input[name="uid"]', xml);
+     var return_value = 0;
+     var pokable = evaluate_xpath('.//input[name="pokeback"]', xml);
 
-     if (poke_node.snapshotLength == 1) {
-          var poke_uid = poke_node.snapshotItem(0).value;
-          var poke_link = evaluate_xpath('.//div[@id="poke_' + poke_uid + ']]/div/a[2]');
+     if (pokable.snapshotLength == 1) return_value = 1;
 
-          if (poke_link.snapshotLength == 1) {
-               var node = poke_link.snapshotItem(0);
-               poke_node.removeAttribute('href');
-               node.innerHTML = "Processing...";
-          } else {
-               FB_log('Poke back link could not be found on the document page.  Continuing anyway.');
-          }
-
-          var r = new XMLHttpRequest();
-
-
-     }
-
+     return return_value;
+}
+     
  
-/*
-     GM_xmlhttpRequest({ 
-          method:'POST', 
-          url:poke_link, 
-	  headers:{
-	       'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
-	       'Referer':document.location,
-	       'Cookie':document.cookie,
-	  },
-	  data:poke_post_data,
-          onload: function(response) { 
-               if (response.status == 200) { 
-                    if (response.responseText.indexOf('You are about to poke') != -1) { 
-                         poke_node.innerHTML = 'Reading confirmation page...'; 
-                         if (debug >= 2) FB_log("Text:" + response.responseText); 
-                         execute_poke(poke_uid, poke_node); 
-                    } else if (response.responseText.indexOf('has not received your last poke yet') != -1) { 
-                         poke_node.removeAttribute('href'); 
-                         poke_node.innerHTML = 'Already poked!'; 
-                    } else { 
-                         poke_node.removeAttribute('href');  
-                         poke_node.innerHTML = 'Auto-Poke failed! [1.1]';  
-                         FB_log("Auto-Poke failed -- Error Code 1.1: While retreiving the poke confirmation page, the script was unable to determine whether the user had already been poked or is about to be poked.  This is likely the result of Facebook changing their code again.");  
-                         FB_log(response.responseText); 
-                     } 
-              } else { 
-                    poke_node.innerHTML = 'Auto-Poke failed! [1.2]'; 
-                    FB_log("Auto-Poke failed -- Error Code 1.2: The poke confirmation page returned a non-200 OK response\n\nfacebook returned:" + response.status + response.statusText); 
-              } 
-          } 
-     }); // end of GM_xmlhttpRequest */
-} 
- 
-function execute_poke(poke_uid, poke_node) { 
-     FB_log('cookie: ' + document.cookie); 
-     var post_form_id = evaluate_xpath('.//*[@id="post_form_id"]').snapshotItem(0).value; 
-     var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).value; 
+
+function execute_poke(xml) {
+     var post_form_id = evaluate_xpath('.//*[@id="post_form_id"]', xml).snapshotItem(0).value; 
+     var poke_uid = evaluate_xpath('.//input[@name="uid"]', xml).snapshotItem(0).value;
+     var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).value;
+
      var post_data = 'uid=' + poke_uid + '&pokeback=1&post_form_id=' + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd=&opp=&pk01=Poke&post_form_id_source=AsyncRequest'; 
- 
+/* 
      poke_node.innerHTML = 'Executing autopoke (' + poke_uid + ')...'; 
      if (debug > 0) FB_log('post_data: ' + post_data); 
  
@@ -256,7 +218,7 @@ function execute_poke(poke_uid, poke_node) {
                FB_log("Auto-Poke failed -- Error Code 2.3: The script experienced unknown errors while attempting to confirm the poke."); 
                FB_log(response.responseText); 
           } 
-     }); 
+     }); */
 } 
 
 function FB_log(log_string, full) {
@@ -284,22 +246,26 @@ function evaluate_xpath(xpath_query, xml) {
 }
 
 function decode_unicode(s) {
-     if (debug > 2) FB_log('Decoding the following string (length: ' + s.length + '): ' + s);
+     var new_s = "";
 
-     unicode_regex = /\\u[a-z0-9]{4}/gi;
-     new_s = s.match(unicode_regex);
+     if (s.length > 0) {
+          if (debug > 2) FB_log('Decoding the following string (length: ' + s.length + '): ' + s);
+
+          unicode_regex = /\\u[a-z0-9]{4}/gi;
+          new_s = s.match(unicode_regex);
      
-     for (var i = 0; i < new_s.length; i++) {
-          var hex_regex = /\\u([a-z0-9]{4})/;
-          var hex = hex_regex.exec(new_s[i]);
-          
-          var current = "0x" + hex[1];
-          FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
-          s = s.replace(new_s[i], String.fromCharCode(current), "g");
-     }
+          for (var i = 0; i < new_s.length; i++) {
+               var hex_regex = /\\u([a-z0-9]{4})/;
+               var hex = hex_regex.exec(new_s[i]);
+               
+               var current = "0x" + hex[1];
+               FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
+               s = s.replace(new_s[i], String.fromCharCode(current), "g");
+          }
 
-     s = s.replace("\\", "", "g");
-     s = s.replace("\\\/", "\/", "g");
+          s = s.replace("\\", "", "g");
+          s = s.replace("\\\/", "\/", "g");
+     }
 
      return s;
 }
