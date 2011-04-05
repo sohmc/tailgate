@@ -145,9 +145,28 @@ function poke_function(poke_link) {
 
                     poke_response = decode_unicode(poke_response);
                     FB_log('poke_response: ' + poke_response, 1);
+                    var xml = string_to_xml(poke_response);
+                    
                     FB_log('buttons: ' + buttons, 1);
+                   
+                    var button_regex = /^{"name":"(.*)","label":"(.*)"},"cancel"$/;
+                    var new_input_node = xml.createElement('input');
+                    new_input_node.setAttribute('type', 'hidden');
+                    new_input_node.setAttribute('foo', 'bar');
 
-                    if (parse_poke_response(string_to_xml(poke_response))) execute_poke(string_to_xml(poke_response));
+                    if (button_regex.test(buttons)) {
+                         button_regex.exec(buttons);
+                         new_input_node.setAttribute('name', RegExp.$1);
+                         new_input_node.setAttribute('value', RegExp.$2);
+                    } else {
+                         new_input_node.setAttribute('name', 'cancel');
+                         new_input_node.setAttribute('value', 'cancel');
+                    }
+
+                    xml.getElementsByTagName('div')[1].appendChild(new_input_node);
+                    if (debug > 2) FB_log(xml_to_string(xml), 1);
+
+                    if (parse_poke_response(xml)) execute_poke(xml);
                } else {
                     FB_log("Error loading page");
                }
@@ -160,10 +179,12 @@ function poke_function(poke_link) {
      r.send();
 }
 
+
+
 // Returns 1 if the user can be poked.
 function parse_poke_response(xml) {
      var return_value = 0;
-     var pokable = evaluate_xpath('.//input[name="pokeback"]', xml);
+     var pokable = evaluate_xpath('.//input[@name="pokeback"]', xml);
 
      if (pokable.snapshotLength == 1) return_value = 1;
 
@@ -275,4 +296,11 @@ function string_to_xml(s) {
      var dom = parser.parseFromString(s, 'text/xml');
 
      return dom;
+}
+
+function xml_to_string(xml) {
+     var serializer = new XMLSerializer();
+     var prettyString = XML(serializer.serializeToString(xml)).toXMLString();
+
+     return prettyString;
 }
