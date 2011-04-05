@@ -70,7 +70,7 @@ function new_init() {
      r.send(null);
 }
 
-
+/* Depricated 
 function init() { 
      var html_tag = evaluate_xpath('.//html'); 
      var fb_lang = html_tag.snapshotItem(0).getAttribute('lang'); 
@@ -86,7 +86,7 @@ function init() {
      } 
  
      find_pokes(); 
-} 
+} */
 
 function toggle_fb_log() {
      var fb_log = document.getElementById('my_div');
@@ -137,34 +137,56 @@ function poke_function(poke_link) {
           if (r.readyState == 4) {
                if (r.status == 200) {
                     if(debug > 2) FB_log(r.responseText, 1);
+
+                    // Retrieve the "body" of the poke dialog along with
+                    // the buttons that are being sent.
                     var div_regex = /"body":{"__html":"(.*)"},"buttons":\[(.*)\],/;
                     div_regex.exec(r.responseText);
 
                     var poke_response = RegExp.$1;
                     var buttons = RegExp.$2;
 
+                    // Convert the string to xml for parsing.
                     poke_response = decode_unicode(poke_response);
                     FB_log('poke_response: ' + poke_response, 1);
                     var xml = string_to_xml(poke_response);
                     
-                    FB_log('buttons: ' + buttons, 1);
+                    if (debug > 2) FB_log('buttons: ' + buttons, 1);
                    
+                    // Process the buttons that Facebook returned.  If
+                    // it contains a "name" and "label", usually means
+                    // that the user is being given a choice to choose
+                    // "Poke" or "Cancel".
                     var button_regex = /^{"name":"(.*)","label":"(.*)"},"cancel"$/;
-                    var new_input_node = xml.createElement('input');
-                    new_input_node.setAttribute('type', 'hidden');
-                    new_input_node.setAttribute('foo', 'bar');
 
                     if (button_regex.test(buttons)) {
                          button_regex.exec(buttons);
+                         
+                         var new_input_node = xml.createElement('input');
+                         new_input_node.setAttribute('type', 'hidden');
                          new_input_node.setAttribute('name', RegExp.$1);
                          new_input_node.setAttribute('value', RegExp.$2);
-                    } else {
-                         new_input_node.setAttribute('name', 'cancel');
-                         new_input_node.setAttribute('value', 'cancel');
+                         
+                         // Add the button to the xml.
+                         xml.getElementsByTagName('div')[1].appendChild(new_input_node);
+                         if (debug > 2) FB_log(xml_to_string(xml), 1);
                     }
 
-                    xml.getElementsByTagName('div')[1].appendChild(new_input_node);
-                    if (debug > 2) FB_log(xml_to_string(xml), 1);
+
+                    // Retrieve the postURI.
+                    var postURI_regex = /"postURI":\["(.*)",(.*)\]}}$/;
+                    if (postURI_regex.test(r.responseText)) {
+                         postURI_regex.exec(poke_response);
+
+                         var new_input_node = xml.createElement('form');
+                         new_input_node.setAttribute('id', 'postURI');
+                         new_input_node.setAttribute('status', RegExp.$2);  // The autopoke script does not use this, but it is stored in case it needs it.
+                         new_input_node.setAttribute('action', RegExp.$1.replace("\\\/", "\/", "g"));
+                         
+                         // Add the button to the xml.
+                         xml.getElementsByTagName('div')[1].appendChild(new_input_node);
+                         if (debug > 2) FB_log(xml_to_string(xml), 1);
+                    }
 
                     if (parse_poke_response(xml)) execute_poke(xml);
                } else {
@@ -181,24 +203,27 @@ function poke_function(poke_link) {
 
 
 
-// Returns 1 if the user can be poked.
-function parse_poke_response(xml) {
-     var return_value = 0;
-     var pokable = evaluate_xpath('.//input[@name="pokeback"]', xml);
-
-     if (pokable.snapshotLength == 1) return_value = 1;
-
-     return return_value;
-}
-     
- 
-
 function execute_poke(xml) {
-     var post_form_id = evaluate_xpath('.//*[@id="post_form_id"]', xml).snapshotItem(0).value; 
-     var poke_uid = evaluate_xpath('.//input[@name="uid"]', xml).snapshotItem(0).value;
-     var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).value;
+     var poke_uid = evaluate_xpath('.//input[@name="uid"]', xml).snapshotItem(0).getAttribute('value');;
+     var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).getAttribute('value');
+     var post_data = "lsd=&post_form_id_source=AsyncRequest";
 
-     var post_data = 'uid=' + poke_uid + '&pokeback=1&post_form_id=' + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd=&opp=&pk01=Poke&post_form_id_source=AsyncRequest'; 
+     var postURI = evaluate_xpath('.//form[@id="postURI"]', xml).snapshotItem(0).getAttribute('action');
+     if (debug > 2) FB_log("PostURI: " + postURI);
+
+     var input_nodes = evaluate_xpath('.//input', xml);
+
+     for (var i = 0; i < input_nodes.snapshotLength; i++) {
+          if (input_nodes.snapshotItem(i).hasAttribute('value'))
+               post_data += "&" + input_nodes.snapshotItem(i).getAttribute('name') + "=" + input_nodes.snapshotItem(i).getAttribute('value');
+          else 
+               post_data += "&" + input_nodes.snapshotItem(i).getAttribute('name') + "=";
+     }
+
+     if (debug > 2) FB_log(post_data);
+
+     update_frontpage(poke_uid);
+
 /* 
      poke_node.innerHTML = 'Executing autopoke (' + poke_uid + ')...'; 
      if (debug > 0) FB_log('post_data: ' + post_data); 
@@ -240,7 +265,37 @@ function execute_poke(xml) {
                FB_log(response.responseText); 
           } 
      }); */
-} 
+}
+
+/* Helper Functions */
+
+function update_frontpage(uid) {
+     var user_div = evaluate_xpath('.//div[@id[contains(.,"' + uid + '")]]');
+
+     if (user_div.snapshotLength == 0)
+          FB_log('User ' + uid + ' could not be found on the frontpage.  Continuing anyway.');
+     else if (user_div.snapshotLength > 1)
+          FB_log('User ' + uid + ' returned multiple nodes.  Continuing anyway.');
+     else {
+          var innerXML = user_div.snapshotItem(0);
+
+          FB_log(xml_to_string(innerXML.childNodes));
+
+
+     }
+
+
+}
+
+// Returns 1 if the user can be poked.
+function parse_poke_response(xml) {
+     var return_value = 0;
+     var pokable = evaluate_xpath('.//input[@name="pokeback"]', xml);
+
+     if (pokable.snapshotLength == 1) return_value = 1;
+
+     return return_value;
+}
 
 function FB_log(log_string, full) {
      if (debug > 2) {
