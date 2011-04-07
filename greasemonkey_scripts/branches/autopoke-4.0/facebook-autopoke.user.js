@@ -15,7 +15,7 @@
 // ==/UserScript== 
 // @require     http://usocheckup.redirectme.net/5200.js
  
-var debug = 5;
+var debug = 1;
 var log_limit = 500; // The max number of characters in each log entry.
 var retries = 3; 
 var wait = 1500; // 1.5 seconds 
@@ -49,7 +49,7 @@ function new_init() {
      r.onreadystatechange = function (aEvt) {
           if (r.readyState == 4) {
                if (r.status == 200) {
-                    if (debug > 2) FB_log(r.responseText);
+                    if (debug > 3) FB_log(r.responseText);
 
                     var poke_divs = evaluate_xpath(".//script[contains(.,'pokes')]");
                     if (poke_divs.snapshotLength == 1) {
@@ -116,7 +116,7 @@ function poke_function(poke_link) {
      r.onreadystatechange = function (aEvt) {
           if (r.readyState == 4) {
                if (r.status == 200) {
-                    if(debug > 2) FB_log(r.responseText, 1);
+                    if (debug > 2) FB_log(r.responseText, 1);
 
                     // Retrieve the "body" of the poke dialog along with
                     // the buttons that are being sent.
@@ -128,7 +128,7 @@ function poke_function(poke_link) {
 
                     // Convert the string to xml for parsing.
                     poke_response = decode_unicode(poke_response);
-                    FB_log('poke_response: ' + poke_response, 1);
+                    if (debug > 2) FB_log('poke_response: ' + poke_response, 1);
                     var xml = string_to_xml(poke_response);
                     
                     if (debug > 2) FB_log('buttons: ' + buttons, 1);
@@ -188,12 +188,11 @@ function poke_function(poke_link) {
 function execute_poke(xml) {
      var poke_uid = evaluate_xpath('.//input[@name="uid"]', xml).snapshotItem(0).getAttribute('value');;
      var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).getAttribute('value');
-     var post_data = "lsd=&post_form_id_source=AsyncRequest";
 
      var postURI = evaluate_xpath('.//form[@id="postURI"]', xml).snapshotItem(0).getAttribute('action');
-     if (debug > 2) FB_log("PostURI: " + postURI);
-
+     postURI += "?__a=1";
      var input_nodes = evaluate_xpath('.//input', xml);
+     var post_data = "__d=1&lsd=&post_form_id_source=AsyncRequest&fb_dtsg=" + fb_dtsg;
 
      for (var i = 0; i < input_nodes.snapshotLength; i++) {
           if (input_nodes.snapshotItem(i).hasAttribute('value'))
@@ -202,8 +201,6 @@ function execute_poke(xml) {
                post_data += "&" + input_nodes.snapshotItem(i).getAttribute('name') + "=";
      }
 
-     if (debug > 2) FB_log("Post data for UID " + poke_uid + ": " + post_data);
-     update_frontpage(poke_uid, 4);
 
      var r = new XMLHttpRequest();
      r.open('POST', postURI, true);
@@ -238,7 +235,10 @@ function execute_poke(xml) {
      r.setRequestHeader('Referer', document.location);
      r.setRequestHeader('Cookie', document.cookie);
 
-     r.send();
+     if (debug > 1) FB_log("Post data for UID " + poke_uid + ": " + post_data);
+     if (debug > 1) FB_log("PostURI: " + postURI);
+     update_frontpage(poke_uid, 4);
+     r.send(post_data);
 }
 
 /* Helper Functions */
@@ -303,6 +303,8 @@ function parse_poke_response(xml) {
 }
 
 function FB_log(log_string, full) {
+     if (debug >= 3) full = 1;
+
      if (debug > 2) {
 	  var logspace = document.getElementById('fb_log');
           if ((!full) && (debug <= 5) && (log_string.length > log_limit)) logspace.value += log_string.substr(0, log_limit) + "... (" + (log_string.length - log_limit) + " characters)\n";
@@ -330,7 +332,7 @@ function evaluate_xpath(xpath_query, xml) {
 
      if (debug >= 2) FB_log(xpath_query); 
      var nodes = xml.evaluate(xpath_query, xml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); 
-     if (debug >= 1) FB_log('nodes returned: ' + nodes.snapshotLength); 
+     if (debug >= 2) FB_log('nodes returned: ' + nodes.snapshotLength); 
  
      return nodes; 
 }
@@ -349,7 +351,7 @@ function decode_unicode(s) {
                var hex = hex_regex.exec(new_s[i]);
                
                var current = "0x" + hex[1];
-               FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
+               if (debug > 2) FB_log("(" + current + ") == (" + String.fromCharCode(current) + ")");
                s = s.replace(new_s[i], String.fromCharCode(current), "g");
           }
 
