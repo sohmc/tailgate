@@ -70,32 +70,7 @@ function new_init() {
      r.send(null);
 }
 
-/* Depricated 
-function init() { 
-     var html_tag = evaluate_xpath('.//html'); 
-     var fb_lang = html_tag.snapshotItem(0).getAttribute('lang'); 
- 
-     if (debug > 0) { 
-          var poke_div = evaluate_xpath('.//h4[contains(.,"Pokes")]'); 
- 
-          if (poke_div.snapshotLength == 1) { 
-               poke_div.snapshotItem(0).innerHTML += ' <a href="#" id="auto_poke">Auto-poke</a>'; 
-               evaluate_xpath('.//a[@id="auto_poke"]').snapshotItem(0).addEventListener('click', find_pokes, true); 
-          } 
- 
-     } 
- 
-     find_pokes(); 
-} */
 
-function toggle_fb_log() {
-     var fb_log = document.getElementById('my_div');
-     if (fb_log.style.display != "none") {
-	  fb_log.style.display = "none";
-     } else {
-	  fb_log.style.display = "block";
-     }
-}
 
 function find_pokes(xml) {
      // Retrieve poke links via XPath
@@ -115,6 +90,7 @@ function find_pokes(xml) {
 	  ajax_ref = ajax_ref.replace(/\?.*/, '');
 	  ajax_ref = ajax_ref + "?uid=" + poke_uid + "&pokeback=1&__a=1&__d=1";
 
+          update_frontpage(poke_uid, 1);
 	  poke_function(ajax_ref)
      } 
      
@@ -128,7 +104,11 @@ function find_pokes(xml) {
  
  
 function poke_function(poke_link) { 
-     if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")"); 
+     if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")");
+
+     var poke_uid_regexp = /\?uid=(\d+)&pokeback/;
+     poke_uid_regexp.exec(poke_link);
+     var poke_uid = RegExp.$1;
 
      var r = new XMLHttpRequest();
      r.open('GET', poke_link, true);
@@ -160,6 +140,7 @@ function poke_function(poke_link) {
                     var button_regex = /^{"name":"(.*)","label":"(.*)"},"cancel"$/;
 
                     if (button_regex.test(buttons)) {
+                         update_frontpage(poke_uid, 3);
                          button_regex.exec(buttons);
                          
                          var new_input_node = xml.createElement('input');
@@ -189,15 +170,16 @@ function poke_function(poke_link) {
                     }
 
                     if (parse_poke_response(xml)) execute_poke(xml);
-               } else {
-                    FB_log("Error loading page");
+               } else { // if status is not 200
+                    update_frontpage(poke_uid, 20);
                }
-          }
-     };
+          } // if readystate is not 4
+     }; // end onReadyStateChange function
 
-     r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
      r.setRequestHeader('Referer', document.location);
      r.setRequestHeader('Cookie', document.cookie);
+
+     update_frontpage(poke_uid, 2);
      r.send();
 }
 
@@ -220,71 +202,94 @@ function execute_poke(xml) {
                post_data += "&" + input_nodes.snapshotItem(i).getAttribute('name') + "=";
      }
 
-     if (debug > 2) FB_log(post_data);
+     if (debug > 2) FB_log("Post data for UID " + poke_uid + ": " + post_data);
+     update_frontpage(poke_uid, 4);
 
-     update_frontpage(poke_uid);
+     var r = new XMLHttpRequest();
+     r.open('POST', postURI, true);
 
-/* 
-     poke_node.innerHTML = 'Executing autopoke (' + poke_uid + ')...'; 
-     if (debug > 0) FB_log('post_data: ' + post_data); 
- 
-     //Submit the poke. 
-     GM_xmlhttpRequest({ 
-          method:'POST', 
-          url:'/ajax/poke.php?__a=1', 
-          headers:{ 
-               'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8', 
-               'Referer':document.location, 
-               'Cookie':document.cookie, 
-          }, 
-          data:post_data, 
-          onload: function (response) { 
-               if (response.status == 200) { 
-                    //Poke either already happened, was successful, or failed. 
-                    if (response.responseText.indexOf('has not received your last poke yet') != -1) { 
-                         poke_node.removeAttribute('href'); 
-                         poke_node.innerHTML = 'Already poked!'; 
-                    } else if (response.responseText.indexOf('You have poked') != -1) { 
-                         poke_node.removeAttribute('href'); 
-                         poke_node.innerHTML = 'Auto-Poked!'; 
-                    } else { 
-                         poke_node.innerHTML = 'Poke failed! [2.1]'; 
-                         FB_log("Auto-Poke failed -- Error Code 2.1: Facebook gave an unexpected response to the poke."); 
-                         FB_log(response.responseText); 
-                    } 
-               } else { 
-                    poke_node.innerHTML = 'Poke failed! [2.2]'; 
-                    FB_log("Auto-Poke failed -- Error Code 2.2: Facebook.com gave a non-200 OK response.\n\nfacebook.com returned: " + response.status + response.statusText); 
-                    FB_log(response.responseText); 
-               } 
-          }, 
-          onerror: function (responseDetails) { 
-               poke_node.removeAttribute('href'); 
-               poke_node.innerHTML = 'Poke failed! [2.3]'; 
-               FB_log("Auto-Poke failed -- Error Code 2.3: The script experienced unknown errors while attempting to confirm the poke."); 
-               FB_log(response.responseText); 
-          } 
-     }); */
+     r.onreadystatechange = function (aEvt) {
+          if (r.readyState == 4) {
+               var poke_status = 0;
+
+               if (r.status == 200) {
+                    if (debug > 2) FB_log("Response for UID " + poke_uid + ": " + r.responseText, 1);
+
+                    // Successful pokes have an autohide "handler"
+                    var poke_successful = /"handler":"","autohide"/;
+                    var poke_error = /"title":{"__html":"Error"}/;
+                    
+                    if (poke_error.test(r.responseText))
+                         poke_status = 110;
+                    else if (poke_successful.test(r.responseText))
+                         poke_status = 100;
+                    else
+                         poke_status = 30;
+               } else {
+                    poke_status = 40;
+               }
+
+               update_frontpage(poke_uid, poke_status);
+               return poke_status;
+          }
+     }; // end onReadyStateChange function
+
+     r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+     r.setRequestHeader('Referer', document.location);
+     r.setRequestHeader('Cookie', document.cookie);
+
+     r.send();
 }
 
 /* Helper Functions */
 
-function update_frontpage(uid) {
-     var user_div = evaluate_xpath('.//div[@id[contains(.,"' + uid + '")]]');
+function update_frontpage(uid, poke_step) {
+     var user_div = evaluate_xpath('.//div[@id[contains(.,"' + uid + '")]]/div/a[@ajaxify[contains(.,"' + uid + '")]]');
 
      if (user_div.snapshotLength == 0)
           FB_log('User ' + uid + ' could not be found on the frontpage.  Continuing anyway.');
      else if (user_div.snapshotLength > 1)
           FB_log('User ' + uid + ' returned multiple nodes.  Continuing anyway.');
      else {
-          var innerXML = user_div.snapshotItem(0);
+          var poke_anchor = user_div.snapshotItem(0);
 
-          FB_log(xml_to_string(innerXML.childNodes));
-
-
+          switch (poke_step) {
+               case 1:
+                    poke_anchor.textContent = "Initializing...";
+                    break;
+               case 2:
+                    poke_anchor.textContent = "Obtaining poke lock...";
+                    break;
+               case 3:
+                    poke_anchor.textContent = "Lock confirmed; preparing to poke...";
+                    break;
+               case 4:
+                    poke_anchor.textContent = "Transmitting...";
+                    break;
+               case 10:
+                    poke_anchor.textContent = "Error 10: could not initialize.";
+                    break;
+               case 20:
+                    poke_anchor.textContent = "Error 20: Could not issolate poke lock.";
+                    break;
+               case 30:
+                    poke_anchor.textContent = "Error 30: Facebook return an unexpected response.";
+                    break;
+               case 100:
+                    poke_anchor.textContent = "Auto-poked!";
+                    poke_anchor.removeAttribute('href');
+                    break;
+               case 110:
+                    poke_anchor.textContent = "Already poked";
+                    poke_anchor.removeAttribute('href');
+                    break;
+               default:
+                    poke_anchor.textContent = "Error 100: Unknown error.";
+                    break;
+          }
      }
 
-
+     return poke_step;
 }
 
 // Returns 1 if the user can be poked.
@@ -307,6 +312,15 @@ function FB_log(log_string, full) {
      }
 
      GM_log(log_string);
+}
+
+function toggle_fb_log() {
+     var fb_log = document.getElementById('my_div');
+     if (fb_log.style.display != "none") {
+	  fb_log.style.display = "none";
+     } else {
+	  fb_log.style.display = "block";
+     }
 }
 
 //=-=-=-=-=- STANDARD FUNCTIONS -=-=-=-=-=//
