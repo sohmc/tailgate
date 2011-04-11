@@ -15,9 +15,8 @@
 // ==/UserScript== 
 // @require     http://usocheckup.redirectme.net/5200.js
  
-var debug = 1;
+var debug = 3;
 var log_limit = 500; // The max number of characters in each log entry.
-var retries = 3; 
 var wait = 1500; // 1.5 seconds 
  
 if (debug > 2) { 
@@ -37,12 +36,12 @@ if (debug > 2) {
 
 if (debug > 0) FB_log('Current Location: ' + document.location); 
 
-new_init();
+init();
 
  
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
-function new_init() {
+function init() {
      var r = new XMLHttpRequest();
      r.open('GET', document.location, true);
 
@@ -77,7 +76,7 @@ function find_pokes(xml) {
      var poke_divs = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]', xml);
      var names     = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[1]', xml);
      var anchors   = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]', xml);
-     if (debug > 0) FB_log('Poke back links found: ' + anchors.snapshotLength);
+     if (debug > 0) FB_log('Poke back links found: ' + poke_divs.snapshotLength);
      
      for (var i=0; i < anchors.snapshotLength; i++) {
 	  var ajax_ref = anchors.snapshotItem(i).getAttribute('ajaxify');
@@ -91,14 +90,12 @@ function find_pokes(xml) {
 	  ajax_ref = ajax_ref + "?uid=" + poke_uid + "&pokeback=1&__a=1&__d=1";
 
           update_frontpage(poke_uid, 1);
-	  poke_function(ajax_ref)
+	  poke_function(ajax_ref);
+          count_poke(poke_uid);
      } 
      
      if (anchors.snapshotLength == 0) { 
-          retries--; 
-          FB_log('No pokes found. Retries left: ' + retries); 
-          if (retries > 0)           
-               setTimeout(find_pokes, wait); 
+          FB_log('No pokes found.');
      } 
 } 
  
@@ -324,6 +321,52 @@ function toggle_fb_log() {
 	  fb_log.style.display = "block";
      }
 }
+
+
+//=-=-=-=-=- POKE WAR COUNT -=-=-=-=-=//
+function count_poke(uid) {
+     var current_count = get_poke_count(uid);
+     var xml = get_pokewar_log();
+
+     if (current_count == 0) {
+          var new_node = xml.createElement('belligerent');
+          new_node.setAttribute('uid', uid);
+          new_node.setAttribute('count', 1);
+          xml.getElementsByTagName('pokewar')[0].appendChild(new_node);
+     } else {
+          var node = evaluate_xpath('.//belligerent[@uid=' + uid + ']', xml);
+          node.snapshotItem(0).setAttribute('count', current_count++);
+     }
+     
+     if (debug > 2) FB_log(xml_to_string(xml), 1);
+     store_pokewar(xml);
+}
+
+function store_pokewar(xml) {
+     GM_setValue('pokewar', xml_to_string(xml));
+}
+
+function get_poke_count(uid) {
+     var count = 0;
+     var xml = get_pokewar_log();
+     var node = evaluate_xpath('.//belligerent[@uid=' + uid + ']', xml);
+
+     if (node.snapshotLength == 1) {
+          count = node.snapshotItem(0).getAttribute('count');
+     }
+
+     return count;
+}
+
+
+function get_pokewar_log() {
+     var pokewar_battle_log = GM_getValue('pokewar', '<pokewar />');
+     var xml = string_to_xml(pokewar_battle_log);
+
+     return xml;
+}
+
+
 
 //=-=-=-=-=- STANDARD FUNCTIONS -=-=-=-=-=//
  
