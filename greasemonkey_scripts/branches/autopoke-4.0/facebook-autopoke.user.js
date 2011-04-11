@@ -91,7 +91,6 @@ function find_pokes(xml) {
 
           update_frontpage(poke_uid, 1);
 	  poke_function(ajax_ref);
-          count_poke(poke_uid);
      } 
      
      if (anchors.snapshotLength == 0) { 
@@ -261,7 +260,7 @@ function update_frontpage(uid, poke_step) {
                     poke_anchor.textContent = "Lock confirmed; preparing to poke...";
                     break;
                case 4:
-                    poke_anchor.textContent = "Transmitting...";
+                    poke_anchor.textContent = "Transmitting poke information...";
                     break;
                case 10:
                     poke_anchor.textContent = "Error 10: could not initialize.";
@@ -274,14 +273,15 @@ function update_frontpage(uid, poke_step) {
                     break;
                case 100:
                     poke_anchor.textContent = "Auto-poked!";
-                    poke_anchor.removeAttribute('href');
+                    poke_anchor.removeAttribute('ajaxify');
+                    poke_anchor.setAttribute('title', 'Poke count: ' + count_poke(uid));
                     break;
                case 110:
                     poke_anchor.textContent = "Already poked";
-                    poke_anchor.removeAttribute('href');
+                    poke_anchor.removeAttribute('ajaxify');
                     break;
                default:
-                    poke_anchor.textContent = "Error 100: Unknown error.";
+                    poke_anchor.textContent = "Error 400: Unknown error.";
                     break;
           }
      }
@@ -327,6 +327,9 @@ function toggle_fb_log() {
 function count_poke(uid) {
      var current_count = get_poke_count(uid);
      var xml = get_pokewar_log();
+     var new_count = parseInt(current_count, 10) + 1;
+
+     if (debug > 1) FB_log('Current poke count: ' + current_count);
 
      if (current_count == 0) {
           var new_node = xml.createElement('belligerent');
@@ -335,11 +338,13 @@ function count_poke(uid) {
           xml.getElementsByTagName('pokewar')[0].appendChild(new_node);
      } else {
           var node = evaluate_xpath('.//belligerent[@uid=' + uid + ']', xml);
-          node.snapshotItem(0).setAttribute('count', current_count++);
+          node.snapshotItem(0).setAttribute('count', new_count);
      }
      
      if (debug > 2) FB_log(xml_to_string(xml), 1);
      store_pokewar(xml);
+
+     return new_count;
 }
 
 function store_pokewar(xml) {
