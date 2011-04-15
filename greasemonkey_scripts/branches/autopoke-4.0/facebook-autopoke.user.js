@@ -5,8 +5,8 @@
 // @description Automatically pokes back people listed on your home page. This script was inspired by Lukas Fragodt's Auto-Poke and EZ-Poke. 
 // @version     4.0
 // @license     GPL 3.0 
-// @include     http://*.facebook.tld/* 
-// @include     https://*.facebook.tld/* 
+// @include     http*://*.facebook.tld/* 
+// @exclude     http*://*.facebook.tld/plugins/*
 //  
 // 
 // ==/UserScript== 
@@ -14,7 +14,7 @@
  
 var debug = 3;
 var log_limit = 500; // The max number of characters in each log entry.
-var wait = 1500; // 1.5 seconds 
+var wait = 300; // five minutes in seconds
  
 if (debug > 2) fb_log_div(); 
 if (debug > 0) FB_log('Current Location: ' + document.location); 
