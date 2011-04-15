@@ -5,11 +5,8 @@
 // @description Automatically pokes back people listed on your home page. This script was inspired by Lukas Fragodt's Auto-Poke and EZ-Poke. 
 // @version     4.0
 // @license     GPL 3.0 
-// @include     http*://facebook.com/home.php* 
-// @include     http*://*.facebook.com/home.php* 
-// @include     http*://*.facebook.com/ 
-// @include     http*://*.facebook.com/?* 
-// @include     http*://*.facebook.com/#* 
+// @include     http://*.facebook.tld/* 
+// @include     https://*.facebook.tld/* 
 //  
 // 
 // ==/UserScript== 
@@ -19,21 +16,7 @@ var debug = 3;
 var log_limit = 500; // The max number of characters in each log entry.
 var wait = 1500; // 1.5 seconds 
  
-if (debug > 2) { 
-     my_div = document.createElement('div'); 
-     my_div.innerHTML = '<div style="height: 300px; width: 600px; ' + 
-	     'background-color: #99FFCC; z-index: 100; position: fixed;' + 
-	     'padding: 5px; ' +  
-	     'right: 10px; bottom: 10px;" id="my_div">' +  
-	     '<p><a id="close_fb_log">Close</a></p>' +
-	     '<textarea style="width: 590px; height: 225px;" id="fb_log" nowrap readonly>' +  
-	     '</textarea>' +
-	     '</div>'; 
-
-     document.body.insertBefore(my_div, document.body.firstChild);
-     document.getElementById('close_fb_log').addEventListener("click", toggle_fb_log, true);
-} 
-
+if (debug > 2) fb_log_div(); 
 if (debug > 0) FB_log('Current Location: ' + document.location); 
 
 init();
@@ -45,7 +28,7 @@ function init() {
      var r = new XMLHttpRequest();
      r.open('GET', document.location, true);
 
-     r.onreadystatechange = function (aEvt) {
+     r.onreadystatechange = function () {
           if (r.readyState == 4) {
                if (r.status == 200) {
                     if (debug > 3) FB_log(r.responseText);
@@ -109,7 +92,7 @@ function poke_function(poke_link) {
      var r = new XMLHttpRequest();
      r.open('GET', poke_link, true);
 
-     r.onreadystatechange = function (aEvt) {
+     r.onreadystatechange = function () {
           if (r.readyState == 4) {
                if (r.status == 200) {
                     if (debug > 2) FB_log(r.responseText, 1);
@@ -201,7 +184,7 @@ function execute_poke(xml) {
      var r = new XMLHttpRequest();
      r.open('POST', postURI, true);
 
-     r.onreadystatechange = function (aEvt) {
+     r.onreadystatechange = function () {
           if (r.readyState == 4) {
                var poke_status = 0;
 
@@ -320,6 +303,23 @@ function toggle_fb_log() {
      } else {
 	  fb_log.style.display = "block";
      }
+}
+
+
+function fb_log_div() {
+     my_div = document.createElement('div'); 
+     my_div.setAttribute('style', 'height: 300px; width: 600px; ' + 
+               'background-color: #99FFCC; z-index: 100; position: fixed;' +
+	       'padding: 5px; ' +  
+	       'right: 10px; bottom: 10px;');
+     my_div.setAttribute('id', 'my_div');
+
+     my_div.innerHTML = '<p><a id="close_fb_log">Close</a></p>' +
+	     '<textarea style="width: 590px; height: 225px;" id="fb_log" nowrap readonly>' +  
+	     '</textarea>';
+
+     document.body.insertBefore(my_div, document.body.firstChild);
+     document.getElementById('close_fb_log').addEventListener("click", toggle_fb_log, true);
 }
 
 
