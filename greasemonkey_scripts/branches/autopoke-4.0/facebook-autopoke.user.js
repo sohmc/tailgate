@@ -322,6 +322,19 @@ function fb_log_div() {
      document.getElementById('close_fb_log').addEventListener("click", toggle_fb_log, true);
 }
 
+function turn_on_debugging() {
+     if (confirm('WARNING!!  PLEASE READ THIS BEFORE CONTINUING!!\r\nYou are about to enable ' + 
+               'debugging.  This will reload the poke mechinism and output text that you ' +
+               'can then paste into a bug report.  Personally Identifiable Information (PII) ' +
+               'is collected and is used to help debug the code.  If you are unsure if ' +
+               'you want to continue, click CANCEL now.')) {
+          debug = 5;
+
+          fb_log_div();
+          init();
+     }
+}
+
 
 //=-=-=-=-=- POKE WAR COUNT -=-=-=-=-=//
 function count_poke(uid) {
