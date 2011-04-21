@@ -7,6 +7,7 @@
 // @license     GPL 3.0 
 // @include     http*://*.facebook.tld/* 
 // @exclude     http*://*.facebook.tld/plugins/*
+// @exclude     http*://*.facebook.tld/widgets/*
 //  
 // 
 // ==/UserScript== 
@@ -14,7 +15,8 @@
  
 var debug = 3;
 var log_limit = 500; // The max number of characters in each log entry.
-var wait = 300; // five minutes in seconds
+var wait = 5; // in minutes
+wait = wait * 60 * 1000; // in milliseconds
  
 if (debug > 2) fb_log_div(); 
 if (debug > 0) FB_log('Current Location: ' + document.location); 
@@ -25,6 +27,9 @@ init();
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
 function init() {
+     var d = new Date();
+     if (debug > 0) FB_log("init: " + d.toString());
+
      var r = new XMLHttpRequest();
      r.open('GET', document.location, true);
 
@@ -42,7 +47,9 @@ function init() {
                          poke_pagelet = decode_unicode(poke_pagelet);
                          if (debug > 3) FB_log('poke_pagelet: ' + poke_pagelet);
                          find_pokes(string_to_xml(poke_pagelet));
-                    }
+                    }    
+
+                    window.setTimeout(init, wait);
                } else {
                     FB_log("Error loading page");
                }
