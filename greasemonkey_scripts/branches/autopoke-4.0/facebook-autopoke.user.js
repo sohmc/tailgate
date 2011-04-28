@@ -8,6 +8,9 @@
 // @include     http*://*.facebook.tld/* 
 // @exclude     http*://*.facebook.tld/plugins/*
 // @exclude     http*://*.facebook.tld/widgets/*
+// @exclude     http*://*.facebook.tld/iframe/*
+// @exclude     http*://*.channel.facebook.tld/*
+// @exclude     http*://*.facebook.tld/ai.php*
 //  
 // 
 // ==/UserScript== 
@@ -17,10 +20,14 @@ var debug = 3;
 var log_limit = 500; // The max number of characters in each log entry.
 var wait = 5; // in minutes
 wait = wait * 60 * 1000; // in milliseconds
- 
+
 if (debug > 2) fb_log_div(); 
 if (debug > 0) FB_log('Current Location: ' + document.location); 
 
+var fb_dtsg = get_var_value('fb_dtsg');
+var post_form_id = get_var_value('post_form_id');
+var ajaxify_vars = '__a=1';
+ 
 init();
 
  
@@ -47,7 +54,7 @@ function init() {
                          poke_pagelet = decode_unicode(poke_pagelet);
                          if (debug > 3) FB_log('poke_pagelet: ' + poke_pagelet);
                          find_pokes(string_to_xml(poke_pagelet));
-                    }    
+                    }
 
                     window.setTimeout(init, wait);
                } else {
@@ -66,6 +73,7 @@ function find_pokes(xml) {
      var poke_divs = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]', xml);
      var names     = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[1]', xml);
      var anchors   = evaluate_xpath('.//div[@id[starts-with(.,"poke")]]/div/a[2]', xml);
+
      if (debug > 0) FB_log('Poke back links found: ' + poke_divs.snapshotLength);
      
      for (var i=0; i < anchors.snapshotLength; i++) {
@@ -77,7 +85,7 @@ function find_pokes(xml) {
 	  var poke_uid = RegExp.$1;
 
 	  ajax_ref = ajax_ref.replace(/\?.*/, '');
-	  ajax_ref = ajax_ref + "?uid=" + poke_uid + "&pokeback=1&__a=1&__d=1";
+	  ajax_ref = ajax_ref + "?uid=" + poke_uid + "&pokeback=1&" + ajaxify_vars;
 
           update_frontpage(poke_uid, 1);
 	  poke_function(ajax_ref);
@@ -96,8 +104,11 @@ function poke_function(poke_link) {
      poke_uid_regexp.exec(poke_link);
      var poke_uid = RegExp.$1;
 
+     var post_data = 'uid=' + poke_uid + 'pokeback=1&__d=1&post_form_id=' + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
+     alert('HERE!');
+
      var r = new XMLHttpRequest();
-     r.open('GET', poke_link, true);
+     r.open('POST', poke_link, true);
 
      r.onreadystatechange = function () {
           if (r.readyState == 4) {
@@ -166,14 +177,13 @@ function poke_function(poke_link) {
      r.setRequestHeader('Cookie', document.cookie);
 
      update_frontpage(poke_uid, 2);
-     r.send();
+     r.send(post_data);
 }
 
 
 
 function execute_poke(xml) {
      var poke_uid = evaluate_xpath('.//input[@name="uid"]', xml).snapshotItem(0).getAttribute('value');;
-     var fb_dtsg = evaluate_xpath('.//*[@name="fb_dtsg"]').snapshotItem(0).getAttribute('value');
 
      var postURI = evaluate_xpath('.//form[@id="postURI"]', xml).snapshotItem(0).getAttribute('action');
      postURI += "?__a=1";
@@ -280,6 +290,19 @@ function update_frontpage(uid, poke_step) {
 }
 
 // Returns 1 if the user can be poked.
+
+function get_var_value(name) {
+     if (debug > 2) FB_log('Attempting to retrieve value for variable ' + name);
+     var return_value = null;
+     var n = evaluate_xpath('.//*[@name="' + name + '"]');
+
+     if (n.snapshotLength > 0) 
+          return_value = n.snapshotItem(0).getAttribute('value');
+
+     if (debug > 2) FB_log(name + ' = (' + return_value + ')');
+     return return_value;
+}
+
 function parse_poke_response(xml) {
      var return_value = 0;
      var pokable = evaluate_xpath('.//input[@name="pokeback"]', xml);
