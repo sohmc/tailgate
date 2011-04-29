@@ -24,6 +24,7 @@ wait = wait * 60 * 1000; // in milliseconds
 if (debug > 2) fb_log_div(); 
 if (debug > 0) FB_log('Current Location: ' + document.location); 
 
+var script_error = 0;
 var fb_dtsg = get_var_value('fb_dtsg');
 var post_form_id = get_var_value('post_form_id');
 var ajaxify_vars = '__a=1';
@@ -89,6 +90,11 @@ function find_pokes(xml) {
 
           update_frontpage(poke_uid, 1);
 	  poke_function(ajax_ref);
+          
+          if (script_error > 0) {
+               FB_log('Unrecoverable error has occured.');
+               i = anchors.snapshotLength + 10;
+          }
      } 
      
      if (anchors.snapshotLength == 0) { 
@@ -104,8 +110,7 @@ function poke_function(poke_link) {
      poke_uid_regexp.exec(poke_link);
      var poke_uid = RegExp.$1;
 
-     var post_data = 'uid=' + poke_uid + 'pokeback=1&__d=1&post_form_id=' + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
-     alert('HERE!');
+     var post_data = 'uid=' + poke_uid + '&pokeback=1&__d=1&post_form_id=' + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
 
      var r = new XMLHttpRequest();
      r.open('POST', poke_link, true);
@@ -168,7 +173,7 @@ function poke_function(poke_link) {
 
                     if (parse_poke_response(xml)) execute_poke(xml);
                } else { // if status is not 200
-                    update_frontpage(poke_uid, 20);
+                    update_frontpage(poke_uid, 12);
                }
           } // if readystate is not 4
      }; // end onReadyStateChange function
@@ -177,6 +182,7 @@ function poke_function(poke_link) {
      r.setRequestHeader('Cookie', document.cookie);
 
      update_frontpage(poke_uid, 2);
+     if (debug > 2) FB_log('post_data: ' + post_data);
      r.send(post_data);
 }
 
@@ -262,14 +268,14 @@ function update_frontpage(uid, poke_step) {
                case 4:
                     poke_anchor.textContent = "Transmitting poke information...";
                     break;
-               case 10:
-                    poke_anchor.textContent = "Error 10: could not initialize.";
+               case 11:
+                    poke_anchor.textContent = "Error 11: could not initialize.";
                     break;
-               case 20:
-                    poke_anchor.textContent = "Error 20: Could not issolate poke lock.";
+               case 12:
+                    poke_anchor.textContent = "Error 12: Could not issolate poke lock.";
                     break;
-               case 30:
-                    poke_anchor.textContent = "Error 30: Facebook return an unexpected response.";
+               case 13:
+                    poke_anchor.textContent = "Error 13: Facebook return an unexpected response.";
                     break;
                case 100:
                     poke_anchor.textContent = "Auto-poked!";
@@ -285,6 +291,9 @@ function update_frontpage(uid, poke_step) {
                     break;
           }
      }
+
+     if ((poke_step > 10) && ((poke_step % 10) > 0))
+          script_error = 1;
 
      return poke_step;
 }
