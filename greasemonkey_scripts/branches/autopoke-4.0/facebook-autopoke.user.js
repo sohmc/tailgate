@@ -35,11 +35,15 @@ init();
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
 function init() {
+     var url = '' + document.location;
      var d = new Date();
      if (debug > 0) FB_log("init: " + d.toString());
+     
+     url += (url.match(/\?/) == null ? "?" : "&") + (d.getTime());
+     if (debug > 1) FB_log("url to ping: " + url);
 
      var r = new XMLHttpRequest();
-     r.open('GET', document.location, true);
+     r.open('GET', url, true);
 
      r.onreadystatechange = function () {
           if (r.readyState == 4) {
