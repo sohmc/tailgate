@@ -50,7 +50,7 @@ function init() {
                if (r.status == 200) {
                     if (debug > 3) FB_log(r.responseText);
 
-                    var poke_divs = evaluate_xpath(".//script[contains(.,'pokes')]");
+                    var poke_divs = evaluate_xpath(".//script[contains(.,'poke_dialog.php')]");
                     if (poke_divs.snapshotLength == 1) {
                          var div_regex = /"pagelet_pokes":"(.*)"/;
                          div_regex.exec(poke_divs.snapshotItem(0).innerHTML);
@@ -59,9 +59,9 @@ function init() {
                          poke_pagelet = decode_unicode(poke_pagelet);
                          if (debug > 3) FB_log('poke_pagelet: ' + poke_pagelet);
                          find_pokes(string_to_xml(poke_pagelet));
+                    } else {
+                         FB_log("Auto-poke detected a different schema.  Quitting...");
                     }
-
-                    window.setTimeout(init, wait);
                } else {
                     FB_log("Error loading page");
                }
