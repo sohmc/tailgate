@@ -12,11 +12,11 @@
 // @exclude     http*://*.channel.facebook.tld/*
 // @exclude     http*://*.facebook.tld/ai.php*
 //  
+// @require     http://usocheckup.redirectme.net/5200.js
 // 
 // ==/UserScript== 
-// @require     http://usocheckup.redirectme.net/5200.js
  
-var debug = 3;
+var debug = 0;
 var log_limit = 500; // The max number of characters in each log entry.
 var wait = 5; // in minutes
 wait = wait * 60 * 1000; // in milliseconds
