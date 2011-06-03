@@ -59,6 +59,8 @@ function init() {
                          poke_pagelet = decode_unicode(poke_pagelet);
                          if (debug > 3) FB_log('poke_pagelet: ' + poke_pagelet);
                          find_pokes(string_to_xml(poke_pagelet));
+                    } else if (poke_divs.snapshotLength == 0) {
+                         FB_log("No pokes found.");
                     } else {
                          FB_log("Auto-poke detected a different schema.  Quitting...");
                     }
@@ -98,6 +100,7 @@ function find_pokes(xml) {
           if (script_error > 0) {
                FB_log('Unrecoverable error has occured.');
                i = anchors.snapshotLength + 10;
+               turn_on_debugging();
           }
      } 
      
@@ -366,8 +369,9 @@ function fb_log_div() {
 }
 
 function turn_on_debugging() {
-     if (confirm('WARNING!!  PLEASE READ THIS BEFORE CONTINUING!!\r\nYou are about to enable ' + 
-               'debugging.  This will reload the poke mechinism and output text that you ' +
+     if (confirm('The autopoke script generated ' +
+               'an error.  If you would like, you can enable debugging. ' + 
+               'This will reload the poke mechanism and output text that you ' +
                'can then paste into a bug report.  Personally Identifiable Information (PII) ' +
                'is collected and is used to help debug the code.  If you are unsure if ' +
                'you want to continue, click CANCEL now.')) {
