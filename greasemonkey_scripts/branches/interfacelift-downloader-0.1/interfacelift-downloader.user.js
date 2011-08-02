@@ -15,20 +15,44 @@ load_jquery();
 var hostname = location.hostname;
 
 $(document).ready(function() {
+     build_gui();
+
      var download_a = xpath(".//div[@id[starts-with(.,'download')]]/a");
      var download_div = xpath(".//div[@id[starts-with(.,'download')]]/a/..");
 
      for (var i = 0; i < download_div.snapshotLength; i++) {
           var href = "http://" + hostname + download_a.snapshotItem(i).getAttribute('href');
-          GM_log(i + ": " + href);
-          download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" value="' + href + '" />';
+          var id   = download_div.snapshotItem(i).getAttribute('id');
+          download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" value="' + href + '" id="ifdl_' + download_div.snapshotItem(i).getAttribute('id') + '"/>';
+
+          $("#ifdl_" + id).click(function() {
+               toggle_download(this.id, this.value);
+          });
+
      }
 
-     xpath(".//div[@id='sidebar']").snapshotItem(0).innerHTML += "<div style='width: 180px; height: 100px; position: fixed; z-index: 100; text-align: center;'><input type='button' value='Download all now' /></div>\n";
 
 });
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
+
+function toggle_download(id, href) {
+     if ($('#op_' + id).size() == 1) {
+          GM_log('removing ' + href + " (" + id + ")");
+          $('#op_' + id).remove();
+     } else {
+          GM_log('Adding ' + href + " (" + id + ")");
+          $('#images').append("<option value='" + href + "' id='op_" + id + "'>" + id + "</option>\n");
+     }
+}
+
+function build_gui() {
+     xpath(".//div[@id='sidebar']").snapshotItem(0).innerHTML += "<div style='width: 180px; height: 100px; position: fixed; z-index: 100; text-align: center; bottom: 0px;' id='interface_dl_div'>&nbsp;</div>\n";
+
+     var interface_dl_div = document.getElementById('interface_dl_div');
+
+     interface_dl_div.innerHTML = "<select name='images' id='images' size='5' multiple='true' style='width: 180px;'></select>\n";
+}
 
 function xpath(xpath_query) {
     if (debug >= 2) GM_log(xpath_query);
