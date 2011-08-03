@@ -28,8 +28,11 @@ $(document).ready(function() {
           var id = re[1];
 
           var preview = download_preview.snapshotItem(i).getAttribute('src');
-
-          download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" preview="' + preview + '" value="' + href + '" id="ifdl_' + id + '"/>';
+          if ($('option[id^="op_ifdl_' + id + '"]').length == 1) {
+               download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" preview="' + preview + '" value="' + href + '" id="ifdl_' + id + '"checked="true" />';
+          } else {
+               download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" preview="' + preview + '" value="' + href + '" id="ifdl_' + id + '"/>';
+          }
 
           $("#ifdl_" + id).click(function() {
                toggle_download(this.id, this.value);
@@ -61,22 +64,39 @@ function toggle_download(id, href) {
 
           $('#op_' + id).hover(function() {
                var preview_src = $(this).attr('preview');
-               GM_log($(this).attr('preview'));
                $('#preview_box').html('<img width="180" height="112" border="0" src="' + preview_src + '" />');
           },
           function() {
                $('#preview_box').html('');
           });
      }
+
+     GM_setValue('dl_items', $('#images').html());
 }
 
 function build_gui() {
-     xpath(".//div[@id='sidebar']").snapshotItem(0).innerHTML += "<div style='width: 180px; height: 300px; position: fixed; z-index: 100; text-align: center; bottom: 0px;' id='interface_dl_div'>&nbsp;</div>\n";
+     $('#sidebar').append("<div style='width: 180px; height: 300px; position: fixed; z-index: 100; text-align: center; bottom: 0px;' id='interface_dl_div'>\n<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='5' multiple='true' style='width: 180px;'></select></div>\n");
 
-     var interface_dl_div = document.getElementById('interface_dl_div');
+     $('#images').html(GM_getValue('dl_items'));
 
-     interface_dl_div.innerHTML = "<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='5' multiple='true' style='width: 180px;'></select>\n";
+     $('option[id^="op_"]').each(function() {
+          $(this).dblclick(function() {
+               $(this).remove();
+          });
+
+          $(this).hover(function() {
+               var preview_src = $(this).attr('preview');
+               $('#preview_box').html('<img width="180" height="112" border="0" src="' + preview_src + '" />');
+          },
+          function() {
+               $('#preview_box').html('');
+          });
+     });
 }
+
+
+// =-=-=-=-=- STANDARD FUNCTIONS -=-=-=-=-= //
+
 
 function xpath(xpath_query) {
     if (debug >= 2) GM_log(xpath_query);
