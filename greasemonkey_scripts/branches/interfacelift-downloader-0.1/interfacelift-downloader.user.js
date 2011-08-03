@@ -57,31 +57,23 @@ function toggle_download(id, href) {
 
           GM_log('Adding ' + href + " (" + id + ")");
           $('#images').append("<option value='" + href + "' id='op_" + id + "' preview='" + preview_src + "'>" + title + "</option>\n");
-
-          $('#op_' + id).dblclick(function() {
-               $(this).remove();
-          });
-
-          $('#op_' + id).hover(function() {
-               var preview_src = $(this).attr('preview');
-               $('#preview_box').html('<img width="180" height="112" border="0" src="' + preview_src + '" />');
-          },
-          function() {
-               $('#preview_box').html('');
-          });
+          document.getElementById('images').scrollTop = document.getElementById('images').scrollHeight;
+          
+          add_events();
      }
 
+     $('#img_count').text($('option[id^="op_"]').length);
      GM_setValue('dl_items', $('#images').html());
 }
 
-function build_gui() {
-     $('#sidebar').append("<div style='width: 180px; height: 300px; position: fixed; z-index: 100; text-align: center; bottom: 0px;' id='interface_dl_div'>\n<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='5' multiple='true' style='width: 180px;'></select></div>\n");
-
-     $('#images').html(GM_getValue('dl_items'));
-
+function add_events() {
      $('option[id^="op_"]').each(function() {
+          $(this).unbind();
+
           $(this).dblclick(function() {
                $(this).remove();
+               $('#img_count').text($('option[id^="op_"]').length);
+               GM_setValue('dl_items', $('#images').html());
           });
 
           $(this).hover(function() {
@@ -92,6 +84,15 @@ function build_gui() {
                $('#preview_box').html('');
           });
      });
+
+     $('#img_count').text($('option[id^="op_"]').length);
+}
+
+function build_gui() {
+     $('#sidebar').append("<div style='width: 180px; height: 300px; position: fixed; z-index: 100; text-align: center; bottom: 0px;' id='interface_dl_div'>\n<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='10' multiple='true' style='width: 175px;'></select><br><div id='img_count' style='text-align: right;'>0</div></div>\n");
+
+     $('#images').html(GM_getValue('dl_items'));
+     add_events();
 }
 
 
