@@ -11,7 +11,8 @@
 // ==/UserScript==
 // @require        http://usocheckup.redirectme.net/83304.js
 
-var debug = 3;
+var debug = 0;
+
 load_jquery();
 
 $(document).ready(function() {
