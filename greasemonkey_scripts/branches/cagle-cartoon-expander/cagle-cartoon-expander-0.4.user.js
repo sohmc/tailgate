@@ -14,8 +14,6 @@
 var debug = 3;
 load_jquery();
 
-//setTimeout(initialize, 3000);
-
 $(document).ready(function() {
      $('#entries').scroll(function() {
           GM_log('Scrolling!');
@@ -24,7 +22,7 @@ $(document).ready(function() {
 
      $('a[href*="rss.cagle.com"]').click(function() {
           GM_log('Cagle link clicked!');
-
+          setTimeout(add_events, 2000);
      });
 });
 
