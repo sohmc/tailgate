@@ -43,6 +43,31 @@ $(document).ready(function() {
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
+function send_to_server() {
+     var images = "";
+     $('option[id^="op_"]').each(function() {
+          images += $(this).val() + "\n";
+     });
+
+     var post_data = "email=foobar&images=" + images;
+
+     GM_xmlhttpRequest({
+          method:'POST',
+          url:'http://www.mikesoh.com/holding/interfacelift.php',
+          headers:{
+               'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
+          },
+          data:post_data,
+          onload: function(response) {
+               if (response.status == 200) {
+                    GM_log(response.responseText);
+               } else {
+                    GM_log('Post failed');
+               }
+          }
+     });
+}
+
 function toggle_download(id, href) {
      if ($('#op_' + id).size() == 1) {
           GM_log('removing ' + href + " (" + id + ")");
@@ -89,7 +114,11 @@ function add_events() {
 }
 
 function build_gui() {
-     $('#sidebar').append("<div style='width: 180px; height: 300px; position: fixed; z-index: 100; text-align: center; bottom: 0px;' id='interface_dl_div'>\n<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='10' multiple='true' style='width: 175px;'></select><br><div id='img_count' style='text-align: right;'>0</div></div>\n");
+     $('#sidebar').append("<div style='width: 180px; height: 400px; position: fixed; z-index: 100; text-align: center; top: 10px;' id='interface_dl_div'>\n<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='10' multiple='true' style='width: 175px;'></select><br><input type='button' value='Download Wallpaper' id='download_wallpaper'><span id='img_count' style='padding-left: 10px;'>0</span></div>\n");
+
+     $('#download_wallpaper').click(function() {
+          send_to_server();
+     });
 
      $('#images').html(GM_getValue('dl_items'));
      add_events();
