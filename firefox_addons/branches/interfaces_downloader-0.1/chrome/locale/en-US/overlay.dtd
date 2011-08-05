@@ -1,0 +1,8 @@
+<!ENTITY interfacesdownloader.label "Your localized menuitem">
+<!ENTITY interfacesdownloaderContext.label "Your Menuitem">
+<!ENTITY interfacesdownloaderContext.accesskey "Y">
+<!ENTITY interfacesdownloaderToolbarButton.label "Your Toolbar Button">
+<!ENTITY interfacesdownloaderToolbarButton.tooltip "This is your toolbar button!">
+<!ENTITY interfacesdownloaderSidebar.label "Your Sidebar">
+<!ENTITY interfacesdownloaderToolbar.name  "example">
+<!ENTITY interfacesdownloaderToolbar.label "This is an example toolbar. You can hide it under View &gt; toolbars &gt; &interfacesdownloaderToolbar.name;">

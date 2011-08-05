@@ -1,0 +1,6 @@
+content   interfacesdownloader                 chrome/content/
+skin      interfacesdownloader   classic/1.0   chrome/skin/
+locale    interfacesdownloader   en-US         chrome/locale/en-US/
+
+
+overlay   chrome://browser/content/browser.xul   chrome://interfacesdownloader/content/ff-overlay.xul
