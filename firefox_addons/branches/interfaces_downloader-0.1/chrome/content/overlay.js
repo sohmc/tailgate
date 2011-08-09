@@ -3,6 +3,25 @@ var interfacesdownloader = {
     // initialization code
     this.initialized = true;
     this.strings = document.getElementById("interfacesdownloader-strings");
+    var appcontent = document.getElementById("appcontent");
+    if (appcontent) 
+         appcontent.addEventListener("DOMContentLoaded", interfacesdownloader.onPageLoad, true);
+  },
+
+  onPageLoad: function(aEvent) {
+     var f = new interfaceliftdownloader(doc);
+     f.isWorking();
+     
+     var doc = aEvent.originalTarget;
+
+     if (doc.nodeName == "#document") {
+          var at_interfaces = /http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
+
+          if (at_interfaces) {
+               f.at_interfacelift();
+          }
+     }
+
   },
 
   onMenuItemCommand: function(e) {
