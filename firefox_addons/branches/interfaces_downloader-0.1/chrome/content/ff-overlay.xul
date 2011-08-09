@@ -4,12 +4,10 @@
 <overlay id="interfacesdownloader-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="overlay.js"/>
   <script src="ff-overlay.js"/>
+  <script type="application/javascript" src="interfaceslift-downloader.user.js"/>
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="interfacesdownloader-strings" src="chrome://interfacesdownloader/locale/overlay.properties"/>
   </stringbundleset>
-
-
-
 
 </overlay>
