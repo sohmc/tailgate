@@ -9,16 +9,16 @@ var interfacesdownloader = {
   },
 
   onPageLoad: function(aEvent) {
-     var f = new interfaceliftdownloader(doc);
-     f.isWorking();
-     
      var doc = aEvent.originalTarget;
+     var f = new interfaceliftdownloader(doc);
+
+     f.xpath('.//*');
 
      if (doc.nodeName == "#document") {
           var at_interfaces = /http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
 
           if (at_interfaces) {
-               f.at_interfacelift();
+               f.at_interfacelift(aEvent.target);
           }
      }
 
@@ -34,7 +34,8 @@ var interfacesdownloader = {
   onToolbarButtonCommand: function(e) {
     // just reuse the function above.  you can change this, obviously!
     interfacesdownloader.onMenuItemCommand(e);
-  }
+  },
+
 };
 
 window.addEventListener("load", function () { interfacesdownloader.onLoad(); }, false);
