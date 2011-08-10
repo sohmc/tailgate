@@ -1,24 +1,25 @@
 dump("sourcing interfacelift wrapper...");
 var interfaceliftdownloader = function(doc) {
-     this.hostname = location.hostname;
+     this.hostname = doc.location.hostname;
      this.debug = 3;
      this.document = doc;
+          
+     // FUNCTIONS
 
      this.at_interfacelift = function () {
+          // Activate jQuery
+          this.jQuery = interfacesdownloader.jQuery;
+          this.$ = function(selector, context) {
+               return new this.jQuery.fn.init(selector, context || window._content.document);
+          };
+          this.$.fn = this.$.prototype = this.jQuery.fn;
+          interfacesdownloader.env = window._content.document;
+
           this.build_gui();
           this.initialize_interface();
      };
 
      this.initialize_interface = function() {
-          var jQuery = interfacesdownloader.jQuery;
-          var $ = function(selector, context) {
-               return new jQuery.fn.init(selector, context || window._content.document);
-          };
-          $.fn = $.prototype = jQuery.fn;
-          interfacesdownloader.env = window._content.document;
-
-          $("body").click(function() { alert('jQuery Works'); });
-
           var download_a = this.xpath(".//div[@id[starts-with(.,'download')]]/a");
           var download_div = this.xpath(".//div[@id[starts-with(.,'download')]]/a/..");
           var download_preview = this.xpath(".//div[@id[starts-with(.,'download')]]/a/../../../a/img");
@@ -37,10 +38,51 @@ var interfaceliftdownloader = function(doc) {
                     download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" preview="' + preview + '" value="' + href + '" id="ifdl_' + id + '"/>';
                }
 
+               doc.getElementById('ifdl_' + id).addEventListener('click', function() { 
+                    dump('id: ' + this.id + ' = value: ' + this.value + "\n");
+
+                    var child = doc.getElementById('op_' + this.id);
+                    var select_parent = doc.getElementById('images');
+
+                    if (child) select_parent.removeChild(child);
+                    else {
+                         var re = /(\d+)$/.exec(this.id);
+                         var img_id = re[1];
+
+                         var title_node = doc.evaluate('.//div[@id="list_' + img_id + '"]/.//h1/a[@href[contains(.,"' + img_id + '")]]', doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                         var title = title_node.snapshotItem(0).innerHTML;
+                         
+                         child = doc.createElement('option');
+                         child.setAttribute('value', this.value);
+                         child.setAttribute('id', 'op_' + this.id);
+                         child.setAttribute('preview', this.getAttribute('preview'));
+                         child.innerHTML = title;
+
+                         select_parent.appendChild(child);
+                         select_parent.scrollTop = select_parent.scrollHeight;
+
+                         doc.getElementById('op_' + this.id).addEventListener('dblclick', function() {
+                              doc.getElementById('images').removeChild(doc.getElementById('op_' + this.id));
+                         }, false);
+                    }
+               }, false);
           }
+
+          this.add_events();
      };
 
-     this.toggle_download = function (t) {
+     this.add_events = function() {
+          var select_parent = doc.getElementById('images');
+          var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
+
+          for (var i = 0; i < option_nodes.snapshotLength; i++) {
+               var n = option_nodes.snapshotItem(i);
+               n.removeEventListener('dblclick');
+
+               n.addEventListener('dblclick', function() {
+                    select_parent.removeChild(n);
+               });
+          }
      };
 
      this.build_gui = function () {
@@ -67,6 +109,5 @@ var interfaceliftdownloader = function(doc) {
 
          return nodes
      };
-
 }
 dump("Done.\n");
