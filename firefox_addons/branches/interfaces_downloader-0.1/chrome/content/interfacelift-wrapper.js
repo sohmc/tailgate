@@ -44,8 +44,9 @@ var interfaceliftdownloader = function(doc) {
                     var child = doc.getElementById('op_' + this.id);
                     var select_parent = doc.getElementById('images');
 
-                    if (child) select_parent.removeChild(child);
-                    else {
+                    if (child) {
+                         select_parent.removeChild(child);
+                    } else {
                          var re = /(\d+)$/.exec(this.id);
                          var img_id = re[1];
 
@@ -62,7 +63,18 @@ var interfaceliftdownloader = function(doc) {
                          select_parent.scrollTop = select_parent.scrollHeight;
 
                          doc.getElementById('op_' + this.id).addEventListener('dblclick', function() {
-                              doc.getElementById('images').removeChild(doc.getElementById('op_' + this.id));
+                              var select_parent = doc.getElementById('images');
+
+                              select_parent.removeChild(this);
+                         }, false);
+
+                         doc.getElementById('op_' + this.id).addEventListener('mouseover', function() {
+                              var preview_box = doc.getElementById('preview_box');
+                              preview_box.innerHTML = '<img width="180" height="112" border="0" src="' + this.getAttribute('preview') + '" />';
+                         }, false);
+                         doc.getElementById('op_' + this.id).addEventListener('mouseout', function() {
+                              var preview_box = doc.getElementById('preview_box');
+                              preview_box.innerHTML = '';
                          }, false);
                     }
                }, false);
@@ -97,7 +109,7 @@ var interfaceliftdownloader = function(doc) {
           var ifdl_gui = doc.createElement('div');
           ifdl_gui.setAttribute('id', 'interface_dl_div');
           ifdl_gui.setAttribute('style', 'width: 180px; height: 400px; position: fixed; z-index: 100; text-align: center; top: 10px;');
-          ifdl_gui.innerHTML = "<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='10' multiple='true' style='width: 175px;'></select><br><input type='button' value='Download Wallpaper' id='download_wallpaper'><span id='img_count' style='padding-left: 10px;'>0</span>";
+          ifdl_gui.innerHTML = "<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='10' multiple='true' style='width: 175px;'></select><br><input type='button' value='Download Wallpaper' id='download_wallpaper'>";
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
 
      };
