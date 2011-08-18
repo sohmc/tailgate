@@ -83,6 +83,19 @@ var interfaceliftdownloader = function(doc) {
           this.add_events();
      };
 
+     this.download_image = function (src) {
+          var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+                        .createInstance(Components.interfaces.nsIWebBrowserPersist);
+
+          // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
+          const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+          const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+          persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
+
+          // do the save
+          persist.saveURI("http://interfacelift.com/wallpaper/De5bdba5/02579_calmandsorrowful_1280x1024.jpg", null, null, null, "", null);
+     };
+
      this.add_events = function() {
           var select_parent = doc.getElementById('images');
           var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
