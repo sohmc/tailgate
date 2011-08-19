@@ -3,16 +3,14 @@
 <!DOCTYPE prefwindow SYSTEM "chrome://interfacesdownloader/locale/options.dtd">
 <prefwindow id="interfacesdownloader-preferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&prefwindow.title;">
   <prefpane id="pane1" label="&pane1.title;">
-    <script src="options.js" />
+    <script src="chrome://interfacesdownloader/content/options.js" />
+          
     <preferences>
       <preference id="image_location" name="extensions.interfacesdownloader.image_location" type="file" />
-      <preference id="boolpref1" name="extensions.interfacesdownloader.boolpref" type="bool"/>
-      <preference id="intpref1" name="extensions.interfacesdownloader.intpref" type="int"/>
-      <preference id="stringpref1" name="extensions.interfacesdownloader.stringpref" type="string"/> <!-- note that this is only an ASCII string - use unichar for unicode strings -->
     </preferences>
-    <checkbox id="checkboolpref" preference="boolpref1" label="&checkboolpref.label;" accesskey="&checkboolpref.accesskey;"/>
-    <label accesskey="&intpref.accesskey;" control="textintpref">&intpref.label;</label><textbox id="textintpref" preference="intpref1"/>
-    <label accesskey="&stringpref.accesskey;" control="textstringpref">&stringpref.label;</label><textbox id="textstringpref" preference="stringpref1"/>
-    <label value="Where to store images?" control="image_location" /> <button id="select_dl_location" preference="image_location" label="Choose a directory" oncommand="ifdl_options.choose_directory(event)"/>
+
+    <label>&image_location_info.label;</label>
+    <label id="image_location_path" />
+    <label accesskey="&image_location.accesskey;" control="image_location">&image_location.label;</label><button id="select_dl_location" preference="image_location" label="Choose a directory" oncommand="ifdl_options.choose_directory(event)"/>
   </prefpane>
 </prefwindow>

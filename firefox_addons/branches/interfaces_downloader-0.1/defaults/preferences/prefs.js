@@ -1,6 +1,3 @@
-pref("extensions.interfacesdownloader.boolpref", false);
-pref("extensions.interfacesdownloader.intpref", 0);
-pref("extensions.interfacesdownloader.stringpref", "A string");
 pref("extensions.interfacesdownloader.image_location", "Desk");
 
 // https://developer.mozilla.org/en/Localizing_extension_descriptions
