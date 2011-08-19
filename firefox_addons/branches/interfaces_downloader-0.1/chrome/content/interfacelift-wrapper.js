@@ -84,16 +84,7 @@ var interfaceliftdownloader = function(doc) {
      };
 
      this.download_image = function (src) {
-          var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-                        .createInstance(Components.interfaces.nsIWebBrowserPersist);
 
-          // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
-          const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
-          const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-          persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
-
-          // do the save
-          persist.saveURI("http://interfacelift.com/wallpaper/De5bdba5/02579_calmandsorrowful_1280x1024.jpg", null, null, null, "", null);
      };
 
      this.add_events = function() {
@@ -124,6 +115,42 @@ var interfaceliftdownloader = function(doc) {
           ifdl_gui.setAttribute('style', 'width: 180px; height: 400px; position: fixed; z-index: 100; text-align: center; top: 10px;');
           ifdl_gui.innerHTML = "<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='10' multiple='true' style='width: 175px;'></select><br><input type='button' value='Download Wallpaper' id='download_wallpaper'>";
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
+
+          doc.getElementById('download_wallpaper').addEventListener('click', function () {
+               dump("downloading image...\n");
+               var local_path = "";
+               var src = 'http://interfacelift.com/wallpaper/7yz4ma1/02527_hofkirchedresden_1280x1024.jpg';
+
+               var prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                                     .getService(Components.interfaces.nsIPrefService)
+                                     .getBranch("extensions.interfacesdownloader.");
+
+               if (prefs.prefHasUserValue("image_location")) {
+                    local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
+
+                    var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+                                  .createInstance(Components.interfaces.nsIWebBrowserPersist);
+
+                    var ios = Components.classes['@mozilla.org/network/io-service;1']
+                              .getService(Components.interfaces.nsIIOService);
+
+                    var uri = ios.newURI(src, null, null);
+
+                    // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
+                    const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+                    const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+                    persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
+
+                    // do the save
+                    try {
+                         persist.saveURI(uri, null, null, null, null, local_path);
+                    } catch (e) {
+                         dump(e);
+                    }
+               } else {
+                    alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
+               }
+          }, false);
 
      };
 
