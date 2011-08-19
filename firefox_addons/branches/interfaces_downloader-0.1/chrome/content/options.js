@@ -1,11 +1,8 @@
 dump("sourcing options.js...");
 var ifdl_options = {
      onLoad: function() {
-          var prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefService)
-                                .getBranch("extensions.myext.");
-          var file = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
-          document.getElementById('image_location_path').value = file.path;
+          dump("loading options.js...\n");
+          ifdl_options.get_path();
      },
 
      choose_directory: function(e) {
@@ -19,9 +16,24 @@ var ifdl_options = {
           if (rv == nsIFilePicker.returnOK) {
                var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                      .getService(Components.interfaces.nsIPrefService)
-                                     .getBranch("extensions.myext.");
+                                     .getBranch("extensions.interfacesdownloader.");
                prefs.setComplexValue("image_location", Components.interfaces.nsILocalFile, fp.file);
                dump(fp.file.path + "\n");
+               
+               ifdl_options.get_path();
+          }
+     },
+
+     get_path: function() {
+          var prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                                .getService(Components.interfaces.nsIPrefService)
+                                .getBranch("extensions.interfacesdownloader.");
+
+          if (prefs.prefHasUserValue("image_location")) {
+               var file = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
+               document.getElementById('image_location_path').value = file.path;
+          } else {
+               document.getElementById('image_location_path').value = "None selected!!";
           }
      },
 };

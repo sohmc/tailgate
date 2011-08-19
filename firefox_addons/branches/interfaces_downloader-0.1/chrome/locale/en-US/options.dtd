@@ -8,4 +8,4 @@
 <!ENTITY stringpref.accesskey "S">
 <!ENTITY image_location.label "Where would you like to store your wallpaper?">
 <!ENTITY image_location.accesskey "W">
-<!ENTITY image_location_info.label "The InterfacesLift Downloader will download your selected wallpaper to this location:">
+<!ENTITY image_location_info.label "InterfacesLift Downloader will download your selected wallpaper to this location:">
