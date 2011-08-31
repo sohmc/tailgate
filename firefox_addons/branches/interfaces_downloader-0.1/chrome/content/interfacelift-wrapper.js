@@ -120,6 +120,7 @@ var interfaceliftdownloader = function(doc) {
                dump("downloading image...\n");
                var local_path = "";
                var src = 'http://interfacelift.com/wallpaper/7yz4ma1/02527_hofkirchedresden_1280x1024.jpg';
+               src = 'http://upload.wikimedia.org/wikipedia/commons/e/e7/Bromsgrove_Museum.jpg';
 
                var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                      .getService(Components.interfaces.nsIPrefService)
@@ -127,6 +128,14 @@ var interfaceliftdownloader = function(doc) {
 
                if (prefs.prefHasUserValue("image_location")) {
                     local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
+                    dump("image_location: " + local_path.path + "\n");
+
+                    var re = /\/(\w+.jpg)$/.exec(src);
+                    dump("image name: " + re[1] + "\n");
+
+                    local_path.append(re[1]);
+                    
+                    dump("image destination set to: " + local_path.path + "\n")
 
                     var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
                                   .createInstance(Components.interfaces.nsIWebBrowserPersist);
@@ -145,7 +154,7 @@ var interfaceliftdownloader = function(doc) {
                     try {
                          persist.saveURI(uri, null, null, null, null, local_path);
                     } catch (e) {
-                         dump(e);
+                         dump(e + "\n");
                     }
                } else {
                     alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
