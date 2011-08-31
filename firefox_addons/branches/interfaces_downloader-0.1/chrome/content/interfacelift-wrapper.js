@@ -7,22 +7,60 @@ var interfaceliftdownloader = function(doc) {
      // FUNCTIONS
 
      this.at_interfacelift = function () {
-          // Activate jQuery
-          this.jQuery = interfacesdownloader.jQuery;
-          this.$ = function(selector, context) {
-               return new this.jQuery.fn.init(selector, context || window._content.document);
-          };
-          this.$.fn = this.$.prototype = this.jQuery.fn;
           interfacesdownloader.env = window._content.document;
 
+          ifdl_functions.xpath(".//html");
           this.build_gui();
           this.initialize_interface();
      };
 
+     this.download_images = function () {
+          dump("downloading image...\n");
+          var prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                                .getService(Components.interfaces.nsIPrefService)
+                                .getBranch("extensions.interfacesdownloader.");
+
+          var src = 'http://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg/535px-Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg';
+
+          if (prefs.prefHasUserValue("image_location")) {
+               var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
+               dump("image_location: " + local_path.path + "\n");
+
+               var re = /\/(\w+.jpg)$/.exec(src);
+               dump("image name: " + re[1] + "\n");
+
+               local_path.append(re[1]);
+               
+               dump("image destination set to: " + local_path.path + "\n")
+
+               var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+                             .createInstance(Components.interfaces.nsIWebBrowserPersist);
+
+               var ios = Components.classes['@mozilla.org/network/io-service;1']
+                         .getService(Components.interfaces.nsIIOService);
+
+               var uri = ios.newURI(src, null, null);
+
+               // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
+               const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+               const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+               persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
+
+               // do the save
+               try {
+                    persist.saveURI(uri, null, null, null, null, local_path);
+               } catch (e) {
+                    dump(e + "\n");
+               }
+          } else {
+               alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
+          }
+     };
+
      this.initialize_interface = function() {
-          var download_a = this.xpath(".//div[@id[starts-with(.,'download')]]/a");
-          var download_div = this.xpath(".//div[@id[starts-with(.,'download')]]/a/..");
-          var download_preview = this.xpath(".//div[@id[starts-with(.,'download')]]/a/../../../a/img");
+          var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
+          var download_div = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a/..");
+          var download_preview = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a/../../../a/img");
 
           for (var i = 0; i < download_div.snapshotLength; i++) {
                if (this.debug >= 3) dump("modify " + i + "\n");
@@ -77,33 +115,34 @@ var interfaceliftdownloader = function(doc) {
                               preview_box.innerHTML = '';
                          }, false);
                     }
+
+                    ifdl_functions.store_images();
                }, false);
           }
 
           this.add_events();
      };
 
-     this.download_image = function (src) {
-
-     };
-
      this.add_events = function() {
           var select_parent = doc.getElementById('images');
-          var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
+          var option_nodes = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
 
           for (var i = 0; i < option_nodes.snapshotLength; i++) {
                var n = option_nodes.snapshotItem(i);
                n.removeEventListener('dblclick');
 
                n.addEventListener('dblclick', function() {
+                    ifdl_functions.store_images();
                     select_parent.removeChild(n);
                });
           }
+
+          
      };
 
      this.build_gui = function () {
-          var ads = this.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
-          var sidebar_parent = this.xpath('.//div[@id="sidebar"]');
+          var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
+          var sidebar_parent = ifdl_functions.xpath('.//div[@id="sidebar"]');
           
           for (var i = 0; i < ads.snapshotLength; i++) {
                sidebar_parent.snapshotItem(0).removeChild(ads.snapshotItem(i));
@@ -117,58 +156,11 @@ var interfaceliftdownloader = function(doc) {
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
 
           doc.getElementById('download_wallpaper').addEventListener('click', function () {
-               dump("downloading image...\n");
-               var local_path = "";
-               var src = 'http://interfacelift.com/wallpaper/7yz4ma1/02527_hofkirchedresden_1280x1024.jpg';
-               src = 'http://upload.wikimedia.org/wikipedia/commons/e/e7/Bromsgrove_Museum.jpg';
-
-               var prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                                     .getService(Components.interfaces.nsIPrefService)
-                                     .getBranch("extensions.interfacesdownloader.");
-
-               if (prefs.prefHasUserValue("image_location")) {
-                    local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
-                    dump("image_location: " + local_path.path + "\n");
-
-                    var re = /\/(\w+.jpg)$/.exec(src);
-                    dump("image name: " + re[1] + "\n");
-
-                    local_path.append(re[1]);
-                    
-                    dump("image destination set to: " + local_path.path + "\n")
-
-                    var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-                                  .createInstance(Components.interfaces.nsIWebBrowserPersist);
-
-                    var ios = Components.classes['@mozilla.org/network/io-service;1']
-                              .getService(Components.interfaces.nsIIOService);
-
-                    var uri = ios.newURI(src, null, null);
-
-                    // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
-                    const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
-                    const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-                    persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
-
-                    // do the save
-                    try {
-                         persist.saveURI(uri, null, null, null, null, local_path);
-                    } catch (e) {
-                         dump(e + "\n");
-                    }
-               } else {
-                    alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
-               }
+               ifdl_functions.foobar("test");
           }, false);
+          doc.getElementById('images').innerHTML = ifdl_functions.restore_images();
 
      };
 
-     this.xpath = function (q) {
-         if (this.debug >= 2) dump(q + "\n");
-         var nodes = this.document.evaluate(q, this.document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-         if (this.debug >= 1) dump('number of nodes returned: ' + nodes.snapshotLength + "\n");
-
-         return nodes
-     };
 }
 dump("Done.\n");
