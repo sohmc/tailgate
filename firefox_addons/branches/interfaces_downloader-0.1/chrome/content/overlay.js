@@ -4,7 +4,6 @@ var interfacesdownloader = {
   onLoad: function() {
     // initialization code
     this.initialized = true;
-    this.strings = document.getElementById("interfacesdownloader-strings");
     var appcontent = document.getElementById("appcontent");
 
     if (appcontent) 
@@ -24,11 +23,18 @@ var interfacesdownloader = {
      }
   },
 
-  unLoad: function() {
-          loaded = 0;
-  }
+     unLoad: function(aEvent) {
+          var doc = aEvent.originalTarget;
+          if (aEvent.originalTarget instanceof HTMLDocument) {
+               var at_interfaces = /http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
 
+               if (at_interfaces) {
+                    loaded = 0;
+                    dump("page has been unloaded.\n");
+               }
+          }
+     }
 };
 
 window.addEventListener("load", function () { interfacesdownloader.onLoad(); }, false);
-window.addEventListener("unload", function () { interfacesdownloader.unLoad(); }, false);
+window.addEventListener("pagehide", interfacesdownloader.unLoad, false);

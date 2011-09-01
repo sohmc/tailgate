@@ -6,6 +6,7 @@ var ifdl_wrapper = function(doc) {
      // FUNCTIONS
 
      this.at_interfacelift = function () {
+          dump("loaded: " + loaded + "\n");
           if (loaded == 0) {
                this.build_gui();
                this.initialize_interface();
