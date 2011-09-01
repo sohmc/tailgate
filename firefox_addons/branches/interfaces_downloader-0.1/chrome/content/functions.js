@@ -1,9 +1,5 @@
 dump("sourcing functions.js...");
 var ifdl_functions = {
-     foobar: function (e) {
-          alert(e)
-     },
-
      store_images: function () {
           dump("Attempting to store images xml...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
@@ -48,6 +44,7 @@ var ifdl_functions = {
      },
 
      restore_images: function () {
+          dump("Attempting to restore images...\n")
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -59,20 +56,24 @@ var ifdl_functions = {
           temp_file.append("ifdl_cache.xml");
 
           // =-=-=-=-=- LOAD -=-=-=-=-= //
-          Components.utils.import("resource://gre/modules/NetUtil.jsm");
+          if (temp_file.exists()) {
+               dump(temp_file.path + " exists.\n");
+               Components.utils.import("resource://gre/modules/NetUtil.jsm");
 
-          NetUtil.asyncFetch(temp_file, function(inputStream, status) {
-               if (!Components.isSuccessCode(status)) {
-                    // Handle error!
-                    return;
-               }
+               NetUtil.asyncFetch(temp_file, function(inputStream, status) {
+                    if (!Components.isSuccessCode(status)) {
+                         // Handle error!
+                         return;
+                    }
 
-               // The file data is contained within inputStream.
-               // You can read it into a string with
-               var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+                    // The file data is contained within inputStream.
+                    // You can read it into a string with
+                    var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
 
-               return data;
-          });
+                    window._content.document.getElementById('images').innerHTML = data;
+               });
+          }
+          dump("Done\n");
      },
 
      xpath: function (q) {

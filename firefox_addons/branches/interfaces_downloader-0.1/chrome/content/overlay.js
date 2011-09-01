@@ -1,3 +1,5 @@
+var loaded = 0;
+
 var interfacesdownloader = {
   onLoad: function() {
     // initialization code
@@ -6,12 +8,12 @@ var interfacesdownloader = {
     var appcontent = document.getElementById("appcontent");
 
     if (appcontent) 
-         appcontent.addEventListener("DOMContentLoaded", interfacesdownloader.onPageLoad, true);
+         appcontent.addEventListener("DOMContentLoaded", this.onPageLoad, false);
   },
 
   onPageLoad: function(aEvent) {
      var doc = aEvent.originalTarget;
-     var f = new interfaceliftdownloader(doc);
+     var f = new ifdl_wrapper(doc);
 
      if (doc.nodeName == "#document") {
           var at_interfaces = /http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
@@ -22,18 +24,11 @@ var interfacesdownloader = {
      }
   },
 
-  onMenuItemCommand: function(e) {
-    var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                                  .getService(Components.interfaces.nsIPromptService);
-    promptService.alert(window, this.strings.getString("helloMessageTitle"),
-                                this.strings.getString("helloMessage"));
-  },
-
-  onToolbarButtonCommand: function(e) {
-    // just reuse the function above.  you can change this, obviously!
-    interfacesdownloader.onMenuItemCommand(e);
-  },
+  unLoad: function() {
+          loaded = 0;
+  }
 
 };
 
 window.addEventListener("load", function () { interfacesdownloader.onLoad(); }, false);
+window.addEventListener("unload", function () { interfacesdownloader.unLoad(); }, false);
