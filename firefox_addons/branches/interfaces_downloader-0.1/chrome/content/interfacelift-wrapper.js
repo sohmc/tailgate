@@ -7,6 +7,7 @@ var ifdl_wrapper = function(doc) {
 
      this.at_interfacelift = function () {
           var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
+          var option_nodes = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');          
 
           if (download_a.snapshotLength > 0) {
                this.build_gui();
@@ -14,6 +15,8 @@ var ifdl_wrapper = function(doc) {
                ifdl_functions.restore_images();
                loaded++;
           }
+
+          if ((option_nodes.snapshotLength > 0) && (loaded)) ifdl_functions.add_events();
      };
 
      this.download_images = function () {
@@ -131,25 +134,6 @@ var ifdl_wrapper = function(doc) {
                }, false);
           }
 
-          this.add_events();
-     };
-
-     this.add_events = function() {
-          var w_document = window._content.document;
-          var select_parent = w_document.getElementById('images');
-          var option_nodes = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
-
-          for (var i = 0; i < option_nodes.snapshotLength; i++) {
-               var n = option_nodes.snapshotItem(i);
-               var remove_function = function () {
-                    select_parent.removeChild(n);
-                    ifdl_functions.store_images();
-               };
-
-               n.removeEventListener('dblclick', remove_function, false);
-
-               n.addEventListener('dblclick', remove_function, false);
-          }
      };
 
      this.build_gui = function () {
@@ -171,8 +155,8 @@ var ifdl_wrapper = function(doc) {
           
           w_document.getElementById('download_wallpaper').addEventListener('click', function () {
                ifdl_functions.restore_images();
+               ifdl_functions.add_events();
           }, false);
-
      };
 
 }
