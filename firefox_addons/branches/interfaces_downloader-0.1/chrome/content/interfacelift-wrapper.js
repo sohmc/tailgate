@@ -71,7 +71,7 @@ var ifdl_wrapper = function(doc) {
 
           for (var i = 0; i < download_div.snapshotLength; i++) {
                if (this.debug >= 3) dump("modify " + i + "\n");
-               var href = "http://" + this.hostname + download_a.snapshotItem(i).getAttribute('href');
+               var href = "http://" + w_document.location.hostname + download_a.snapshotItem(i).getAttribute('href');
                var re = /^download_(\d+)/.exec(download_div.snapshotItem(i).getAttribute('id'));
                var id = re[1];
 
@@ -109,28 +109,11 @@ var ifdl_wrapper = function(doc) {
                          select_parent.appendChild(child);
                          select_parent.scrollTop = select_parent.scrollHeight;
 
-                         w_document.getElementById('op_' + this.id).addEventListener('dblclick', function() {
-                              var w_document = window._content.document;
-                              var select_parent = w_document.getElementById('images');
-
-                              select_parent.removeChild(this);
-                         }, false);
-
-                         w_document.getElementById('op_' + this.id).addEventListener('mouseover', function() {
-                              var w_document = window._content.document;
-                              var preview_box = w_document.getElementById('preview_box');
-                              preview_box.innerHTML = '<img width="180" height="112" border="0" src="' + this.getAttribute('preview') + '" />';
-                         }, false);
-                         w_document.getElementById('op_' + this.id).addEventListener('mouseout', function() {
-                              var w_document = window._content.document;
-                              var preview_box = w_document.getElementById('preview_box');
-                              preview_box.innerHTML = '';
-                         }, false);
-
                          dump("done.\n")
                     }
 
                     ifdl_functions.store_images();
+                    ifdl_functions.add_events();
                }, false);
           }
 
