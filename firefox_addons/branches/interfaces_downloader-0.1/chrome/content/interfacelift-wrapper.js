@@ -6,8 +6,9 @@ var ifdl_wrapper = function(doc) {
      // FUNCTIONS
 
      this.at_interfacelift = function () {
-          dump("loaded: " + loaded + "\n");
-          if (loaded == 0) {
+          var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
+
+          if (download_a.snapshotLength > 0) {
                this.build_gui();
                this.initialize_interface();
                ifdl_functions.restore_images();
