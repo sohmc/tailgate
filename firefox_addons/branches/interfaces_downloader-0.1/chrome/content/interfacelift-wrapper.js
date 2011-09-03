@@ -6,17 +6,21 @@ var ifdl_wrapper = function(doc) {
      // FUNCTIONS
 
      this.at_interfacelift = function () {
-          var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
-          var option_nodes = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');          
+          var w_document = window._content.document;
+          var sidebar_parent = ifdl_functions.xpath('.//div[@id="sidebar"]');
+          var select_parent = w_document.getElementById('images');
 
-          if (download_a.snapshotLength > 0) {
-               this.build_gui();
+          if ((sidebar_parent.snapshotLength == 1) && (!select_parent)) this.build_gui();
+
+          var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
+          var checkboxes = ifdl_functions.xpath(".//input[@id[starts-with(.,'ifdl_')]]");
+
+          if (download_a.snapshotLength != checkboxes.snapshotLength) {
                this.initialize_interface();
                ifdl_functions.restore_images();
-               loaded++;
+               ifdl_functions.add_events();
           }
-
-          if ((option_nodes.snapshotLength > 0) && (loaded)) ifdl_functions.add_events();
+          
      };
 
      this.download_images = function () {
@@ -93,7 +97,7 @@ var ifdl_wrapper = function(doc) {
                     if (child) {
                          select_parent.removeChild(child);
                     } else {
-                         dump('item not in select list.  adding...');
+                         dump("item not in select list.  adding...\n");
                          var re = /(\d+)$/.exec(this.id);
                          var img_id = re[1];
 

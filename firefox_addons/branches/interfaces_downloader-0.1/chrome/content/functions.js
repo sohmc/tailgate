@@ -78,23 +78,20 @@ var ifdl_functions = {
 
      add_events: function () {
           var w = window._content.document;
-          dump("adding events...");
+          dump("adding events...\n");
           var select_parent = w.getElementById('images');
           var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
 
           for (var i = 0; i < option_nodes.snapshotLength; i++) {
                var n = option_nodes.snapshotItem(i);
 
-               n.removeEventListener('dblclick', this.remove_on_dblclick, false);
-               n.removeEventListener('mouseover', this.show_preview, false);
-               n.removeEventListener('mouseout', this.clear_preview, false);
-
+               dump("adding events to item " + i + "...");
                n.addEventListener('dblclick', this.remove_on_dblclick, false);
                n.addEventListener('mouseover', this.show_preview, false);
                n.addEventListener('mouseout', this.clear_preview, false);
+               dump("done.\n");
+               dump(n.getAttribute('id') + "\n");
           }
-
-          dump("done.\n");
      },
 
 
@@ -119,7 +116,6 @@ var ifdl_functions = {
           var preview_box = w.getElementById('preview_box');
           preview_box.innerHTML = '';
      },
-     
      
      
      xpath: function (q) {
