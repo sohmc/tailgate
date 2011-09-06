@@ -1,6 +1,6 @@
 dump("sourcing functions.js...");
 var ifdl_functions = {
-     store_images: function () {
+     save_images: function () {
           dump("Attempting to store images xml...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
@@ -17,7 +17,6 @@ var ifdl_functions = {
           var selects_xml = window._content.document.getElementById('images').innerHTML;
 
           //=-=-=-=-=- SAVE -=-=-=-=-=//
-/*
           Components.utils.import("resource://gre/modules/NetUtil.jsm");
           Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
@@ -34,33 +33,16 @@ var ifdl_functions = {
 
           // The last argument (the callback) is optional.
           NetUtil.asyncCopy(istream, ostream, function(status) {
-            if (!Components.isSuccessCode(status)) {
-                 alert('Unable to save to ' + temp_file.path);
-                 return;
-            }
-          }); */
+               if (!Components.isSuccessCode(status)) {
+                    alert('Unable to save to ' + temp_file.path);
+                    return;
+               }
 
-          // file is nsIFile, data is a string
-          var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
-                         .createInstance(Components.interfaces.nsIFileOutputStream);
-
-          // use 0x02 | 0x10 to open file for appending.
-          foStream.init(temp_file, 0x02)
-          // In a c file operation, we have no need to set file mode with or operation,
-          // directly using "r" or "w" usually.
-
-          // if you are sure there will never ever be any non-ascii text in data you can 
-          // also call foStream.writeData directly
-          var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"]
-                          .createInstance(Components.interfaces.nsIConverterOutputStream);
-          converter.init(foStream, "UTF-8", 0, 0);
-          converter.writeString(selects_xml);
-          converter.close(); // this closes foStream
-
-          dump("done.\n");
+               dump("done.\n");
+          });
      },
 
-     restore_images: function () {
+     load_images: function () {
           dump("Attempting to restore images...\n")
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
@@ -73,7 +55,6 @@ var ifdl_functions = {
           temp_file.append("ifdl_cache.xml");
 
           // =-=-=-=-=- LOAD -=-=-=-=-= //
-          /*
           if (temp_file.exists()) {
                dump(temp_file.path + " exists.\n");
                Components.utils.import("resource://gre/modules/NetUtil.jsm");
@@ -89,26 +70,9 @@ var ifdl_functions = {
                     var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
 
                     window._content.document.getElementById('images').innerHTML = data;
+                    ifdl_functions.add_events();
                });
-          }*/
-
-          // open an input stream from file
-          var istream = Components.classes["@mozilla.org/network/file-input-stream;1"].
-                        createInstance(Components.interfaces.nsIFileInputStream);
-          istream.init(temp_file, 0x01, 0444, 0);
-          istream.QueryInterface(Components.interfaces.nsILineInputStream);
-
-          // read lines into array
-          var line = {}, hasmore;
-          var data = "";
-          do {
-               hasmore = istream.readLine(line);
-               data += line.value;
-          } while(hasmore);
-
-          istream.close();
-
-          window._content.document.getElementById('images').innerHTML = data;
+          }
 
           dump("Done\n");
      },
@@ -148,21 +112,16 @@ var ifdl_functions = {
           
           this.parentNode.removeChild(this);
           
-          this.store_images();
-          dump("removed.\n");
+          ifdl_functions.save_images();
      },
 
      show_preview: function () {
-          dump("showing preview\n");
-
           var w = window._content.document;
           var preview_box = w.getElementById('preview_box');
           preview_box.innerHTML = '<img width="180" height="112" border="0" src="' + this.getAttribute('preview') + '" />';
      },
 
      clear_preview: function() {
-          dump("clearing preview\n");
-
           var w = window._content.document;
           var preview_box = w.getElementById('preview_box');
           preview_box.innerHTML = '';

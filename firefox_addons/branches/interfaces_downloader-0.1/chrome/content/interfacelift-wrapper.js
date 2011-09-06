@@ -27,7 +27,7 @@ var ifdl_wrapper = function(doc) {
 
           if (download_a.snapshotLength != checkboxes.snapshotLength) {
                this.initialize_interface();
-               ifdl_functions.restore_images();
+               ifdl_functions.load_images();
           }
           
           // If there are any images carried over from the last load,
@@ -129,7 +129,7 @@ var ifdl_wrapper = function(doc) {
                          dump("done.\n")
                     }
 
-                    ifdl_functions.store_images();
+                    ifdl_functions.save_images();
                     ifdl_functions.add_events();
                }, false);
           }
@@ -149,7 +149,7 @@ var ifdl_wrapper = function(doc) {
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
           
           w_document.getElementById('download_wallpaper').addEventListener('click', function () {
-               ifdl_functions.restore_images();
+               ifdl_functions.load_images();
                ifdl_functions.add_events();
           }, false);
      };
