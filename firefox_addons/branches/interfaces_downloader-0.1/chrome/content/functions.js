@@ -77,6 +77,62 @@ var ifdl_functions = {
           dump("Done\n");
      },
 
+
+     download_images: function () {
+          dump("downloading image...\n");
+          var prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                                .getService(Components.interfaces.nsIPrefService)
+                                .getBranch("extensions.interfacesdownloader.");
+
+//          var src = 'http://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg/535px-Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg';
+
+          if (prefs.prefHasUserValue("image_location")) {
+               var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
+               dump("image_location: " + local_path.path + "\n");
+
+               var images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
+
+               for (var i = 0; i < images.snapshotLength; i++) {
+                    var p = images.snapshotItem(i);
+                    var src = p.value;
+
+                    var re = /\/(\w+.jpg)$/.exec(src);
+                    dump("image name: " + re[1] + "\n");
+
+                    local_path.append(re[1]);
+                    
+                    dump("source: " + src + "\n");
+                    dump("destination: " + local_path.path + "\n")
+
+                    var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+                                  .createInstance(Components.interfaces.nsIWebBrowserPersist);
+
+                    var ios = Components.classes['@mozilla.org/network/io-service;1']
+                              .getService(Components.interfaces.nsIIOService);
+
+                    var uri = ios.newURI(src, null, null);
+
+                    // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
+                    const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+                    const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+                    persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
+
+                    // do the save
+                    try {
+                         persist.saveURI(uri, null, null, null, null, local_path);
+                         p.parentNode.removeChild(p);
+                    } catch (e) {
+                         dump(e + "\n");
+                    }
+               }
+
+               ifdl_functions.save_images();
+          } else {
+               alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
+          }
+     },
+
+
      remove_ads: function () {
           var w = window._content.document;
           var ads = this.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
@@ -103,7 +159,6 @@ var ifdl_functions = {
                dump(n.getAttribute('id') + "\n");
           }
      },
-
 
      remove_on_dblclick: function () {
           var w = window._content.document;

@@ -36,48 +36,6 @@ var ifdl_wrapper = function(doc) {
           if (restored_images.snapshotLength > 0) ifdl_functions.add_events();
      };
 
-     this.download_images = function () {
-          dump("downloading image...\n");
-          var prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefService)
-                                .getBranch("extensions.interfacesdownloader.");
-
-          var src = 'http://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg/535px-Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg';
-
-          if (prefs.prefHasUserValue("image_location")) {
-               var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
-               dump("image_location: " + local_path.path + "\n");
-
-               var re = /\/(\w+.jpg)$/.exec(src);
-               dump("image name: " + re[1] + "\n");
-
-               local_path.append(re[1]);
-               
-               dump("image destination set to: " + local_path.path + "\n")
-
-               var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-                             .createInstance(Components.interfaces.nsIWebBrowserPersist);
-
-               var ios = Components.classes['@mozilla.org/network/io-service;1']
-                         .getService(Components.interfaces.nsIIOService);
-
-               var uri = ios.newURI(src, null, null);
-
-               // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
-               const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
-               const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-               persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
-
-               // do the save
-               try {
-                    persist.saveURI(uri, null, null, null, null, local_path);
-               } catch (e) {
-                    dump(e + "\n");
-               }
-          } else {
-               alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
-          }
-     };
 
      this.initialize_interface = function() {
           var w_document = window._content.document;
@@ -149,8 +107,7 @@ var ifdl_wrapper = function(doc) {
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
           
           w_document.getElementById('download_wallpaper').addEventListener('click', function () {
-               ifdl_functions.load_images();
-               ifdl_functions.add_events();
+               ifdl_functions.download_images();
           }, false);
      };
 
