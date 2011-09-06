@@ -93,16 +93,18 @@ var ifdl_functions = {
                var images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
 
                for (var i = 0; i < images.snapshotLength; i++) {
+                    var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
+                    var destination = local_path;
                     var p = images.snapshotItem(i);
                     var src = p.value;
 
                     var re = /\/(\w+.jpg)$/.exec(src);
                     dump("image name: " + re[1] + "\n");
 
-                    local_path.append(re[1]);
+                    destination.append(re[1]);
                     
                     dump("source: " + src + "\n");
-                    dump("destination: " + local_path.path + "\n")
+                    dump("destination: " + destination.path + "\n")
 
                     var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
                                   .createInstance(Components.interfaces.nsIWebBrowserPersist);
@@ -119,14 +121,16 @@ var ifdl_functions = {
 
                     // do the save
                     try {
-                         persist.saveURI(uri, null, null, null, null, local_path);
-                         p.parentNode.removeChild(p);
+                         persist.saveURI(uri, null, null, null, null, destination);
+                         //p.parentNode.removeChild(p);
                     } catch (e) {
+                         dump("There was a problem saving this file:\n");
                          dump(e + "\n");
                     }
+                    dump("\n\n");
                }
 
-               ifdl_functions.save_images();
+//               ifdl_functions.save_images();
           } else {
                alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
           }
