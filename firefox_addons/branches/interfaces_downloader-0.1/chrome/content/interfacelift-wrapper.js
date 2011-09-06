@@ -7,20 +7,33 @@ var ifdl_wrapper = function(doc) {
 
      this.at_interfacelift = function () {
           var w_document = window._content.document;
+          
+          // Remove any existing adds in the sidebar.
+          var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
+          if (ads.snapshotLength > 0) ifdl_functions.remove_ads();
+
+
+          // If the sidebar is loaded and the images select isn't
+          // present, go ahead and build the gui.
           var sidebar_parent = ifdl_functions.xpath('.//div[@id="sidebar"]');
           var select_parent = w_document.getElementById('images');
 
           if ((sidebar_parent.snapshotLength == 1) && (!select_parent)) this.build_gui();
 
+          // If the number of available downloads does not equal the
+          // number of checkboxes, redraw the interface.
           var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
           var checkboxes = ifdl_functions.xpath(".//input[@id[starts-with(.,'ifdl_')]]");
 
           if (download_a.snapshotLength != checkboxes.snapshotLength) {
                this.initialize_interface();
                ifdl_functions.restore_images();
-               ifdl_functions.add_events();
           }
           
+          // If there are any images carried over from the last load,
+          // make sure to attach events to them.
+          var restored_images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
+          if (restored_images.snapshotLength > 0) ifdl_functions.add_events();
      };
 
      this.download_images = function () {
@@ -124,16 +137,11 @@ var ifdl_wrapper = function(doc) {
      };
 
      this.build_gui = function () {
+          ifdl_functions.remove_ads();
+          
           var w_document = window._content.document;
-
-          var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
           var sidebar_parent = ifdl_functions.xpath('.//div[@id="sidebar"]');
           
-          for (var i = 0; i < ads.snapshotLength; i++) {
-               sidebar_parent.snapshotItem(0).removeChild(ads.snapshotItem(i));
-               if (this.debug >= 3) dump("removed " + i + "\n");
-          }
-
           var ifdl_gui = w_document.createElement('div');
           ifdl_gui.setAttribute('id', 'interface_dl_div');
           ifdl_gui.setAttribute('style', 'width: 180px; height: 400px; position: fixed; z-index: 100; text-align: center; top: 10px;');
