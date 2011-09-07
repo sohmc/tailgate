@@ -38,3 +38,5 @@ var interfacesdownloader = {
 
 window.addEventListener("load", function () { interfacesdownloader.onLoad(); }, false);
 window.addEventListener("pagehide", interfacesdownloader.unLoad, false);
+
+ifdl_functions.remove_temp_file();

@@ -42,6 +42,15 @@ var ifdl_functions = {
           });
      },
 
+     remove_temp_file: function () {
+          var temp_file = Components.classes["@mozilla.org/file/directory_service;1"]
+                                    .getService(Components.interfaces.nsIProperties)
+                                    .get("ProfD", Components.interfaces.nsIFile);
+
+          temp_file.append("ifdl_cache.xml");
+          if (temp_file.exists()) temp_file.remove(false);
+     },
+
      load_images: function () {
           dump("Attempting to restore images...\n")
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
@@ -69,8 +78,10 @@ var ifdl_functions = {
                     // You can read it into a string with
                     var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
 
-                    window._content.document.getElementById('images').innerHTML = data;
-                    ifdl_functions.add_events();
+                    if (data.length > 0) {
+                         window._content.document.getElementById('images').innerHTML = data;
+                         ifdl_functions.add_events();
+                    }
                });
           }
 
@@ -84,26 +95,27 @@ var ifdl_functions = {
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
 
-//          var src = 'http://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg/535px-Corinthian_oinochoe_animal_frieze_630_BC_Staatliche_Antikensammlungen.jpg';
-
           if (prefs.prefHasUserValue("image_location")) {
                var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
                dump("image_location: " + local_path.path + "\n");
 
-               var images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
+               //var images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
+               var images = ifdl_functions.some_images();
 
-               for (var i = 0; i < images.snapshotLength; i++) {
+               //for (var i = 0; i < images.snapshotLength; i++) {
+               for (var i = 0; i < images.length; i++) {
                     var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
                     var destination = local_path;
-                    var p = images.snapshotItem(i);
-                    var src = p.value;
+                    //var p = images.snapshotItem(i);
+                    //var src = p.value;
+                    var src = images[i];
+                    dump("source: " + src + "\n");
 
-                    var re = /\/(\w+.jpg)$/.exec(src);
+                    var re = /\/([\w\-]+.jpg)$/.exec(src);
                     dump("image name: " + re[1] + "\n");
 
                     destination.append(re[1]);
                     
-                    dump("source: " + src + "\n");
                     dump("destination: " + destination.path + "\n")
 
                     var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
@@ -119,14 +131,27 @@ var ifdl_functions = {
                     const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
                     persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
 
+                    persist.progressListener = {
+                         onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
+                              var percentComplete = (aCurTotalProgress/aMaxTotalProgress)*100;
+                              dump("value: " + src);
+                              dump(aCurTotalProgress + " / " + aMaxTotalProgress + " complete\n");
+                         },
+
+                         onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
+                              var hex = aStateFlags.toString(16);
+                              dump(aStateFlags + " (hex: " + hex + ") " + aStatus + "\n");
+                         }
+                    }
+
                     // do the save
                     try {
                          persist.saveURI(uri, null, null, null, null, destination);
-                         //p.parentNode.removeChild(p);
                     } catch (e) {
                          dump("There was a problem saving this file:\n");
                          dump(e + "\n");
                     }
+                    
                     dump("\n\n");
                }
 
@@ -184,6 +209,12 @@ var ifdl_functions = {
           var w = window._content.document;
           var preview_box = w.getElementById('preview_box');
           preview_box.innerHTML = '';
+     },
+
+     some_images: function() {
+          var image_array = ['http://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Hoverfly_and_Lavendar_Bokeh.jpg/800px-Hoverfly_and_Lavendar_Bokeh.jpg', 'http://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Ant_nest_beetle.jpg/799px-Ant_nest_beetle.jpg', 'http://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Cross_Pen.jpg/800px-Cross_Pen.jpg'];
+
+          return image_array;
      },
      
      
