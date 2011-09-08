@@ -107,7 +107,7 @@ var ifdl_wrapper = function(doc) {
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
           
           w_document.getElementById('download_wallpaper').addEventListener('click', function () {
-               ifdl_functions.download_images();
+               ifdl_functions.process_images();
           }, false);
      };
 

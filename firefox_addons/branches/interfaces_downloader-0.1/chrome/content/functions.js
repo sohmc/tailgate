@@ -88,8 +88,17 @@ var ifdl_functions = {
           dump("Done\n");
      },
 
+     process_images: function () {
+          var images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
 
-     download_images: function () {
+          if (images.snapshotLength > 0) {
+               var p = images.snapshotItem(0);
+               ifdl_functions.download_image(p);
+          }
+     },
+
+
+     download_image: function (node) {
           dump("downloading image...\n");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
@@ -97,65 +106,62 @@ var ifdl_functions = {
 
           if (prefs.prefHasUserValue("image_location")) {
                var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
+               var destination = local_path;
                dump("image_location: " + local_path.path + "\n");
+               
+               var src = node.value;
+               dump("source: " + src + "\n");
 
-               //var images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
-               var images = ifdl_functions.some_images();
+               var re = /\/([\w\-]+.jpg)$/.exec(src);
+               dump("image name: " + re[1] + "\n");
 
-               //for (var i = 0; i < images.snapshotLength; i++) {
-               for (var i = 0; i < images.length; i++) {
-                    var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
-                    var destination = local_path;
-                    //var p = images.snapshotItem(i);
-                    //var src = p.value;
-                    var src = images[i];
-                    dump("source: " + src + "\n");
+               destination.append(re[1]);
+               
+               dump("destination: " + destination.path + "\n")
 
-                    var re = /\/([\w\-]+.jpg)$/.exec(src);
-                    dump("image name: " + re[1] + "\n");
+               var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+                             .createInstance(Components.interfaces.nsIWebBrowserPersist);
 
-                    destination.append(re[1]);
-                    
-                    dump("destination: " + destination.path + "\n")
+               var ios = Components.classes['@mozilla.org/network/io-service;1']
+                         .getService(Components.interfaces.nsIIOService);
 
-                    var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-                                  .createInstance(Components.interfaces.nsIWebBrowserPersist);
+               var uri = ios.newURI(src, null, null);
 
-                    var ios = Components.classes['@mozilla.org/network/io-service;1']
-                              .getService(Components.interfaces.nsIIOService);
+               // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
+               const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+               const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+               persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
 
-                    var uri = ios.newURI(src, null, null);
+               persist.progressListener = {
+                    onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
+                         dump("downloading: " + src + "\n");
+                         dump(aCurTotalProgress + " / " + aMaxTotalProgress + " complete\n");
 
-                    // with persist flags if desired See nsIWebBrowserPersist page for more PERSIST_FLAGS.
-                    const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
-                    const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-                    persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
+                         if (aCurTotalProgress == aMaxTotalProgress) {
+                              dump("Finished downloading.\n");
+                         }
+                    },
 
-                    persist.progressListener = {
-                         onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
-                              var percentComplete = (aCurTotalProgress/aMaxTotalProgress)*100;
-                              dump("value: " + src);
-                              dump(aCurTotalProgress + " / " + aMaxTotalProgress + " complete\n");
-                         },
-
-                         onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
-                              var hex = aStateFlags.toString(16);
-                              dump(aStateFlags + " (hex: " + hex + ") " + aStatus + "\n");
+                    onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
+                         var hex = aStateFlags.toString(16);
+                         dump(aStateFlags + " (hex: " + hex + ") " + aStatus + "\n");
+                         if ((hex = '50010') && (destination.exists())) {
+                              dump("File size: " + destination.fileSize + "\n");
+                              node.parentNode.removeChild(node);
+                              ifdl_functions.process_images();
                          }
                     }
-
-                    // do the save
-                    try {
-                         persist.saveURI(uri, null, null, null, null, destination);
-                    } catch (e) {
-                         dump("There was a problem saving this file:\n");
-                         dump(e + "\n");
-                    }
-                    
-                    dump("\n\n");
                }
 
-//               ifdl_functions.save_images();
+               // do the save
+               try {
+                    persist.saveURI(uri, null, null, null, null, destination);
+               } catch (e) {
+                    dump("There was a problem saving this file:\n");
+                    dump(e + "\n");
+               }
+               
+               dump("\n\n");
           } else {
                alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
           }
