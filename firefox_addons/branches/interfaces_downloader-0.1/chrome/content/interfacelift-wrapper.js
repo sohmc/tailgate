@@ -45,7 +45,7 @@ var ifdl_wrapper = function(doc) {
           var download_preview = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a/../../../a/img");
 
           for (var i = 0; i < download_div.snapshotLength; i++) {
-               if (this.debug >= 3) dump("modify " + i + "\n");
+               if (this.debug >= 3) ifdl_functions.dump("modify " + i);
                var href = "http://" + w_document.location.hostname + download_a.snapshotItem(i).getAttribute('href');
                var re = /^download_(\d+)/.exec(download_div.snapshotItem(i).getAttribute('id'));
                var id = re[1];
@@ -60,7 +60,7 @@ var ifdl_wrapper = function(doc) {
 
                w_document.getElementById('ifdl_' + id).addEventListener('click', function() { 
                     var w_document = window._content.document;
-                    dump('id: ' + this.id + ' = value: ' + this.value + "\n");
+                    if (debug >= 1) ifdl_functions.dump('id: ' + this.id + ' = value: ' + this.value);
 
                     var child = w_document.getElementById('op_' + this.id);
                     var select_parent = w_document.getElementById('images');
@@ -68,7 +68,7 @@ var ifdl_wrapper = function(doc) {
                     if (child) {
                          select_parent.removeChild(child);
                     } else {
-                         dump("item not in select list.  adding...\n");
+                         if (debug >= 3) ifdl_functions.dump("item not in select list.  adding...");
                          var re = /(\d+)$/.exec(this.id);
                          var img_id = re[1];
 
@@ -84,7 +84,7 @@ var ifdl_wrapper = function(doc) {
                          select_parent.appendChild(child);
                          select_parent.scrollTop = select_parent.scrollHeight;
 
-                         dump("done.\n")
+                         if (debug >= 1) ifdl_functions.dump("done.")
                     }
 
                     ifdl_functions.save_images();

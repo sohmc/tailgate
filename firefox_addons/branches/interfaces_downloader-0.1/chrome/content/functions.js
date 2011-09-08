@@ -1,7 +1,7 @@
 dump("sourcing functions.js...");
 var ifdl_functions = {
      save_images: function () {
-          dump("Attempting to store images xml...");
+          if (debug >= 3) ifdl_functions.dump("Attempting to store images xml...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -38,7 +38,7 @@ var ifdl_functions = {
                     return;
                }
 
-               dump("done.\n");
+               if (debug >= 3) ifdl_functions.dump("Stored " + temp_file.fileSize + " bytes.");
           });
      },
 
@@ -52,7 +52,7 @@ var ifdl_functions = {
      },
 
      load_images: function () {
-          dump("Attempting to restore images...\n")
+          if (debug >= 3) ifdl_functions.dump("Attempting to restore images...")
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -65,7 +65,7 @@ var ifdl_functions = {
 
           // =-=-=-=-=- LOAD -=-=-=-=-= //
           if (temp_file.exists()) {
-               dump(temp_file.path + " exists.\n");
+               if (debug >= 3) ifdl_functions.dump(temp_file.path + " exists.");
                Components.utils.import("resource://gre/modules/NetUtil.jsm");
 
                NetUtil.asyncFetch(temp_file, function(inputStream, status) {
@@ -80,12 +80,11 @@ var ifdl_functions = {
 
                     if (data.length > 0) {
                          window._content.document.getElementById('images').innerHTML = data;
+                         if (debug >= 3) ifdl_functions.dump("Restored " + temp_file.fileSize + " bytes.");
                          ifdl_functions.add_events();
                     }
                });
           }
-
-          dump("Done\n");
      },
 
      process_images: function () {
@@ -99,7 +98,7 @@ var ifdl_functions = {
 
 
      download_image: function (node) {
-          dump("downloading image...\n");
+          if (debug >= 1) ifdl_functions.dump("downloading image...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -107,17 +106,17 @@ var ifdl_functions = {
           if (prefs.prefHasUserValue("image_location")) {
                var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
                var destination = local_path;
-               dump("image_location: " + local_path.path + "\n");
+               if (debug >= 3) ifdl_functions.dump("image_location: " + local_path.path);
                
                var src = node.value;
-               dump("source: " + src + "\n");
+               if (debug >= 3) ifdl_functions.dump("source: " + src);
 
                var re = /\/([\w\-]+.jpg)$/.exec(src);
-               dump("image name: " + re[1] + "\n");
+               if (debug >= 1) ifdl_functions.dump("image name: " + re[1]);
 
                destination.append(re[1]);
                
-               dump("destination: " + destination.path + "\n")
+               if (debug >= 3) ifdl_functions.dump("destination: " + destination.path)
 
                var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
                              .createInstance(Components.interfaces.nsIWebBrowserPersist);
@@ -134,19 +133,16 @@ var ifdl_functions = {
 
                persist.progressListener = {
                     onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
-                         dump("downloading: " + src + "\n");
-                         dump(aCurTotalProgress + " / " + aMaxTotalProgress + " complete\n");
-
                          if (aCurTotalProgress == aMaxTotalProgress) {
-                              dump("Finished downloading.\n");
+                              if (debug >= 1) ifdl_functions.dump("Finished downloading.");
                          }
                     },
 
                     onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
                          var hex = aStateFlags.toString(16);
-                         dump(aStateFlags + " (hex: " + hex + ") " + aStatus + "\n");
+                         if (debug >= 3) ifdl_functions.dump(aStateFlags + " (hex: " + hex + ") " + aStatus);
                          if ((hex = '50010') && (destination.exists())) {
-                              dump("File size: " + destination.fileSize + "\n");
+                              if (debug >= 1) ifdl_functions.dump("File size: " + destination.fileSize);
                               node.parentNode.removeChild(node);
                               ifdl_functions.process_images();
                          }
@@ -157,11 +153,8 @@ var ifdl_functions = {
                try {
                     persist.saveURI(uri, null, null, null, null, destination);
                } catch (e) {
-                    dump("There was a problem saving this file:\n");
-                    dump(e + "\n");
+                    ifdl_functions.dump("There was a problem saving this file:\n\n" + e);
                }
-               
-               dump("\n\n");
           } else {
                alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
           }
@@ -179,19 +172,18 @@ var ifdl_functions = {
 
      add_events: function () {
           var w = window._content.document;
-          dump("adding events...\n");
+          if (debug >= 1) ifdl_functions.dump("adding events...");
           var select_parent = w.getElementById('images');
           var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
 
           for (var i = 0; i < option_nodes.snapshotLength; i++) {
                var n = option_nodes.snapshotItem(i);
 
-               dump("adding events to item " + i + "...");
+               if (debug >= 3) ifdl_functions.dump("adding events to item " + i + "...");
                n.addEventListener('dblclick', this.remove_on_dblclick, false);
                n.addEventListener('mouseover', this.show_preview, false);
                n.addEventListener('mouseout', this.clear_preview, false);
-               dump("done.\n");
-               dump(n.getAttribute('id') + "\n");
+               if (debug >= 3) ifdl_functions.dump("done.");
           }
      },
 
@@ -225,12 +217,19 @@ var ifdl_functions = {
      
      
      xpath: function (q) {
-          dump(q + "\n");
+          if (debug >= 1) ifdl_functions.dump("xpath query: " + q);
           var nodes = window._content.document.evaluate(q, window._content.document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-          dump('number of nodes returned: ' + nodes.snapshotLength + "\n");
+          if (debug >= 3) ifdl_functions.dump('number of nodes returned: ' + nodes.snapshotLength);
 
           return nodes;
      },
+
+     dump: function (s) {
+          var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"]
+                                          .getService(Components.interfaces.nsIConsoleService);
+
+          aConsoleService.logStringMessage("ifdl log:: " + s);
+     }
 
 };
 

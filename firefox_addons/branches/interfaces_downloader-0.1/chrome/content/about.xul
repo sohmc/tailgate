@@ -4,15 +4,30 @@
 
 <!DOCTYPE dialog SYSTEM "chrome://interfacesdownloader/locale/about.dtd">
 
-<dialog title="&about; Interfaces Downloader" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<dialog title="&about; InterfacesLIFT Downloader" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <groupbox align="center" orient="horizontal">
     <vbox>
       <text value="Interfaces Downloader" style="font-weight: bold; font-size: x-large;"/>
-      <text value="&version; 1.0"/>
+      <text value="&version; 0.1"/>
       <separator class="thin"/>
       <text value="&createdBy;" style="font-weight: bold;"/>
       <text value="Michael Soh"/>
       <separator class="thin"/>
+      <text>
+          Copyright &copy; 2011 Michael Soh<br>
+          This program is free software: you can redistribute it and/or modify
+          it under the terms of the GNU General Public License as published by 
+          the Free Software Foundation, version 3 of the License.
+
+          This program is distributed in the hope that it will be useful,
+          but WITHOUT ANY WARRANTY; without even the implied warranty of
+          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+          GNU General Public License for more details.
+
+          You should have received a copy of the GNU General Public License
+          along with this program.  If not, see 
+          <a href="http://www.gnu.org/licenses/">GPL License</a>.
+     </text>
     </vbox>
   </groupbox>
 </dialog>

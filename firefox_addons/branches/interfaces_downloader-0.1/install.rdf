@@ -6,8 +6,7 @@
     <em:name>Interfaces Downloader</em:name>
     <em:version>0.1</em:version>
     <em:creator>Michael Soh</em:creator>
-    <em:contributor></em:contributor>
-    <em:description>Download desktop wallpaper in a snap without having to pay annoying fees.</em:description>
+    <em:description>Download desktop wallpaper in a snap.</em:description>
     <em:aboutURL>chrome://interfacesdownloader/content/about.xul</em:aboutURL>
     <em:optionsURL>chrome://interfacesdownloader/content/options.xul</em:optionsURL>
     <em:targetApplication>
