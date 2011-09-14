@@ -29,18 +29,53 @@ function process_links() {
 
      for (var i = 0; i < 2; i++) {
           var c = cards.snapshotItem(i);
-          GM_log("xml: " + c.innerHTML);
           var xml = string_to_xml(c.innerHTML);
 
           var link = xpath('.//h2/a[@class="entry-title-link"]', xml);
-          if (link) {
+          var div = xpath('.//div[@class="item-body"]', xml);
+
+          if ((link) && (div)) {
                var l = link.snapshotItem(0);
-               GM_log("i=" + i + " --  node name: " + l.nodeName + " node type: " + l.nodeType + "\n" + l.textContent);
+               var d = div.snapshotItem(0);
+
                GM_log("href: " + l.getAttribute('href'));
+               get_remote_post(l.getAttribute('href'), d);
           }
      }
+}
 
 
+function get_remote_post(href) {
+     GM_log('getting remote post...');
+     GM_xmlhttpRequest({
+          method: 'GET',
+          url: href,
+          headers: {
+               'Referer':document.location,
+          },
+          onload: function(response) {
+               if (response.status == 200) {
+                    GM_log('Got response: ' + response.responseText);
+                    var xpath_for_remote_post = get_xpath_for_post(href);
+                    var xml = string_to_xml(response.responseText);
+
+                    var entry_node = xpath(".//*", xml);
+                    for (var p = 0; p < entry_node.snapshotLength; p++) {
+                         var e = entry_node.snapshotItem(p);
+                         GM_log("p=" + p + " --  node name: " + e.nodeName + " node type: " + e.nodeType + "\n" + e.textContent);
+                    }
+               } else {
+                    GM_log('ERROR: ' + response.status);
+               }
+          }
+     });
+}
+
+
+function get_xpath_for_post(href) {
+     var v = './/div[@id="centercolumn-full"]';
+
+     return v;
 }
 
 
