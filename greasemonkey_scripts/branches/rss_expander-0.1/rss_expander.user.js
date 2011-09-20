@@ -17,11 +17,28 @@ debug = 3;
 $(document).ready(function() {
      $('#entries').scroll(function() { process_links(); });
      $('div[class^="entry"]').click(function() { process_links(); });
+     create_frame();
 });
 
 
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
+
+
+function create_frame() {
+     var frame = document.getElementById("sample-frame");
+     if (!frame) {
+           // create frame
+           frame = document.createElement("div"); // iframe (or browser on older Firefox)
+           frame.setAttribute("id", "sample-frame");
+           frame.setAttribute("name", "sample-frame");
+           frame.setAttribute("type", "content");
+           frame.setAttribute("style", "display: block; position: absolute; right: 10px; bottom: 10px; border: 2px solid red; z-index: 1000");
+           //document.getElementById("main-window").appendChild(frame);
+           // or 
+           document.documentElement.appendChild(frame);
+     } 
+}
 
 function process_links() {
      GM_log('processing...');
@@ -30,16 +47,15 @@ function process_links() {
      for (var i = 0; i < 2; i++) {
           var c = cards.snapshotItem(i);
           var xml = string_to_xml(c.innerHTML);
+          GM_log(xml_to_string(xml));
 
           var link = xpath('.//h2/a[@class="entry-title-link"]', xml);
-          var div = xpath('.//div[@class="item-body"]', xml);
 
-          if ((link) && (div)) {
+          if (link.snapshotLength == 1) {
                var l = link.snapshotItem(0);
-               var d = div.snapshotItem(0);
 
                GM_log("href: " + l.getAttribute('href'));
-               get_remote_post(l.getAttribute('href'), d);
+               get_remote_post(l.getAttribute('href'));
           }
      }
 }
@@ -47,43 +63,58 @@ function process_links() {
 
 function get_remote_post(href) {
      GM_log('getting remote post...');
+     var frame = document.getElementById("sample-frame");
+
      GM_xmlhttpRequest({
           method: 'GET',
           url: href,
           headers: {
-               'Referer':document.location,
+               "Referer": document.location
           },
-          onload: function(response) {
-               if (response.status == 200) {
-                    GM_log('Got response: ' + response.responseText);
-                    var xpath_for_remote_post = get_xpath_for_post(href);
-                    var xml = string_to_xml(response.responseText);
-
-                    var entry_node = xpath(".//*", xml);
-                    for (var p = 0; p < entry_node.snapshotLength; p++) {
-                         var e = entry_node.snapshotItem(p);
-                         GM_log("p=" + p + " --  node name: " + e.nodeName + " node type: " + e.nodeType + "\n" + e.textContent);
-                    }
+          onload: function (r) {
+               if (r.status == 200) {
+                    var xml = string_to_xml(r.responseText);
+                    GM_log(xml_to_string(xml));
                } else {
-                    GM_log('ERROR: ' + response.status);
+                    GM_log("ERROR: Status code " + r.status);
                }
           }
      });
+
+
 }
 
 
 function get_xpath_for_post(href) {
-     var v = './/div[@id="centercolumn-full"]';
+     var v = './/a[(@class="photo") and (@href[starts-with(.,"#mutable")])]';
 
      return v;
 }
 
 
+// =-=-=-=-=- STANDARD FUNCTION LIBRARY -=-=-=-=-= //
+
+
+function node_info(n) {
+     return "node name: " + n.nodeName + " node type: " + n.nodeType + "\n" + n.textContent;
+}
+
 function string_to_xml(s) {
      var parser = new DOMParser();
      var dom = parser.parseFromString(s, 'text/xml');
 
+     var error = xpath('/parsererror', dom);
+     if (error.snapshotLength > 0) 
+          GM_log('PARSER ERROR: ' + error.snapshotItem(0).textContent);
+
      return dom;
+}
+
+function xml_to_string(xml) {
+     var serializer = new XMLSerializer();
+     var prettyString = XML(serializer.serializeToString(xml)).toXMLString();
+
+     return prettyString;
 }
 
 function xpath(xpath_query, xml) { 
