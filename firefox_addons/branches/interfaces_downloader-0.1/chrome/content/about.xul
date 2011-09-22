@@ -8,7 +8,7 @@
   <groupbox align="center" orient="horizontal">
     <vbox>
       <text value="Interfaces Downloader" style="font-weight: bold; font-size: x-large; text-align: center;"/>
-      <text value="&version; 0.1" style="text-align: center;"/>
+      <text value="&version; 0.2 (22 Sept 2011)" style="text-align: center;"/>
       <separator class="thin"/>
       <text value="&createdBy;" style="font-weight: bold; text-align: center;"/>
       <text value="Michael Soh" style="text-align: center;"/>
