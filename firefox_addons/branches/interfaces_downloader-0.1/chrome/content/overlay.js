@@ -1,5 +1,4 @@
 var loaded = 0;
-var debug = 3;
 
 var interfacesdownloader = {
   onLoad: function() {

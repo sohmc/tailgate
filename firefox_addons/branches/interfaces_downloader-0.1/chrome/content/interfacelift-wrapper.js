@@ -1,6 +1,6 @@
 dump("sourcing interfacelift wrapper...");
 var ifdl_wrapper = function(doc) {
-     this.debug = 3;
+     this.debug = ifdl_functions.debug_value();
      this.document = doc;
           
      // FUNCTIONS
@@ -52,15 +52,23 @@ var ifdl_wrapper = function(doc) {
 
                var preview = download_preview.snapshotItem(i).getAttribute('src');
 
+               var input_dom = w_document.createElement('input');
+               input_dom.setAttribute('type', 'checkbox');
+               input_dom.setAttribute('preview', preview);
+               input_dom.setAttribute('value', href);
+               input_dom.setAttribute('id', 'ifdl_' + id);
+               input_dom.setAttribute('name', 'dl');
+
                if (w_document.getElementById('op_ifdl_' + id)) {
-                    download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" preview="' + preview + '" value="' + href + '" id="ifdl_' + id + '"checked="true" />';
-               } else {
-                    download_div.snapshotItem(i).innerHTML = '<input type="checkbox" name="dl" preview="' + preview + '" value="' + href + '" id="ifdl_' + id + '"/>';
+                    input_dom.setAttribute('checked', 'true');
                }
+
+               download_div.snapshotItem(i).textContent = "";
+               download_div.snapshotItem(i).appendChild(input_dom);
 
                w_document.getElementById('ifdl_' + id).addEventListener('click', function() { 
                     var w_document = window._content.document;
-                    if (debug >= 1) ifdl_functions.dump('id: ' + this.id + ' = value: ' + this.value);
+                    if (ifdl_wrapper.debug >= 1) ifdl_functions.dump('id: ' + this.id + ' = value: ' + this.value);
 
                     var child = w_document.getElementById('op_' + this.id);
                     var select_parent = w_document.getElementById('images');
@@ -68,23 +76,23 @@ var ifdl_wrapper = function(doc) {
                     if (child) {
                          select_parent.removeChild(child);
                     } else {
-                         if (debug >= 3) ifdl_functions.dump("item not in select list.  adding...");
+                         if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("item not in select list.  adding...");
                          var re = /(\d+)$/.exec(this.id);
                          var img_id = re[1];
 
                          var title_node = ifdl_functions.xpath('.//div[@id="list_' + img_id + '"]/.//h1/a[@href[contains(.,"' + img_id + '")]]');
-                         var title = title_node.snapshotItem(0).innerHTML;
+                         var title = title_node.snapshotItem(0).textContent;
                          
                          child = w_document.createElement('option');
                          child.setAttribute('value', this.value);
                          child.setAttribute('id', 'op_' + this.id);
                          child.setAttribute('preview', this.getAttribute('preview'));
-                         child.innerHTML = title;
+                         child.textContent = title;
 
                          select_parent.appendChild(child);
                          select_parent.scrollTop = select_parent.scrollHeight;
 
-                         if (debug >= 1) ifdl_functions.dump("done.")
+                         if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("done.")
                     }
 
                     ifdl_functions.save_images();
@@ -103,7 +111,29 @@ var ifdl_wrapper = function(doc) {
           var ifdl_gui = w_document.createElement('div');
           ifdl_gui.setAttribute('id', 'interface_dl_div');
           ifdl_gui.setAttribute('style', 'width: 180px; height: 400px; position: fixed; z-index: 100; text-align: center; top: 10px;');
-          ifdl_gui.innerHTML = "<div id='preview_box' class='preview' style='width: 180px; height: 112px;'></div><select name='images' id='images' size='10' multiple='true' style='width: 175px;'></select><br><input type='button' value='Download Wallpaper' id='download_wallpaper'>";
+
+          var preview_div = w_document.createElement('div');
+          preview_div.setAttribute('id', 'preview_box');
+          preview_div.setAttribute('class', 'preview');
+          preview_div.setAttribute('style', 'width: 180px; height: 112px;');
+
+          var select_node = w_document.createElement('select');
+          select_node.setAttribute('name', 'images');
+          select_node.setAttribute('id', 'images');
+          select_node.setAttribute('size', '10');
+          select_node.setAttribute('style', 'width: 175px');
+         
+          var download_button = w_document.createElement('input');
+          download_button.setAttribute('type', 'button');
+          download_button.setAttribute('value', 'Download Wallpaper');
+          download_button.setAttribute('id', 'download_wallpaper');
+
+
+          ifdl_gui.appendChild(preview_div);
+          ifdl_gui.appendChild(select_node);
+          ifdl_gui.appendChild(w_document.createElement('br'));
+          ifdl_gui.appendChild(download_button);
+          
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
           
           w_document.getElementById('download_wallpaper').addEventListener('click', function () {
