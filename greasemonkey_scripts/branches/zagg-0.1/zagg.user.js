@@ -6,10 +6,10 @@
 // @version     0.1.1
 // @license     GPL 3.0 
 // @include     https://www.zagg.com/support/account/orders.php*
-// @require     http://usocheckup.redirectme.net/98173.js
 //  
 // 
 // ==/UserScript== 
+// @require     http://usocheckup.redirectme.net/98173.js
 
 
 var debug = 0;
