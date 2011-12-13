@@ -6,7 +6,8 @@
 // @version     0.1.1
 // @license     GPL 3.0 
 // @include     https://www.zagg.com/support/account/orders.php*
-//  
+// 
+// @require     http://tailgate.googlecode.com/hg/greasemonkey_scripts/jquery/jquery-1.7.1.min.js
 // 
 // ==/UserScript== 
 // @require     http://usocheckup.redirectme.net/98173.js
@@ -14,7 +15,11 @@
 
 var debug = 0;
 
-var replace_links = evaluate_xpath(".//a[@href[contains(.,'view_order.php?id=')]]/..[a='Replace']/a");
+// remove all warranty replacements
+var replace_links = evaluate_xpath(".//h3[contains(.,'Warranty Replacement Order History')]/..//table[1]");
+replace_links.snapshotItem(0).style.display = 'none';
+
+replace_links = evaluate_xpath(".//h3[contains(.,'Warranty Replacement Order History')]/..//table[1]/.//a[contains(.,'Replace')]");
 
 for (var i = 0; i < replace_links.snapshotLength; i++) {
      if (debug) GM_log('inspecting item: ' + i);
@@ -22,22 +27,25 @@ for (var i = 0; i < replace_links.snapshotLength; i++) {
      if (debug) GM_log('href: ' + p.getAttribute('href'));
 
      var r = new XMLHttpRequest();
-     r.open('GET', p.getAttribute('href'), false);
-     r.send(null);
-     if (r.status == 200) {
-          if (debug) GM_log(i + ': contacting ' + p.getAttribute);
-          if (debug) GM_log(i + ': connection status: ' + r.status);
-          if (r.status == 200) {
-               if (debug) GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
-               if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') != -1) {
-                    if (debug) GM_log(i + ': Unavailable');
-                    p.style.display = 'none';
-               } else {
-                    if (debug) GM_log(i + ': AVAILABLE');
-                    p.style.color = 'green';
+     r.open('GET', p.getAttribute('href'));
+     r.onreadystatechange = function () {
+          if (r.readyState == 4) {
+               if (r.status == 200) {
+                    var q = r.getAllResponseHeaders();
+
+                    
+                    if (debug) GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
+                    if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') != -1) {
+                         if (debug) GM_log(i + ': Unavailable');
+                         p.style.display = 'none';
+                    } else {
+                         if (debug) GM_log(i + ': AVAILABLE');
+                         p.style.color = 'green';
+                    }
                }
           }
-     }
+     };
+     r.send(null);
 }
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
