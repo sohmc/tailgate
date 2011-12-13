@@ -5,7 +5,7 @@
 // @description Automatically pokes back people listed on your home page. This script was inspired by Lukas Fragodt's Auto-Poke and EZ-Poke. 
 // @version     4.1
 // @license     GPL 3.0 
-// @include     http*://*.facebook.com/* 
+// @include     http*://*.facebook.com/pokes* 
 // @exclude     http*://*.facebook.com/plugins/*
 // @exclude     http*://*.facebook.com/widgets/*
 // @exclude     http*://*.facebook.com/iframe/*
@@ -18,7 +18,7 @@
 
 load_jquery();
  
-var debug = 0;
+var debug = 3;
 var log_limit = 500; // The max number of characters in each log entry.
 var wait = 5; // in minutes
 wait = wait * 60 * 1000; // in milliseconds
@@ -29,6 +29,7 @@ if (debug > 0) FB_log('Current Location: ' + document.location);
 var script_error = 0;
 var fb_dtsg = get_var_value('fb_dtsg');
 var post_form_id = get_var_value('post_form_id');
+var user = 0;
 var ajaxify_vars = '__a=1';
 
 $(document).ready(function() {
@@ -54,15 +55,27 @@ function init() {
                if (r.status == 200) {
                     if (debug > 3) FB_log(r.responseText);
 
-                    var poke_divs = evaluate_xpath(".//script[contains(.,'poke_dialog.php')]");
-                    if (poke_divs.snapshotLength == 1) {
-                         var div_regex = /"pagelet_pokes":"(.*)"/;
-                         div_regex.exec(poke_divs.snapshotItem(0).innerHTML);
-                         var poke_pagelet = new String(RegExp.$1);
+                    user = /"user":"(\d+)"/.exec(r.responseText)[1];
+                    FB_log("User ID: " + user);
 
-                         poke_pagelet = decode_unicode(poke_pagelet);
-                         if (debug > 3) FB_log('poke_pagelet: ' + poke_pagelet);
-                         find_pokes(string_to_xml(poke_pagelet));
+                    var poke_divs = evaluate_xpath(".//a[@ajaxify[contains(.,'poke_dialog.php')]]");
+
+                    if (poke_divs.snapshotLength > 0) {
+                         FB_log("Pokes found: " + poke_divs.snapshotLength);
+
+                         for (var i = 0; i < poke_divs.snapshotLength; i++) {
+                              var poke_link = poke_divs.snapshotItem(i);
+
+                              FB_log(i + ": ajax = " + poke_link.getAttribute('ajaxify'));
+                              var div_regex = new RegExp("uid=(\\d+)");
+                              var a = div_regex.exec(poke_link.getAttribute('ajaxify'));
+
+                              var poke_uid = a[1];
+
+                              update_frontpage(poke_uid, 1);
+                              poke_function(poke_link.getAttribute('ajaxify'));
+
+                         }
                     } else if (poke_divs.snapshotLength == 0) {
                          FB_log("No pokes found.");
                     } else {
@@ -115,13 +128,14 @@ function find_pokes(xml) {
  
  
 function poke_function(poke_link) { 
-     if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")");
-
      var poke_uid_regexp = /\?uid=(\d+)&pokeback/;
      poke_uid_regexp.exec(poke_link);
      var poke_uid = RegExp.$1;
 
-     var post_data = 'uid=' + poke_uid + '&pokeback=1&__d=1&post_form_id=' + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest';
+     var post_data = 'uid=' + poke_uid + '&pokeback=1&__d=1&post_form_id=' + post_form_id + '&fb_dtsg=' + fb_dtsg + '&lsd&post_form_id_source=AsyncRequest&__user=' + user;
+     poke_link += '&__a=1';
+
+     if (debug > 0) FB_log("Retrieving confirmation page(" + poke_link + ")");
 
      var r = new XMLHttpRequest();
      r.open('POST', poke_link, true);
@@ -133,11 +147,10 @@ function poke_function(poke_link) {
 
                     // Retrieve the "body" of the poke dialog along with
                     // the buttons that are being sent.
-                    var div_regex = /"body":{"__html":"(.*)"},"buttons":\[(.*)\],/;
-                    div_regex.exec(r.responseText);
+                    var div_regex = new RegExp('"body":{"__html":"(.*)"},"buttons":\[(.*)\],"postURI"');
 
-                    var poke_response = RegExp.$1;
-                    var buttons = RegExp.$2;
+                    var poke_response = div_regex.exec(r.responseText)[1];
+                    var buttons = div_regex.exec(r.responseText)[2];
 
                     // Convert the string to xml for parsing.
                     poke_response = decode_unicode(poke_response);
@@ -256,13 +269,13 @@ function execute_poke(xml) {
 
 /* Helper Functions */
 
-function update_frontpage(uid, poke_step) {
-     var user_div = evaluate_xpath('.//div[@id[contains(.,"' + uid + '")]]/div/a[@ajaxify[contains(.,"' + uid + '")]]');
+function update_frontpage(poke_uid, poke_step) {
+     var user_div = evaluate_xpath(".//a[@ajaxify[contains(.,'poke_dialog.php?uid=" + poke_uid + "')]]");
 
      if (user_div.snapshotLength == 0)
-          FB_log('User ' + uid + ' could not be found on the frontpage.  Continuing anyway.');
+          FB_log('User ' + poke_uid + ' could not be found on the frontpage.  Continuing anyway.');
      else if (user_div.snapshotLength > 1)
-          FB_log('User ' + uid + ' returned multiple nodes.  Continuing anyway.');
+          FB_log('User ' + poke_uid + ' returned multiple nodes.  Continuing anyway.');
      else {
           var poke_anchor = user_div.snapshotItem(0);
 
@@ -291,7 +304,7 @@ function update_frontpage(uid, poke_step) {
                case 100:
                     poke_anchor.textContent = "Auto-poked!";
                     poke_anchor.removeAttribute('ajaxify');
-                    poke_anchor.setAttribute('title', 'Poke count: ' + count_poke(uid));
+                    poke_anchor.setAttribute('title', 'Poke count: ' + count_poke(poke_uid));
                     break;
                case 110:
                     poke_anchor.textContent = "Already poked";
@@ -321,6 +334,10 @@ function get_var_value(name) {
 
      if (debug > 2) FB_log(name + ' = (' + return_value + ')');
      return return_value;
+}
+
+function get_user_id() {
+     
 }
 
 function parse_poke_response(xml) {
@@ -452,7 +469,7 @@ function evaluate_xpath(xpath_query, xml) {
 function decode_unicode(s) {
      var new_s = "";
 
-     if (s.length > 0) {
+     if ((typeof(s) == "string") && (s.length > 0)) {
           if (debug > 2) FB_log('Decoding the following string (length: ' + s.length + '): ' + s);
 
           unicode_regex = /\\u[a-z0-9]{4}/gi;
