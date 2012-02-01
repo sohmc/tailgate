@@ -6,8 +6,4 @@
   <script src="chrome://interfacesdownloader/content/interfacelift-wrapper.js" />
   <script src="chrome://interfacesdownloader/content/overlay.js" />
 
-  <stringbundleset id="stringbundleset">
-    <stringbundle id="interfacesdownloader-strings" src="chrome://interfacesdownloader/locale/overlay.properties"/>
-  </stringbundleset>
-
 </overlay>

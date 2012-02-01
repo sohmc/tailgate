@@ -15,7 +15,7 @@ var interfacesdownloader = {
      var f = new ifdl_wrapper(doc);
 
      if (doc.nodeName == "#document") {
-          var at_interfaces = /http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
+          var at_interfaces = /^http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
 
           if (at_interfaces) {
                f.at_interfacelift(aEvent.target);
@@ -26,7 +26,7 @@ var interfacesdownloader = {
      unLoad: function(aEvent) {
           var doc = aEvent.originalTarget;
           if (aEvent.originalTarget instanceof HTMLDocument) {
-               var at_interfaces = /http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
+               var at_interfaces = /^http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
 
                if (at_interfaces) {
                     loaded = 0;

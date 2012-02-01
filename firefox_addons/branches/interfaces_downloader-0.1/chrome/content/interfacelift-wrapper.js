@@ -110,7 +110,7 @@ var ifdl_wrapper = function(doc) {
           
           var ifdl_gui = w_document.createElement('div');
           ifdl_gui.setAttribute('id', 'interface_dl_div');
-          ifdl_gui.setAttribute('style', 'width: 180px; height: 400px; position: fixed; z-index: 100; text-align: center; top: 10px;');
+          ifdl_gui.setAttribute('style', 'width: 180px; height: 400px; position: fixed; z-index: 100; text-align: center; top: 135px;');
 
           var preview_div = w_document.createElement('div');
           preview_div.setAttribute('id', 'preview_box');
