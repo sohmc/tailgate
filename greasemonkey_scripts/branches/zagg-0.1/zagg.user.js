@@ -32,31 +32,20 @@ for (var t = 0; t < tables.snapshotLength; t++) {
                replace: r.snapshotItem(4)
           }
 
-          var a = xpath_snapshot(".//a", row_object.replace);
+          // Don't include replacements since they are never replacable.
+          var re = new RegExp("^IR\\d+");
 
-          /*
-                         if (debug) GM_log(i + ': Unavailable');
-                         p.style.display = 'none';
-                    } else {
-                         if (debug) GM_log(i + ': AVAILABLE');
-                         p.style.color = 'green';
-                    } */
+          if ((row_object.status.textContent == "Order shipped") && (!re.test(row_object.invoice.textContent))) { 
+               var a = xpath_simple("string(.//a/@href)", XPathResult.STRING_TYPE, row_object.replace);
 
+               get_replacement_availability(a.stringValue);
+          } else {
+               var node = xpath_snapshot(".//a", row_object.replace);
+               node.snapshotItem(0).style.display = "none";
+          }
      }
-
 }
 
-
-// replace_links.snapshotItem(0).style.display = 'none';
-
-replace_links = xpath_snapshot(".//h3[contains(.,'Warranty Replacement Order History')]/..//table[1]/.//a[contains(.,'Replace')]");
-
-for (var i = 0; i < replace_links.snapshotLength; i++) {
-     if (debug) GM_log('inspecting item: ' + i);
-     var p = replace_links.snapshotItem(i);
-     if (debug) GM_log('href: ' + p.getAttribute('href'));
-
-}
 
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
@@ -70,9 +59,11 @@ function get_replacement_availability(url) {
                if (r.status == 200) {
                     var q = r.getAllResponseHeaders();
                     
-                    if (debug) GM_log(i + ': site returned ' + r.responseText.length + ' characters.');
+                    if (debug) GM_log('site returned ' + r.responseText.length + ' characters.');
                     if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') >= 0) {
-                         replacement_available = 1;
+                         change_status(url, 0);
+                    } else {
+                         change_status(url, 1);
                     }
                }
           }
@@ -83,16 +74,43 @@ function get_replacement_availability(url) {
 }
 
 
+function change_status(url, is_available) {
+     GM_log("url: " + url + " (available = " + is_available + ")");
+     var node = xpath_snapshot(".//a[contains(.,'Replace')][@href='" + url + "']");
+
+     var a = node.snapshotItem(0);
+    
+     if (is_available) {
+          a.style.color = 'green';
+          a.style.fontWeight = 'bold';
+     } else {
+          a.style.display = 'none';
+     }
+}
+
+
 
 // =-=-=-=-=- Standard Functions -=-=-=-=-= //
 // The following functions are ones that I've created and use in pretty
 // much every script I write.
 
-function xpath_snapshot(xpath_query, xml) {
-    if (!xml) xml = document;
+function xpath_simple(xpath_query, result, node) {
+    if (!node) node = document;
+    if (!result) return xpath_snapshot(xpath_query);
+
+    if (debug >= 2) GM_log("xpath_simple: " + xpath_query);
+    var r = document.evaluate(xpath_query, node, null, result, null);
+    
+    if (debug >= 2) GM_log("xpath result type: " + r.resultType);
+
+    return r;
+}
+
+function xpath_snapshot(xpath_query, node) {
+    if (!node) node = document;
 
     if (debug >= 2) GM_log("xpath_snapshot: " + xpath_query);
-    var nodes = document.evaluate(xpath_query, xml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var nodes = document.evaluate(xpath_query, node, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     if (debug >= 1) GM_log('number of nodes returned: ' + nodes.snapshotLength);
 
     return nodes;
@@ -103,7 +121,6 @@ function xpath_iterate(xpath_query, node) {
 
     if (debug >= 2) GM_log("xpath_iterate: " + xpath_query);
     var iterators = document.evaluate(xpath_query, node, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-    if (debug >= 1) GM_log('number of nodes returned: ' + nodes.snapshotLength);
 
     return iterators;
 }
