@@ -3,17 +3,16 @@
 // @author      Michael Soh 
 // @namespace   zagg-98173
 // @description Shows you which products you have are available for replacement
-// @version     0.1.1
+// @version     0.2
 // @license     GPL 3.0 
 // @include     https://www.zagg.com/support/account/orders.php*
 // 
-// @require     http://tailgate.googlecode.com/hg/greasemonkey_scripts/jquery/jquery-1.7.1.min.js
+// @require     http://usocheckup.redirectme.net/98173.js
 // 
 // ==/UserScript== 
-// @require     http://usocheckup.redirectme.net/98173.js
 
 
-var debug = 5;
+var debug = 0;
 
 // remove all warranty replacements
 var tables = xpath_snapshot(".//table");
@@ -50,32 +49,48 @@ for (var t = 0; t < tables.snapshotLength; t++) {
 // =-=-=-=-=- FUNCTIONS -=-=-=-=-= //
 
 function get_replacement_availability(url) {
-     var replacement_available = 0;
-
      var r = new XMLHttpRequest();
      r.open('GET', url);
      r.onreadystatechange = function () {
           if (r.readyState == 4) {
+               if (debug >= 3) GM_log("readyState 4 received.  status = " + r.status);
                if (r.status == 200) {
-                    var q = r.getAllResponseHeaders();
+                    if (debug >= 3) GM_log("Status 200 received.");
+                    if (debug >= 3) GM_log('Parsing: ' + url);
                     
                     if (debug) GM_log('site returned ' + r.responseText.length + ' characters.');
+
                     if (r.responseText.indexOf('alt="Unavailible" title="Replacement Availability"') >= 0) {
                          change_status(url, 0);
                     } else {
-                         change_status(url, 1);
+                         // Get model of shield
+                         var regexp = RegExp('<td width="30%">(.*)</td>');
+                         var match = regexp.exec(r.responseText);
+                         var model = match[1].replace(/(\r\n|\n\r|\s+$)/gm, "");
+                         if(debug) GM_log("model: [" + model + "]");
+                         
+                         change_status(url, 1, model);
                     }
+               } else if (r.response == null) {
+                    GM_log("XMLHttpRequest was not successful.");
+               } else {
+                    GM_log("XMLHttpRequest errored out.");
                }
+          } else {
+               if (debug) GM_log("current readyState: " + r.readyState);
+               if (debug >= 2) GM_log("responseText.length: " + r.responseText.length);
           }
      };
+/*   r.responseType = "document";
+     r.overrideMimeType = "text/xml"; */
      r.send(null);
      
-     return replacement_available;
+     return 0;
 }
 
 
-function change_status(url, is_available) {
-     GM_log("url: " + url + " (available = " + is_available + ")");
+function change_status(url, is_available, model) {
+     if (debug) GM_log("url: " + url + " (available = " + is_available + ")");
      var node = xpath_snapshot(".//a[contains(.,'Replace')][@href='" + url + "']");
 
      var a = node.snapshotItem(0);
@@ -83,6 +98,7 @@ function change_status(url, is_available) {
      if (is_available) {
           a.style.color = 'green';
           a.style.fontWeight = 'bold';
+          a.setAttribute('title', model);
      } else {
           a.style.display = 'none';
      }
@@ -125,16 +141,14 @@ function xpath_iterate(xpath_query, node) {
     return iterators;
 }
 
-function string_to_xml(s) {
-     var parser = new DOMParser();
-     var dom = parser.parseFromString(s, 'text/xml');
+function HTMLParser(aHTMLString){
+  var html = document.implementation.createDocument("http://www.w3.org/1999/xhtml", "html", null),
+    body = document.createElementNS("http://www.w3.org/1999/xhtml", "body");
+  html.documentElement.appendChild(body);
 
-     return dom;
-}
+  body.appendChild(Components.classes["@mozilla.org/feed-unescapehtml;1"]
+    .getService(Components.interfaces.nsIScriptableUnescapeHTML)
+    .parseFragment(aHTMLString, false, null, body));
 
-function xml_to_string(xml) {
-     var serializer = new XMLSerializer();
-     var prettyString = XML(serializer.serializeToString(xml)).toXMLString();
-
-     return prettyString;
+  return body;
 }
