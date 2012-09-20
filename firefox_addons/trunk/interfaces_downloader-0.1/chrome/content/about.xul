@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://interfacesdownloader/locale/about.dtd">
+
+<dialog title="&about; InterfacesLIFT Downloader" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <groupbox align="center" orient="horizontal">
+    <vbox>
+      <text value="Interfaces Downloader" style="font-weight: bold; font-size: x-large; text-align: center;"/>
+      <text value="&version; 0.2 (22 Sept 2011)" style="text-align: center;"/>
+      <separator class="thin"/>
+      <text value="&createdBy;" style="font-weight: bold; text-align: center;"/>
+      <text value="Michael Soh" style="text-align: center;"/>
+      <separator class="thin"/>
+      <description style="width: 300px; margin-left: 0px;">
+          This program is free software: you can redistribute it and/or modify
+          it under the terms of the GNU General Public License as published by 
+          the Free Software Foundation, version 3 of the License.
+      </description>
+
+      <description style="width: 300px; margin-left: 0px; margin-top: 1em;">
+          This program is distributed in the hope that it will be useful,
+          but WITHOUT ANY WARRANTY; without even the implied warranty of
+          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+          GNU General Public License for more details.
+      </description>
+
+      <description style="width: 300px; margin-left: 0px; margin-top: 1em;">
+          You should have received a copy of the GNU General Public License
+          along with this program.  If not, see the <label href="http://www.gnu.org/licenses/" class="text-link" value="GPL License"/>.
+     </description>
+    </vbox>
+  </groupbox>
+</dialog>

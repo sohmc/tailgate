@@ -1,0 +1,5 @@
+<!ENTITY prefwindow.title "Interfaces Downloader preferences">
+<!ENTITY pane1.title "Interfaces Downloader preferences">
+<!ENTITY image_location.label "Where would you like to store your wallpaper?">
+<!ENTITY image_location.accesskey "W">
+<!ENTITY image_location_info.label "InterfacesLift Downloader will download your selected wallpaper to this location:">
