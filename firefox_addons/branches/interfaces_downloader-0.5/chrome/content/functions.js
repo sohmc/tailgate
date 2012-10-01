@@ -108,6 +108,22 @@ var ifdl_functions = {
           }
      },
 
+     clear_images: function () {
+          var image_select = ifdl_functions.xpath('.//select[@id="images"]');
+
+          if (image_select.snapshotLength = 1) {
+               var p = image_select.snapshotItem(0);
+
+               while (p.hasChildNodes()) {
+                    p.removeChild(p.lastChild);
+               }
+
+               ifdl_functions.remove_temp_file();
+          }
+
+          var checked_boxes = ifdl_functions.xpath('.//input[@type="checkbox"]')
+     },
+
 
      download_image: function (node) {
           if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("downloading image...");

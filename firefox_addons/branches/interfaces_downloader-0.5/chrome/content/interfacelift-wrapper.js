@@ -75,7 +75,7 @@ var ifdl_wrapper = function(doc) {
 
                     if (child) {
                          select_parent.removeChild(child);
-                    } else {
+                    } else if (this.checked) {
                          if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("item not in select list.  adding...");
                          var re = /(\d+)$/.exec(this.id);
                          var img_id = re[1];
@@ -128,16 +128,26 @@ var ifdl_wrapper = function(doc) {
           download_button.setAttribute('value', 'Download Wallpaper');
           download_button.setAttribute('id', 'download_wallpaper');
 
+          var clear_button = w_document.createElement('input');
+          clear_button.setAttribute('type', 'button');
+          clear_button.setAttribute('value', 'Clear List');
+          clear_button.setAttribute('id', 'clear_list');
+
 
           ifdl_gui.appendChild(preview_div);
           ifdl_gui.appendChild(select_node);
           ifdl_gui.appendChild(w_document.createElement('br'));
           ifdl_gui.appendChild(download_button);
+          ifdl_gui.appendChild(clear_button);
           
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
           
           w_document.getElementById('download_wallpaper').addEventListener('click', function () {
                ifdl_functions.process_images();
+          }, false);
+
+          w_document.getElementById('clear_list').addEventListener('click', function () {
+               ifdl_functions.clear_images();
           }, false);
      };
 
