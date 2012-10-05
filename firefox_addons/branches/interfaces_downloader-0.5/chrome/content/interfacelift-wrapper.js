@@ -1,4 +1,3 @@
-dump("sourcing interfacelift wrapper...");
 var ifdl_wrapper = function(doc) {
      this.debug = ifdl_functions.debug_value();
      this.document = doc;
@@ -152,4 +151,3 @@ var ifdl_wrapper = function(doc) {
      };
 
 }
-dump("Done.\n");

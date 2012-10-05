@@ -30,7 +30,6 @@ var interfacesdownloader = {
 
                if (at_interfaces) {
                     loaded = 0;
-                    dump("page has been unloaded.\n");
                }
           }
      }
