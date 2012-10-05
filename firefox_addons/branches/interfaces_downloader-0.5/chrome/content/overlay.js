@@ -1,4 +1,4 @@
-var loaded = 0;
+// var loaded = 0;
 
 var interfacesdownloader = {
   onLoad: function() {
@@ -29,7 +29,7 @@ var interfacesdownloader = {
                var at_interfaces = /^http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
 
                if (at_interfaces) {
-                    loaded = 0;
+                    // loaded = 0;
                }
           }
      }
