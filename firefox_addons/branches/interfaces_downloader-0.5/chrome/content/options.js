@@ -1,7 +1,5 @@
-dump("sourcing options.js...");
 var ifdl_options = {
      onLoad: function() {
-          dump("loading options.js...\n");
           ifdl_options.get_path();
      },
 
@@ -18,7 +16,6 @@ var ifdl_options = {
                                      .getService(Components.interfaces.nsIPrefService)
                                      .getBranch("extensions.interfacesdownloader.");
                prefs.setComplexValue("image_location", Components.interfaces.nsILocalFile, fp.file);
-               dump(fp.file.path + "\n");
                
                ifdl_options.get_path();
           }
@@ -39,4 +36,3 @@ var ifdl_options = {
 };
 
 window.addEventListener("load", function() { ifdl_options.onLoad(); }, false)
-dump("done.\n");
