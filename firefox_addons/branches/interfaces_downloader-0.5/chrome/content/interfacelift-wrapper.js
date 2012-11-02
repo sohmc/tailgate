@@ -1,3 +1,4 @@
+dump("sourcing interfacelift wrapper...");
 var ifdl_wrapper = function(doc) {
      jQuery.noConflict();
      var $ = function(selector, context) {
@@ -166,3 +167,4 @@ var ifdl_wrapper = function(doc) {
      };
 
 }
+dump("Done.\n");

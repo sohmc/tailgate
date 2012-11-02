@@ -26,6 +26,7 @@ var interfacesdownloader = {
           if (aEvent.originalTarget instanceof HTMLDocument) {
                var at_interfaces = /^http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
 
+                    dump("page has been unloaded.\n");
           }
      }
 };

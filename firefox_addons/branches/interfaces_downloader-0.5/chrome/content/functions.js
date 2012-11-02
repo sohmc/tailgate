@@ -1,3 +1,4 @@
+dump("sourcing functions.js...");
 var ifdl_functions = {
      debug_value: function() {
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
@@ -266,3 +267,5 @@ var ifdl_functions = {
      }
 
 };
+
+dump("done.\n");
