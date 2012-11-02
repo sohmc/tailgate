@@ -1,26 +1,10 @@
 var ifdl_wrapper = function(doc) {
-     jQuery.noConflict();
-     var $ = function(selector, context) {
-               return new jQuery.fn.init(selector,context||example.doc); 
-             };
-     $.fn = $.prototype = jQuery.fn;
-          
-
      this.debug = ifdl_functions.debug_value();
-     this.document = doc;
-          
+     
      // FUNCTIONS
 
      this.at_interfacelift = function () {
-          ifdl_functions.dump();
-          $('#sidebar').each(function () {
-               ifdl_functions.dump('found it');
-          });
-
-     };
-
-     this.at_interfacelift_OLD = function() {
-          var w_document = window._content.document;
+          var w_document = doc;
           
           // Remove any existing adds in the sidebar.
           var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
@@ -52,7 +36,7 @@ var ifdl_wrapper = function(doc) {
 
 
      this.initialize_interface = function() {
-          var w_document = window._content.document;
+          var w_document = doc;
 
           var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
           var download_div = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a/..");
@@ -77,11 +61,9 @@ var ifdl_wrapper = function(doc) {
                     input_dom.setAttribute('checked', 'true');
                }
 
-               download_div.snapshotItem(i).textContent = "";
-               download_div.snapshotItem(i).appendChild(input_dom);
 
-               w_document.getElementById('ifdl_' + id).addEventListener('click', function() { 
-                    var w_document = window._content.document;
+               input_dom.addEventListener('click', function() { 
+                    var w_document = doc;
                     if (ifdl_wrapper.debug >= 1) ifdl_functions.dump('id: ' + this.id + ' = value: ' + this.value);
 
                     var child = w_document.getElementById('op_' + this.id);
@@ -112,6 +94,9 @@ var ifdl_wrapper = function(doc) {
                     ifdl_functions.save_images();
                     ifdl_functions.add_events();
                }, false);
+               
+               download_div.snapshotItem(i).textContent = "";
+               download_div.snapshotItem(i).appendChild(input_dom);
           }
 
      };
@@ -119,7 +104,7 @@ var ifdl_wrapper = function(doc) {
      this.build_gui = function () {
           ifdl_functions.remove_ads();
           
-          var w_document = window._content.document;
+          var w_document = doc;
           var sidebar_parent = ifdl_functions.xpath('.//div[@id="sidebar"]');
           
           var ifdl_gui = w_document.createElement('div');
@@ -141,11 +126,17 @@ var ifdl_wrapper = function(doc) {
           download_button.setAttribute('type', 'button');
           download_button.setAttribute('value', 'Download Wallpaper');
           download_button.setAttribute('id', 'download_wallpaper');
+          download_button.addEventListener('click', function() {
+               ifdl_functions.process_images();
+          }, false);
 
           var clear_button = w_document.createElement('input');
           clear_button.setAttribute('type', 'button');
           clear_button.setAttribute('value', 'Clear List');
           clear_button.setAttribute('id', 'clear_list');
+          clear_button.addEventListener('click', function () {
+               ifdl_functions.clear_images();
+          }, false);
 
 
           ifdl_gui.appendChild(preview_div);
@@ -155,14 +146,11 @@ var ifdl_wrapper = function(doc) {
           ifdl_gui.appendChild(clear_button);
           
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
-          
-          w_document.getElementById('download_wallpaper').addEventListener('click', function () {
-               ifdl_functions.process_images();
-          }, false);
-
-          w_document.getElementById('clear_list').addEventListener('click', function () {
-               ifdl_functions.clear_images();
-          }, false);
      };
 
+     this.get_document() {
+          var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"].
+          getService(Components.interfaces.nsIWindowMediator );
+          return wm.getMostRecentWindow("navigator:browser").content.document;
+     },
 }
