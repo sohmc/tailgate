@@ -1,10 +1,25 @@
 var ifdl_wrapper = function(doc) {
+     jQuery.noConflict();
+     var $ = function(selector, context) {
+               return new jQuery.fn.init(selector,context||example.doc); 
+             };
+     $.fn = $.prototype = jQuery.fn;
+          
+
      this.debug = ifdl_functions.debug_value();
      this.document = doc;
           
      // FUNCTIONS
 
      this.at_interfacelift = function () {
+          ifdl_functions.dump();
+          $('#sidebar').each(function () {
+               ifdl_functions.dump('found it');
+          });
+
+     };
+
+     this.at_interfacelift_OLD = function() {
           var w_document = window._content.document;
           
           // Remove any existing adds in the sidebar.

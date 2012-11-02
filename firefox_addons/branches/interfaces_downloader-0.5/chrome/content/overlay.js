@@ -1,5 +1,3 @@
-// var loaded = 0;
-
 var interfacesdownloader = {
   onLoad: function() {
     // initialization code
@@ -28,9 +26,6 @@ var interfacesdownloader = {
           if (aEvent.originalTarget instanceof HTMLDocument) {
                var at_interfaces = /^http:\/\/.*interfacelift\.com\/.*/.test(doc.location.href);
 
-               if (at_interfaces) {
-                    // loaded = 0;
-               }
           }
      }
 };
