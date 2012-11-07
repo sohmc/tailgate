@@ -148,9 +148,9 @@ var ifdl_wrapper = function(doc) {
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
      };
 
-     this.get_document() {
+     this.get_document = function() {
           var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"].
           getService(Components.interfaces.nsIWindowMediator );
           return wm.getMostRecentWindow("navigator:browser").content.document;
-     },
+     };
 }
