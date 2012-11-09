@@ -62,8 +62,8 @@ var ifdl_wrapper = function(doc) {
                }
 
 
-               input_dom.addEventListener('click', function() { 
-                    var w_document = doc;
+               input_dom.addEventListener('click', function() {
+                    var w_document = window.content.document;
                     if (ifdl_wrapper.debug >= 1) ifdl_functions.dump('id: ' + this.id + ' = value: ' + this.value);
 
                     var child = w_document.getElementById('op_' + this.id);
@@ -93,7 +93,7 @@ var ifdl_wrapper = function(doc) {
 
                     ifdl_functions.save_images();
                     ifdl_functions.add_events();
-               }, false);
+               });
                
                download_div.snapshotItem(i).textContent = "";
                download_div.snapshotItem(i).appendChild(input_dom);
