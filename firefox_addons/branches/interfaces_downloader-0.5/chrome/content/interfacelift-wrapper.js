@@ -4,34 +4,35 @@ var ifdl_wrapper = function(doc) {
      // FUNCTIONS
 
      this.at_interfacelift = function () {
-          var w_document = doc;
-          
-          // Remove any existing adds in the sidebar.
-          var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
-          if (ads.snapshotLength > 0) ifdl_functions.remove_ads();
+          var w_document = window.content.document;
+          if (document.getElementById('interface_dl_div') == null) {
+               // Remove any existing adds in the sidebar.
+               var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
+               if (ads.snapshotLength > 0) ifdl_functions.remove_ads();
 
 
-          // If the sidebar is loaded and the images select isn't
-          // present, go ahead and build the gui.
-          var sidebar_parent = ifdl_functions.xpath('.//div[@id="sidebar"]');
-          var select_parent = w_document.getElementById('images');
+               // If the sidebar is loaded and the images select isn't
+               // present, go ahead and build the gui.
+               var sidebar_parent = ifdl_functions.xpath('.//div[@id="sidebar"]');
+               var select_parent = w_document.getElementById('images');
 
-          if ((sidebar_parent.snapshotLength == 1) && (!select_parent)) this.build_gui();
+               if ((sidebar_parent.snapshotLength == 1) && (!select_parent)) this.build_gui();
 
-          // If the number of available downloads does not equal the
-          // number of checkboxes, redraw the interface.
-          var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
-          var checkboxes = ifdl_functions.xpath(".//input[@id[starts-with(.,'ifdl_')]]");
+               // If the number of available downloads does not equal the
+               // number of checkboxes, redraw the interface.
+               var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
+               var checkboxes = ifdl_functions.xpath(".//input[@id[starts-with(.,'ifdl_')]]");
 
-          if (download_a.snapshotLength != checkboxes.snapshotLength) {
-               this.initialize_interface();
-               ifdl_functions.load_images();
+               if (download_a.snapshotLength != checkboxes.snapshotLength) {
+                    this.initialize_interface();
+                    ifdl_functions.load_images();
+               }
+               
+               // If there are any images carried over from the last load,
+               // make sure to attach events to them.
+               var restored_images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
+               if (restored_images.snapshotLength > 0) ifdl_functions.add_events();
           }
-          
-          // If there are any images carried over from the last load,
-          // make sure to attach events to them.
-          var restored_images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
-          if (restored_images.snapshotLength > 0) ifdl_functions.add_events();
      };
 
 
@@ -64,7 +65,6 @@ var ifdl_wrapper = function(doc) {
 
                input_dom.addEventListener('click', function() {
                     var w_document = window.content.document;
-                    if (ifdl_wrapper.debug >= 1) ifdl_functions.dump('id: ' + this.id + ' = value: ' + this.value);
 
                     var child = w_document.getElementById('op_' + this.id);
                     var select_parent = w_document.getElementById('images');
@@ -72,7 +72,6 @@ var ifdl_wrapper = function(doc) {
                     if (child) {
                          select_parent.removeChild(child);
                     } else if (this.checked) {
-                         if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("item not in select list.  adding...");
                          var re = /(\d+)$/.exec(this.id);
                          var img_id = re[1];
 
@@ -87,12 +86,10 @@ var ifdl_wrapper = function(doc) {
 
                          select_parent.appendChild(child);
                          select_parent.scrollTop = select_parent.scrollHeight;
-
-                         if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("done.")
                     }
 
-                    ifdl_functions.save_images();
-                    ifdl_functions.add_events();
+//                    ifdl_functions.save_images();
+//                    ifdl_functions.add_events();
                });
                
                download_div.snapshotItem(i).textContent = "";
