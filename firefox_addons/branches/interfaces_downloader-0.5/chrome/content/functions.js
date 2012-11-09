@@ -12,7 +12,7 @@ var ifdl_functions = {
      },
 
      save_images: function () {
-          if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("Attempting to store images xml...");
+          if (ifdl_functions.debug_value >= 3) this.dump("Attempting to store images into JSON...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -26,15 +26,13 @@ var ifdl_functions = {
           temp_file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0666);
 
           var selects_xml = window.content.document.getElementById('images').childNodes;
-          var images_json = JSON.parse('{"images": [{}] }');
+          var images_json = new Array();
 
           for (var i = 0; i < selects_xml.length; i++) {
-               images_json.images[i].id = selects_xml[i].id;
-               images_json.images[i].value = selects_xml[i].value;
-               images_json.images[i].preview = selects_xml[i].getAttribute('preview');
+               images_json[i] = { "id": selects_xml[i].id, "value": selects_xml[i].value, "preview": selects_xml[i].getAttribute('preview') };
           }
 
-          alert(JSON.stringify(images_json));
+          this.dump(JSON.stringify(images_json));
 
           //=-=-=-=-=- SAVE -=-=-=-=-=//
           Components.utils.import("resource://gre/modules/NetUtil.jsm");
@@ -54,11 +52,11 @@ var ifdl_functions = {
           // The last argument (the callback) is optional.
           NetUtil.asyncCopy(istream, ostream, function(status) {
                if (!Components.isSuccessCode(status)) {
-                    alert('Unable to save to ' + temp_file.path);
+                    this.dump("Unable to save to " + temp_file.path);
                     return;
                }
 
-               if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("Stored " + temp_file.fileSize + " bytes.");
+               if (ifdl_wrapper.debug >= 3) this.dump("Stored " + temp_file.fileSize + " bytes.");
           });
      },
 
@@ -72,7 +70,7 @@ var ifdl_functions = {
      },
 
      load_images: function () {
-          if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("Attempting to restore images...")
+          if (ifdl_wrapper.debug >= 3) this.dump("Attempting to restore images...")
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -85,7 +83,7 @@ var ifdl_functions = {
 
           // =-=-=-=-=- LOAD -=-=-=-=-= //
           if (temp_file.exists()) {
-               if (ifdl_wrapper.debug >= 3) ifdl_functions.dump(temp_file.path + " exists.");
+               if (ifdl_wrapper.debug >= 3) this.dump(temp_file.path + " exists.");
                Components.utils.import("resource://gre/modules/NetUtil.jsm");
 
                NetUtil.asyncFetch(temp_file, function(inputStream, status) {
@@ -100,24 +98,24 @@ var ifdl_functions = {
 
                     if (data.length > 0) {
                          window.content.document.getElementById('images').innerHTML = data;
-                         if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("Restored " + temp_file.fileSize + " bytes.");
-                         ifdl_functions.add_events();
+                         if (ifdl_wrapper.debug >= 3) this.dump("Restored " + temp_file.fileSize + " bytes.");
+                         this.add_events();
                     }
                });
           }
      },
 
      process_images: function () {
-          var images = ifdl_functions.xpath('.//option[@id[starts-with(.,"op_")]]');
+          var images = this.xpath('.//option[@id[starts-with(.,"op_")]]');
 
           if (images.snapshotLength > 0) {
                var p = images.snapshotItem(0);
-               ifdl_functions.download_image(p);
+               this.download_image(p);
           }
      },
 
      clear_images: function () {
-          var image_select = ifdl_functions.xpath('.//select[@id="images"]');
+          var image_select = this.xpath('.//select[@id="images"]');
 
           if (image_select.snapshotLength = 1) {
                var p = image_select.snapshotItem(0);
@@ -126,15 +124,15 @@ var ifdl_functions = {
                     p.removeChild(p.lastChild);
                }
 
-               ifdl_functions.remove_temp_file();
+               this.remove_temp_file();
           }
 
-          var checked_boxes = ifdl_functions.xpath('.//input[@type="checkbox"]')
+          var checked_boxes = this.xpath('.//input[@type="checkbox"]')
      },
 
 
      download_image: function (node) {
-          if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("downloading image...");
+          if (ifdl_wrapper.debug >= 1) this.dump("downloading image...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -142,17 +140,17 @@ var ifdl_functions = {
           if (prefs.prefHasUserValue("image_location")) {
                var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
                var destination = local_path;
-               if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("image_location: " + local_path.path);
+               if (ifdl_wrapper.debug >= 3) this.dump("image_location: " + local_path.path);
                
                var src = node.value;
-               if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("source: " + src);
+               if (ifdl_wrapper.debug >= 3) this.dump("source: " + src);
 
                var re = /\/([\w\-]+.jpg)$/.exec(src);
-               if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("image name: " + re[1]);
+               if (ifdl_wrapper.debug >= 1) this.dump("image name: " + re[1]);
 
                destination.append(re[1]);
                
-               if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("destination: " + destination.path)
+               if (ifdl_wrapper.debug >= 3) this.dump("destination: " + destination.path)
 
                var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
                              .createInstance(Components.interfaces.nsIWebBrowserPersist);
@@ -170,13 +168,13 @@ var ifdl_functions = {
                persist.progressListener = {
                     onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
                          if (aCurTotalProgress == aMaxTotalProgress) {
-                              if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("Finished downloading.");
+                              if (ifdl_wrapper.debug >= 1) this.dump("Finished downloading.");
                          }
                     },
 
                     onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
                          var hex = aStateFlags.toString(16);
-                         if (ifdl_wrapper.debug >= 3) ifdl_functions.dump(aStateFlags + " (hex: " + hex + ") " + aStatus);
+                         if (ifdl_wrapper.debug >= 3) this.dump(aStateFlags + " (hex: " + hex + ") " + aStatus);
 
                          if (hex = '50001') {
                               node.style.fontStyle = 'italic';
@@ -184,9 +182,9 @@ var ifdl_functions = {
                          }
 
                          if ((hex = '50010') && (destination.exists())) {
-                              if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("File size: " + destination.fileSize);
+                              if (ifdl_wrapper.debug >= 1) this.dump("File size: " + destination.fileSize);
                               node.parentNode.removeChild(node);
-                              ifdl_functions.process_images();
+                              this.process_images();
                          }
 
                     }
@@ -196,7 +194,7 @@ var ifdl_functions = {
                try {
                     persist.saveURI(uri, null, null, null, null, destination);
                } catch (e) {
-                    ifdl_functions.dump("There was a problem saving this file:\n\n" + e);
+                    this.dump("There was a problem saving this file:\n\n" + e);
                }
           } else {
                alert("You have not yet set a download directory!  Please visit the extention's options to set it.");
@@ -215,18 +213,18 @@ var ifdl_functions = {
 
      add_events: function () {
           var w = window.content.document;
-          if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("adding events...");
+          if (ifdl_wrapper.debug >= 1) this.dump("adding events...");
           var select_parent = w.getElementById('images');
           var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
 
           for (var i = 0; i < option_nodes.snapshotLength; i++) {
                var n = option_nodes.snapshotItem(i);
 
-               if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("adding events to item " + i + "...");
+               if (ifdl_wrapper.debug >= 3) this.dump("adding events to item " + i + "...");
                n.addEventListener('dblclick', this.remove_on_dblclick, false);
                n.addEventListener('mouseover', this.show_preview, false);
                n.addEventListener('mouseout', this.clear_preview, false);
-               if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("done.");
+               if (ifdl_wrapper.debug >= 3) this.dump("done.");
           }
      },
 
@@ -237,7 +235,7 @@ var ifdl_functions = {
           
           this.parentNode.removeChild(this);
           
-          ifdl_functions.save_images();
+          this.save_images();
      },
 
      show_preview: function () {
@@ -260,9 +258,9 @@ var ifdl_functions = {
      },
 
      xpath: function (q) {
-          if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("xpath query: " + q);
+          if (ifdl_wrapper.debug >= 1) this.dump("xpath query: " + q);
           var nodes = window.content.document.evaluate(q, window.content.document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-          if (ifdl_wrapper.debug >= 3) ifdl_functions.dump('number of nodes returned: ' + nodes.snapshotLength);
+          if (ifdl_wrapper.debug >= 3) this.dump('number of nodes returned: ' + nodes.snapshotLength);
 
           return nodes;
      },

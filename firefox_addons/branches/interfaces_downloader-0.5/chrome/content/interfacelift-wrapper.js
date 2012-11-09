@@ -6,7 +6,6 @@ var ifdl_wrapper = function(doc) {
      this.at_interfacelift = function () {
           var w_document = window.content.document;
           if (document.getElementById('interface_dl_div') == null) {
-               alert(this.debug);
                // Remove any existing adds in the sidebar.
                var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
                if (ads.snapshotLength > 0) ifdl_functions.remove_ads();
