@@ -6,6 +6,7 @@ var ifdl_wrapper = function(doc) {
      this.at_interfacelift = function () {
           var w_document = window.content.document;
           if (document.getElementById('interface_dl_div') == null) {
+               alert(this.debug);
                // Remove any existing adds in the sidebar.
                var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
                if (ads.snapshotLength > 0) ifdl_functions.remove_ads();
@@ -88,7 +89,7 @@ var ifdl_wrapper = function(doc) {
                          select_parent.scrollTop = select_parent.scrollHeight;
                     }
 
-//                    ifdl_functions.save_images();
+                    ifdl_functions.save_images();
 //                    ifdl_functions.add_events();
                });
                
@@ -118,6 +119,9 @@ var ifdl_wrapper = function(doc) {
           select_node.setAttribute('id', 'images');
           select_node.setAttribute('size', '10');
           select_node.setAttribute('style', 'width: 175px');
+          select_node.addEventListener('', function() {
+               ifdl_functions.save_images();
+          }, false);
          
           var download_button = w_document.createElement('input');
           download_button.setAttribute('type', 'button');

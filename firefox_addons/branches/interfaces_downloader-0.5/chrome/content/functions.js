@@ -25,7 +25,16 @@ var ifdl_functions = {
           if (temp_file.exists()) temp_file.remove(false);
           temp_file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0666);
 
-          var selects_xml = window._content.document.getElementById('images').innerHTML;
+          var selects_xml = window.content.document.getElementById('images').childNodes;
+          var images_json = JSON.parse('{"images": [{}] }');
+
+          for (var i = 0; i < selects_xml.length; i++) {
+               images_json.images[i].id = selects_xml[i].id;
+               images_json.images[i].value = selects_xml[i].value;
+               images_json.images[i].preview = selects_xml[i].getAttribute('preview');
+          }
+
+          alert(JSON.stringify(images_json));
 
           //=-=-=-=-=- SAVE -=-=-=-=-=//
           Components.utils.import("resource://gre/modules/NetUtil.jsm");
@@ -40,7 +49,7 @@ var ifdl_functions = {
           var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
                           createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
           converter.charset = "UTF-8";
-          var istream = converter.convertToInputStream(selects_xml);
+          var istream = converter.convertToInputStream(JSON.stringify(images_json));
 
           // The last argument (the callback) is optional.
           NetUtil.asyncCopy(istream, ostream, function(status) {
@@ -90,7 +99,7 @@ var ifdl_functions = {
                     var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
 
                     if (data.length > 0) {
-                         window._content.document.getElementById('images').innerHTML = data;
+                         window.content.document.getElementById('images').innerHTML = data;
                          if (ifdl_wrapper.debug >= 3) ifdl_functions.dump("Restored " + temp_file.fileSize + " bytes.");
                          ifdl_functions.add_events();
                     }
@@ -196,7 +205,7 @@ var ifdl_functions = {
 
 
      remove_ads: function () {
-          var w = window._content.document;
+          var w = window.content.document;
           var ads = this.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
 
           for (var i = 0; i < ads.snapshotLength; i++) {
@@ -205,7 +214,7 @@ var ifdl_functions = {
      },
 
      add_events: function () {
-          var w = window._content.document;
+          var w = window.content.document;
           if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("adding events...");
           var select_parent = w.getElementById('images');
           var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
@@ -222,7 +231,7 @@ var ifdl_functions = {
      },
 
      remove_on_dblclick: function () {
-          var w = window._content.document;
+          var w = window.content.document;
           var preview_box = w.getElementById('preview_box');
           preview_box.textContent = '';
           
@@ -232,7 +241,7 @@ var ifdl_functions = {
      },
 
      show_preview: function () {
-          var w = window._content.document;
+          var w = window.content.document;
           var preview_box = w.getElementById('preview_box');
 
           var img_node = w.createElement('img');
@@ -245,14 +254,14 @@ var ifdl_functions = {
      },
 
      clear_preview: function() {
-          var w = window._content.document;
+          var w = window.content.document;
           var preview_box = w.getElementById('preview_box');
           preview_box.textContent = '';
      },
 
      xpath: function (q) {
           if (ifdl_wrapper.debug >= 1) ifdl_functions.dump("xpath query: " + q);
-          var nodes = window._content.document.evaluate(q, window._content.document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+          var nodes = window.content.document.evaluate(q, window.content.document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
           if (ifdl_wrapper.debug >= 3) ifdl_functions.dump('number of nodes returned: ' + nodes.snapshotLength);
 
           return nodes;
