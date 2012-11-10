@@ -21,7 +21,7 @@ var ifdl_functions = {
                                     .getService(Components.interfaces.nsIProperties)
                                     .get("ProfD", Components.interfaces.nsIFile);
 
-          temp_file.append("ifdl_cache.xml");
+          temp_file.append("ifdl_cache.json");
           if (temp_file.exists()) temp_file.remove(false);
           temp_file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0666);
 
@@ -31,7 +31,7 @@ var ifdl_functions = {
           for (var i = 0; i < selects_xml.length; i++) {
                images_json[i] = { "id": selects_xml[i].id, "value": selects_xml[i].value, "preview": selects_xml[i].getAttribute('preview') };
           }
-
+          this.dump("Debug set to: " + ifdl_wrapper.debug);
           this.dump(JSON.stringify(images_json));
 
           //=-=-=-=-=- SAVE -=-=-=-=-=//
