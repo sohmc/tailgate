@@ -24,6 +24,7 @@ var ifdl_wrapper = function(doc) {
                var checkboxes = ifdl_functions.xpath(".//input[@id[starts-with(.,'ifdl_')]]");
 
                if (download_a.snapshotLength != checkboxes.snapshotLength) {
+                    alert('link length: ' + download_a.snapshotLength + ' == checkboxes: ' + checkboxes.snapshotLength);
                     this.initialize_interface();
                     ifdl_functions.load_images();
                }

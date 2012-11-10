@@ -1,4 +1,6 @@
 var ifdl_functions = {
+     cache_file: "ifdl_cache.json",
+
      debug_value: function() {
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
@@ -21,7 +23,7 @@ var ifdl_functions = {
                                     .getService(Components.interfaces.nsIProperties)
                                     .get("ProfD", Components.interfaces.nsIFile);
 
-          temp_file.append("ifdl_cache.json");
+          temp_file.append(this.cache_file);
           if (temp_file.exists()) temp_file.remove(false);
           temp_file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0666);
 
@@ -29,7 +31,7 @@ var ifdl_functions = {
           var images_json = new Array();
 
           for (var i = 0; i < selects_xml.length; i++) {
-               images_json[i] = { "id": selects_xml[i].id, "value": selects_xml[i].value, "preview": selects_xml[i].getAttribute('preview') };
+               images_json[i] = { "id": selects_xml[i].id, "value": selects_xml[i].value, "preview": selects_xml[i].getAttribute('preview'), "title": selects_xml[i].textContent };
           }
           this.dump("Debug set to: " + ifdl_wrapper.debug);
           this.dump(JSON.stringify(images_json));
@@ -65,7 +67,7 @@ var ifdl_functions = {
                                     .getService(Components.interfaces.nsIProperties)
                                     .get("ProfD", Components.interfaces.nsIFile);
 
-          temp_file.append("ifdl_cache.xml");
+          temp_file.append(this.cache_file);
           if (temp_file.exists()) temp_file.remove(false);
      },
 
@@ -79,7 +81,7 @@ var ifdl_functions = {
                                     .getService(Components.interfaces.nsIProperties)
                                     .get("ProfD", Components.interfaces.nsIFile);
 
-          temp_file.append("ifdl_cache.xml");
+          temp_file.append(this.cache_file);
 
           // =-=-=-=-=- LOAD -=-=-=-=-= //
           if (temp_file.exists()) {
@@ -97,7 +99,22 @@ var ifdl_functions = {
                     var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
 
                     if (data.length > 0) {
-                         window.content.document.getElementById('images').innerHTML = data;
+                         var w_document = window.content.document;
+                         var images_json = JSON.parse(data);
+                         var select_node = w_document.getElementById('images');
+
+                         for (var i = 0; i < images_json.length; i++) {
+                              if (w_documents.getELementById(images_json[i].id) == null) {
+                                   var select_option = w_document.createElement('option');
+                                   select_option.setAttribute('value', images_json[i].value);
+                                   select_option.setAttribute('id', images_json[i].id);
+                                   select_option.setAttribute('preview', images_json[i].preview);
+                                   select_option.textContent = images_json[i].title;
+
+                                   select_node.appendChild(select_option);
+                              }
+                         }
+
                          if (ifdl_wrapper.debug >= 3) this.dump("Restored " + temp_file.fileSize + " bytes.");
                          this.add_events();
                     }
