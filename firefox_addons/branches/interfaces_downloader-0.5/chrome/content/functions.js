@@ -14,7 +14,7 @@ var ifdl_functions = {
      },
 
      save_images: function () {
-          if (ifdl_functions.debug_value >= 3) this.dump("Attempting to store images into JSON...");
+          if (this.debug_value() >= 3) this.dump("Attempting to store images into JSON...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -33,7 +33,7 @@ var ifdl_functions = {
           for (var i = 0; i < selects_xml.length; i++) {
                images_json[i] = { "id": selects_xml[i].id, "value": selects_xml[i].value, "preview": selects_xml[i].getAttribute('preview'), "title": selects_xml[i].textContent };
           }
-          this.dump("Debug set to: " + ifdl_wrapper.debug);
+          this.dump("Debug set to: " + this.debug_value());
           this.dump(JSON.stringify(images_json));
 
           //=-=-=-=-=- SAVE -=-=-=-=-=//
@@ -58,7 +58,7 @@ var ifdl_functions = {
                     return;
                }
 
-               if (ifdl_wrapper.debug >= 3) this.dump("Stored " + temp_file.fileSize + " bytes.");
+               if (this.debug_value() >= 3) this.dump("Stored " + temp_file.fileSize + " bytes.");
           });
      },
 
@@ -72,7 +72,7 @@ var ifdl_functions = {
      },
 
      load_images: function () {
-          if (ifdl_wrapper.debug >= 3) this.dump("Attempting to restore images...")
+          if (this.debug_value() >= 3) this.dump("Attempting to restore images...")
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -85,7 +85,7 @@ var ifdl_functions = {
 
           // =-=-=-=-=- LOAD -=-=-=-=-= //
           if (temp_file.exists()) {
-               if (ifdl_wrapper.debug >= 3) this.dump(temp_file.path + " exists.");
+               if (this.debug_value() >= 3) this.dump(temp_file.path + " exists.");
                Components.utils.import("resource://gre/modules/NetUtil.jsm");
 
                NetUtil.asyncFetch(temp_file, function(inputStream, status) {
@@ -115,7 +115,7 @@ var ifdl_functions = {
                               }
                          }
 
-                         if (ifdl_wrapper.debug >= 3) this.dump("Restored " + temp_file.fileSize + " bytes.");
+                         if (this.debug_value() >= 3) this.dump("Restored " + temp_file.fileSize + " bytes.");
                          this.add_events();
                     }
                });
@@ -149,7 +149,7 @@ var ifdl_functions = {
 
 
      download_image: function (node) {
-          if (ifdl_wrapper.debug >= 1) this.dump("downloading image...");
+          if (this.debug_value() >= 1) this.dump("downloading image...");
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -157,17 +157,17 @@ var ifdl_functions = {
           if (prefs.prefHasUserValue("image_location")) {
                var local_path = prefs.getComplexValue("image_location", Components.interfaces.nsILocalFile);
                var destination = local_path;
-               if (ifdl_wrapper.debug >= 3) this.dump("image_location: " + local_path.path);
+               if (this.debug_value() >= 3) this.dump("image_location: " + local_path.path);
                
                var src = node.value;
-               if (ifdl_wrapper.debug >= 3) this.dump("source: " + src);
+               if (this.debug_value() >= 3) this.dump("source: " + src);
 
                var re = /\/([\w\-]+.jpg)$/.exec(src);
-               if (ifdl_wrapper.debug >= 1) this.dump("image name: " + re[1]);
+               if (this.debug_value() >= 1) this.dump("image name: " + re[1]);
 
                destination.append(re[1]);
                
-               if (ifdl_wrapper.debug >= 3) this.dump("destination: " + destination.path)
+               if (this.debug_value() >= 3) this.dump("destination: " + destination.path)
 
                var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
                              .createInstance(Components.interfaces.nsIWebBrowserPersist);
@@ -185,13 +185,13 @@ var ifdl_functions = {
                persist.progressListener = {
                     onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
                          if (aCurTotalProgress == aMaxTotalProgress) {
-                              if (ifdl_wrapper.debug >= 1) this.dump("Finished downloading.");
+                              if (this.debug_value() >= 1) this.dump("Finished downloading.");
                          }
                     },
 
                     onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
                          var hex = aStateFlags.toString(16);
-                         if (ifdl_wrapper.debug >= 3) this.dump(aStateFlags + " (hex: " + hex + ") " + aStatus);
+                         if (this.debug_value() >= 3) this.dump(aStateFlags + " (hex: " + hex + ") " + aStatus);
 
                          if (hex = '50001') {
                               node.style.fontStyle = 'italic';
@@ -199,7 +199,7 @@ var ifdl_functions = {
                          }
 
                          if ((hex = '50010') && (destination.exists())) {
-                              if (ifdl_wrapper.debug >= 1) this.dump("File size: " + destination.fileSize);
+                              if (this.debug_value() >= 1) this.dump("File size: " + destination.fileSize);
                               node.parentNode.removeChild(node);
                               this.process_images();
                          }
@@ -230,18 +230,18 @@ var ifdl_functions = {
 
      add_events: function () {
           var w = window.content.document;
-          if (ifdl_wrapper.debug >= 1) this.dump("adding events...");
+          if (this.debug_value() >= 1) this.dump("adding events...");
           var select_parent = w.getElementById('images');
           var option_nodes = this.xpath('.//option[@id[starts-with(.,"op_")]]');
 
           for (var i = 0; i < option_nodes.snapshotLength; i++) {
                var n = option_nodes.snapshotItem(i);
 
-               if (ifdl_wrapper.debug >= 3) this.dump("adding events to item " + i + "...");
+               if (this.debug_value() >= 3) this.dump("adding events to item " + i + "...");
                n.addEventListener('dblclick', this.remove_on_dblclick, false);
                n.addEventListener('mouseover', this.show_preview, false);
                n.addEventListener('mouseout', this.clear_preview, false);
-               if (ifdl_wrapper.debug >= 3) this.dump("done.");
+               if (this.debug_value() >= 3) this.dump("done.");
           }
      },
 
@@ -275,9 +275,9 @@ var ifdl_functions = {
      },
 
      xpath: function (q) {
-          if (ifdl_wrapper.debug >= 1) this.dump("xpath query: " + q);
+          if (this.debug_value() >= 1) this.dump("xpath query: " + q);
           var nodes = window.content.document.evaluate(q, window.content.document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-          if (ifdl_wrapper.debug >= 3) this.dump('number of nodes returned: ' + nodes.snapshotLength);
+          if (this.debug_value() >= 3) this.dump('number of nodes returned: ' + nodes.snapshotLength);
 
           return nodes;
      },

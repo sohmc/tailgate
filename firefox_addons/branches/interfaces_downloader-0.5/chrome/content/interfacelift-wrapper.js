@@ -5,7 +5,8 @@ var ifdl_wrapper = function(doc) {
 
      this.at_interfacelift = function () {
           var w_document = window.content.document;
-          if (document.getElementById('interface_dl_div') == null) {
+          if ((w_document.getElementById('interface_dl_div') == null) && (w_document.getElementById('sidebar') != null)) {
+               ifdl_functions.dump(w_document.location);
                // Remove any existing adds in the sidebar.
                var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
                if (ads.snapshotLength > 0) ifdl_functions.remove_ads();
@@ -24,7 +25,6 @@ var ifdl_wrapper = function(doc) {
                var checkboxes = ifdl_functions.xpath(".//input[@id[starts-with(.,'ifdl_')]]");
 
                if (download_a.snapshotLength != checkboxes.snapshotLength) {
-                    alert('link length: ' + download_a.snapshotLength + ' == checkboxes: ' + checkboxes.snapshotLength);
                     this.initialize_interface();
                     ifdl_functions.load_images();
                }
