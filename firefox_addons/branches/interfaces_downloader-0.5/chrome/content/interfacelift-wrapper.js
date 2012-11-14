@@ -25,8 +25,11 @@ var ifdl_wrapper = function(doc) {
                var checkboxes = ifdl_functions.xpath(".//input[@id[starts-with(.,'ifdl_')]]");
 
                if (download_a.snapshotLength != checkboxes.snapshotLength) {
+                    ifdl_functions.dump("Initializing interface.  Images found: " + download_a.snapshotLength);
                     this.initialize_interface();
                     ifdl_functions.load_images();
+               } else {
+                    ifdl_functions.dump("InterfaceLift Add-on did not execute because it did not find any valid images.");
                }
                
                // If there are any images carried over from the last load,

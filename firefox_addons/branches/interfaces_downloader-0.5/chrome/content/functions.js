@@ -58,7 +58,7 @@ var ifdl_functions = {
                     return;
                }
 
-               if (this.debug_value() >= 3) this.dump("Stored " + temp_file.fileSize + " bytes.");
+               // if (this.debug_value() >= 3) this.dump("Stored " + temp_file.fileSize + " bytes.");
           });
      },
 
@@ -104,7 +104,7 @@ var ifdl_functions = {
                          var select_node = w_document.getElementById('images');
 
                          for (var i = 0; i < images_json.length; i++) {
-                              if (w_documents.getELementById(images_json[i].id) == null) {
+                              if (w_document.getElementById(images_json[i].id) == null) {
                                    var select_option = w_document.createElement('option');
                                    select_option.setAttribute('value', images_json[i].value);
                                    select_option.setAttribute('id', images_json[i].id);
@@ -115,7 +115,7 @@ var ifdl_functions = {
                               }
                          }
 
-                         if (this.debug_value() >= 3) this.dump("Restored " + temp_file.fileSize + " bytes.");
+//                         if (this.debug_value() >= 3) this.dump("Restored " + temp_file.fileSize + " bytes.");
                          this.add_events();
                     }
                });
