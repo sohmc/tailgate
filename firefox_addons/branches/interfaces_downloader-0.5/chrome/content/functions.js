@@ -1,6 +1,8 @@
 var ifdl_functions = {
      cache_file: "ifdl_cache.json",
 
+     countdown: 0.0,
+
      debug_value: function() {
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
@@ -122,15 +124,35 @@ var ifdl_functions = {
           }
      },
 
+     initiate_timeout: function () {
+          var images = this.xpath('.//option[@id[starts-with(.,"op_")]]');
+          var download_button = window.content.document.getElementById('download_wallpaper');
+          if (images.snapshotLength > 0) {
+               ifdl_functions.countdown = ifdl_functions.random_wait_time();
+               if (ifdl_functions.debug_value() >= 3) ifdl_functions.dump("Wait seconds: " + (ifdl_functions.countdown / 1000));
+
+               var countdown = setInterval(function(){ 
+                    if ((ifdl_functions.countdown - 1000) > 0) { 
+                         ifdl_functions.countdown = ifdl_functions.countdown - 1000;
+                         download_button.getElementById('download_wallpaper').value = (ifdl_functions.countdown / 1000) + " seconds remaining.";
+                    } else { 
+                         download_button.getElementById('download_wallpaper').value = "Processing...";
+                         window.clearInterval(countdown);
+                         ifdl_functions.process_images();
+                    }
+               }, 1000);
+          } else {
+               download_button.getElementById('download_wallpaper').value = "Download Wallpaper";
+          }
+     },
+
      process_images: function () {
           var images = this.xpath('.//option[@id[starts-with(.,"op_")]]');
 
           if (images.snapshotLength > 0) {
                var p = images.snapshotItem(0);
                var wait = ifdl_functions.random_wait_time();
-               if (ifdl_functions.debug_value() >= 3) ifdl_functions.dump('Seconds waiting: ' + (wait / 1000));
-
-               SetTimeout(function(){ ifdl_functions.download_image(p); }, ifdl_functions.random_wait_time());
+               ifdl_functions.download_image(p);
           }
      },
 
@@ -188,13 +210,13 @@ var ifdl_functions = {
                persist.progressListener = {
                     onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
                          if (aCurTotalProgress == aMaxTotalProgress) {
-                              if (this.debug_value() >= 1) this.dump("Finished downloading.");
+                              if (ifdl_functions.debug_value() >= 1) ifdl_functions.dump("Finished downloading.");
                          }
                     },
 
                     onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
                          var hex = aStateFlags.toString(16);
-                         if (this.debug_value() >= 3) this.dump(aStateFlags + " (hex: " + hex + ") " + aStatus);
+                         if (ifdl_functions.debug_value() >= 3) ifdl_functions.dump(aStateFlags + " (hex: " + hex + ") " + aStatus);
 
                          if (hex = '50001') {
                               node.style.fontStyle = 'italic';
@@ -202,9 +224,9 @@ var ifdl_functions = {
                          }
 
                          if ((hex = '50010') && (destination.exists())) {
-                              if (this.debug_value() >= 1) this.dump("File size: " + destination.fileSize);
+                              if (ifdl_functions.debug_value() >= 1) ifdl_functions.dump("File size: " + destination.fileSize);
                               node.parentNode.removeChild(node);
-                              this.process_images();
+                              ifdl_functions.initiate_timeout();
                          }
 
                     }
@@ -278,8 +300,8 @@ var ifdl_functions = {
      },
 
      random_wait_time: function() {
-          var minimum = 30; // seconds
-          var maximum = 120; // 2 minutes
+          var minimum = 10; // seconds
+          var maximum = 30; // 2 minutes
 
           return Math.floor(1000 * ((Math.random() * maximum) + minimum));
      },
