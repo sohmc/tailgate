@@ -58,7 +58,7 @@ var ifdl_functions = {
                     return;
                }
 
-               // if (this.debug_value() >= 3) this.dump("Stored " + temp_file.fileSize + " bytes.");
+                if (ifdl_functions.debug_value() >= 3) ifdl_functions.dump("Stored " + temp_file.fileSize + " bytes.");
           });
      },
 
@@ -115,8 +115,8 @@ var ifdl_functions = {
                               }
                          }
 
-//                         if (this.debug_value() >= 3) this.dump("Restored " + temp_file.fileSize + " bytes.");
-                         this.add_events();
+                         if (ifdl_functions.debug_value() >= 3) ifdl_functions.dump("Restored " + temp_file.fileSize + " bytes.");
+                         ifdl_functions.add_events();
                     }
                });
           }
@@ -127,7 +127,10 @@ var ifdl_functions = {
 
           if (images.snapshotLength > 0) {
                var p = images.snapshotItem(0);
-               this.download_image(p);
+               var wait = ifdl_functions.random_wait_time();
+               if (ifdl_functions.debug_value() >= 3) ifdl_functions.dump('Seconds waiting: ' + (wait / 1000));
+
+               SetTimeout(function(){ ifdl_functions.download_image(p); }, ifdl_functions.random_wait_time());
           }
      },
 
@@ -272,6 +275,13 @@ var ifdl_functions = {
           var w = window.content.document;
           var preview_box = w.getElementById('preview_box');
           preview_box.textContent = '';
+     },
+
+     random_wait_time: function() {
+          var minimum = 30; // seconds
+          var maximum = 120; // 2 minutes
+
+          return Math.floor(1000 * ((Math.random() * maximum) + minimum));
      },
 
      xpath: function (q) {

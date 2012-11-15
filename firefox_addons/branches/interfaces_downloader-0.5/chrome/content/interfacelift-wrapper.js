@@ -5,7 +5,9 @@ var ifdl_wrapper = function(doc) {
 
      this.at_interfacelift = function () {
           var w_document = window.content.document;
-          if ((w_document.getElementById('interface_dl_div') == null) && (w_document.getElementById('sidebar') != null)) {
+          var download_a = ifdl_functions.xpath(".//div[@id[starts-with(.,'download')]]/a");
+
+          if ((w_document.getElementById('interface_dl_div') == null) && (download_a.snapshotLength > 0)) {
                ifdl_functions.dump(w_document.location);
                // Remove any existing adds in the sidebar.
                var ads = ifdl_functions.xpath('.//div[@id="sidebar"]/div[@class="ad"]');
@@ -30,6 +32,7 @@ var ifdl_wrapper = function(doc) {
                     ifdl_functions.load_images();
                } else {
                     ifdl_functions.dump("InterfaceLift Add-on did not execute because it did not find any valid images.");
+                    ifdl_functions.dump(w_document.getElementsByTagName('body')[0].innerHTML);
                }
                
                // If there are any images carried over from the last load,
@@ -93,7 +96,7 @@ var ifdl_wrapper = function(doc) {
                     }
 
                     ifdl_functions.save_images();
-//                    ifdl_functions.add_events();
+                    ifdl_functions.add_events();
                });
                
                download_div.snapshotItem(i).textContent = "";
@@ -150,6 +153,7 @@ var ifdl_wrapper = function(doc) {
           ifdl_gui.appendChild(clear_button);
           
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
+          this.watch_select();
      };
 
      this.get_document = function() {
@@ -157,4 +161,18 @@ var ifdl_wrapper = function(doc) {
           getService(Components.interfaces.nsIWindowMediator );
           return wm.getMostRecentWindow("navigator:browser").content.document;
      };
+
+     this.watch_select = function() {
+/*          var w_document = window.content.document;
+          var target = XULDocument.QuerySelector('#images');
+
+          var observer = new MutationObserver(function(mutations) {
+               mutations.forEach(function(mutation) {
+                    ifdl_functions.dump(mutation.type);
+               });
+          });
+
+          var config = { childList: true };
+          observer.observe(target, config); */
+     }
 }
