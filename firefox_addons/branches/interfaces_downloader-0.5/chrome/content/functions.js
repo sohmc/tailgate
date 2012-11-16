@@ -27,7 +27,7 @@ var ifdl_functions = {
 
           temp_file.append(this.cache_file);
           if (temp_file.exists()) temp_file.remove(false);
-          temp_file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0666);
+          temp_file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0664);
 
           var selects_xml = window.content.document.getElementById('images').childNodes;
           var images_json = new Array();
