@@ -153,7 +153,6 @@ var ifdl_wrapper = function(doc) {
           ifdl_gui.appendChild(clear_button);
           
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);
-          this.watch_select();
      };
 
      this.get_document = function() {
@@ -162,17 +161,4 @@ var ifdl_wrapper = function(doc) {
           return wm.getMostRecentWindow("navigator:browser").content.document;
      };
 
-     this.watch_select = function() {
-/*          var w_document = window.content.document;
-          var target = XULDocument.QuerySelector('#images');
-
-          var observer = new MutationObserver(function(mutations) {
-               mutations.forEach(function(mutation) {
-                    ifdl_functions.dump(mutation.type);
-               });
-          });
-
-          var config = { childList: true };
-          observer.observe(target, config); */
-     }
 }
