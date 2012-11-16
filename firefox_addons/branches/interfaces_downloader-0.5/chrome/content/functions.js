@@ -144,6 +144,7 @@ var ifdl_functions = {
                }, 1000);
           } else {
                download_button.value = "Download Wallpaper";
+               ifdl_functions.remove_temp_file();
           }
      },
 
@@ -153,6 +154,8 @@ var ifdl_functions = {
           if (images.snapshotLength > 0) {
                var p = images.snapshotItem(0);
                ifdl_functions.download_image(p);
+          } else {
+               alert("You did not select an images for download.");
           }
      },
 
