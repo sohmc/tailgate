@@ -4,7 +4,7 @@
     <em:id>interfacesdownloader@tailgate.googlecode.com</em:id>
     <em:type>2</em:type>
     <em:name>Interfaces Downloader</em:name>
-    <em:version>0.5 - ALPHA</em:version>
+    <em:version>0.5 (Build 248)</em:version>
     <em:creator>Michael Soh</em:creator>
     <em:description>Download desktop wallpaper in a snap.</em:description>
     <em:aboutURL>chrome://interfacesdownloader/content/about.xul</em:aboutURL>
