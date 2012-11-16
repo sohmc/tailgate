@@ -1,2 +1,5 @@
 syntax: glob
 firefox_addons/branches/interfacesdownloader@tailgate.googlecode.com
+*.lnk
+firefox_addons/branches/image_destination/*
+*.swp

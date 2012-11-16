@@ -89,6 +89,7 @@ var ifdl_wrapper = function(doc) {
                          child.setAttribute('value', this.value);
                          child.setAttribute('id', 'op_' + this.id);
                          child.setAttribute('preview', this.getAttribute('preview'));
+                         child.setAttribute('title', title);
                          child.textContent = title;
 
                          select_parent.appendChild(child);
@@ -150,6 +151,7 @@ var ifdl_wrapper = function(doc) {
           ifdl_gui.appendChild(select_node);
           ifdl_gui.appendChild(w_document.createElement('br'));
           ifdl_gui.appendChild(download_button);
+          ifdl_gui.appendChild(w_document.createElement('br'));
           ifdl_gui.appendChild(clear_button);
           
           sidebar_parent.snapshotItem(0).appendChild(ifdl_gui);

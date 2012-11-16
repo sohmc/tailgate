@@ -33,7 +33,7 @@ var ifdl_functions = {
           var images_json = new Array();
 
           for (var i = 0; i < selects_xml.length; i++) {
-               images_json[i] = { "id": selects_xml[i].id, "value": selects_xml[i].value, "preview": selects_xml[i].getAttribute('preview'), "title": selects_xml[i].textContent };
+               images_json[i] = { "id": selects_xml[i].id, "value": selects_xml[i].value, "preview": selects_xml[i].getAttribute('preview'), "title": selects_xml[i].title };
           }
           this.dump("Debug set to: " + this.debug_value());
           this.dump(JSON.stringify(images_json));
@@ -111,6 +111,7 @@ var ifdl_functions = {
                                    select_option.setAttribute('value', images_json[i].value);
                                    select_option.setAttribute('id', images_json[i].id);
                                    select_option.setAttribute('preview', images_json[i].preview);
+                                   select_option.setAttribute('title', images_json[i].title);
                                    select_option.textContent = images_json[i].title;
 
                                    select_node.appendChild(select_option);
@@ -134,15 +135,15 @@ var ifdl_functions = {
                var countdown = setInterval(function(){ 
                     if ((ifdl_functions.countdown - 1000) > 0) { 
                          ifdl_functions.countdown = ifdl_functions.countdown - 1000;
-                         download_button.getElementById('download_wallpaper').value = (ifdl_functions.countdown / 1000) + " seconds remaining.";
+                         download_button.value = (ifdl_functions.countdown / 1000) + " seconds remaining";
                     } else { 
-                         download_button.getElementById('download_wallpaper').value = "Processing...";
+                         download_button.value = "Processing...";
                          window.clearInterval(countdown);
                          ifdl_functions.process_images();
                     }
                }, 1000);
           } else {
-               download_button.getElementById('download_wallpaper').value = "Download Wallpaper";
+               download_button.value = "Download Wallpaper";
           }
      },
 
@@ -151,7 +152,6 @@ var ifdl_functions = {
 
           if (images.snapshotLength > 0) {
                var p = images.snapshotItem(0);
-               var wait = ifdl_functions.random_wait_time();
                ifdl_functions.download_image(p);
           }
      },
@@ -174,7 +174,7 @@ var ifdl_functions = {
 
 
      download_image: function (node) {
-          if (this.debug_value() >= 1) this.dump("downloading image...");
+          if (this.debug_value() >= 1) this.dump("DEBUG 1:: Downloading image titled " + node.title);
           var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                                 .getService(Components.interfaces.nsIPrefService)
                                 .getBranch("extensions.interfacesdownloader.");
@@ -211,6 +211,9 @@ var ifdl_functions = {
                     onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
                          if (aCurTotalProgress == aMaxTotalProgress) {
                               if (ifdl_functions.debug_value() >= 1) ifdl_functions.dump("Finished downloading.");
+                         } else {
+                              var percent_complete = (Math.round((aCurTotalProgress / aMaxTotalProgress) * 1000)) / 10;
+                              node.textContent = node.getAttribute('title') + ' (' + percent_complete + '%)';
                          }
                     },
 
